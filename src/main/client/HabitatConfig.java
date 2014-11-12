@@ -10,5 +10,6 @@ public class HabitatConfig implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		Window.alert("Hello World!");
+		Window.alert("Jeremiah's practice commit");
 	}
 }
