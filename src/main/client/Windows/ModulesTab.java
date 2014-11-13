@@ -1,15 +1,21 @@
 package main.client.Windows;
 
+import main.client.HabitatConfig;
+
 import com.google.gwt.user.client.ui.HTML;
 
 public class ModulesTab extends GwtWindow  {
 
+	@SuppressWarnings("unused")
+	private HabitatConfig root;
+	
 	/**
 	 * Default constructor
 	 */
-	public ModulesTab() {
+	public ModulesTab(HabitatConfig root) {
 		
 		super();
+		this.root = root;
 	}
 	
 	/**

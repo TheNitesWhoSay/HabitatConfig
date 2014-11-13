@@ -33,11 +33,11 @@ public class MainWindow extends GwtWindow {
 	public MainWindow(HabitatConfig root) {
 		
 		this.root = root;
-		homeTab = new HomeTab();
-		modulesTab = new ModulesTab();
-		configTab = new ConfigTab();
-		communicationsTab = new CommunicationsTab();
-		settingsTab = new SettingsTab();
+		homeTab = new HomeTab(root);
+		modulesTab = new ModulesTab(root);
+		configTab = new ConfigTab(root);
+		communicationsTab = new CommunicationsTab(root);
+		settingsTab = new SettingsTab(root);
 	}
 	
 	public void selectTab(int tabNum)
