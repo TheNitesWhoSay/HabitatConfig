@@ -1,5 +1,6 @@
 package main.client.Windows;
 
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
@@ -34,8 +35,27 @@ public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 		
 		if ( !created )
 			created = create();
-			
-		parent.add(this);
+		
+		if ( created )
+			parent.add(this);
+	}
+	
+	/**
+	 * Shows the tab
+	 * 
+	 * Creates the tab before showing
+	 * if it has not already been created
+	 * 
+	 * @param parent the TabPanel this is inserted into
+	 * @param tabTitle the title of this tab
+	 */
+	public void show(TabPanel parent, String tabTitle) {
+		
+		if ( !created )
+			created = create();
+		
+		if ( created )
+			parent.add(this, tabTitle);
 	}
 	
 	/**

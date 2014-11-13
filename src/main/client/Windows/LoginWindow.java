@@ -42,7 +42,6 @@ public class LoginWindow extends GwtWindow {
 		});
 		    
 		add(login);
-		    
 		return true;
 	}
 }
