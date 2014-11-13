@@ -22,7 +22,11 @@ public class HabitatConfig implements EntryPoint {
 	public LoginWindow loginWindow;
 	public LandingGrid landingGrid;
 	
-	/** This is the entry point method. */
+	/**
+	 * This is the entry point method.
+	 * 
+	 * Starts the Habitat Configuration Software
+	 */
 	public void onModuleLoad() {
 		
 		// Call all constructors
@@ -40,9 +44,6 @@ public class HabitatConfig implements EntryPoint {
 			mainWindow.show(RootPanel.get());
 		
 		// From here on out the program is message driven
-		
-		/** The login window could call root.mainWindow.Create()
-			in response to a sucessful login */
 	}
 	
 }
