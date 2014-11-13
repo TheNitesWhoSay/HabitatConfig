@@ -1,5 +1,7 @@
 package main.client;
 
+import com.google.gwt.storage.client.Storage;
+
 /**
  * Handles all persistent configuration options
  */
@@ -24,12 +26,71 @@ public class ConfigOptions {
 	}
 	
 	/**
+	 * Saves the configuration information to the client's computer
+	 * Should be called every time a configuration variable is changed
+	 * @return whether the save was successful
+	 */
+	public boolean saveToClient() {
+		
+		Storage storage = Storage.getLocalStorageIfSupported();
+		if ( storage != null )
+		{
+			storage.setItem("loginRequired", loginRequired?"t":"f");
+			storage.setItem("loginNameCaseSensative", loginNameCaseSensative?"t":"f");
+			storage.setItem("loginPassCaseSensative", loginPassCaseSensative?"t":"f");
+			storage.setItem("loginName", loginName);
+			storage.setItem("loginPass", loginPass);
+		}
+		return false; // Unimplemented
+	}
+	
+	/**
 	 * Loads the programs configuration options from storage
 	 * @return whether loading was 100% successful
 	 */
 	public boolean load() {
 		
-		// Load configuration options from storage
+		Storage storage = Storage.getLocalStorageIfSupported();
+		if ( storage != null )
+		{
+			String sLoginRequired = storage.getItem("loginRequired");
+			String sLoginNameCaseSensative = storage.getItem("loginNameCaseSensative");
+			String sLoginPassCaseSensative = storage.getItem("loginPassCaseSensative");
+			String sLoginName = storage.getItem("loginName");
+			String sLoginPass = storage.getItem("loginPass");
+			
+			if ( sLoginRequired != null )
+			{
+				if ( sLoginRequired.equals("t") )
+					loginRequired = true;
+				else if ( sLoginRequired.equals("f") )
+					loginRequired = false;
+			}
+			
+			if ( sLoginNameCaseSensative != null )
+			{
+				if ( sLoginNameCaseSensative.equals("t") )
+					loginNameCaseSensative = true;
+				else if ( sLoginNameCaseSensative.equals("f") )
+					loginNameCaseSensative = false;
+			}
+			
+			if ( sLoginPassCaseSensative != null )
+			{
+				if ( sLoginPassCaseSensative.equals("t") )
+					loginPassCaseSensative = true;
+				else if ( sLoginPassCaseSensative.equals("f") )
+					loginPassCaseSensative = false;
+			}
+			
+			if ( sLoginName != null )
+				loginName = sLoginName;
+			
+			if ( sLoginPass != null )
+				loginPass = sLoginPass;
+			
+			return true;
+		}
 		return false; // Unimplemented
 	}
 	
@@ -99,6 +160,7 @@ public class ConfigOptions {
 		if ( validateLogin(loginName, loginPass) )
 		{
 			this.loginRequired = loginRequired;
+			saveToClient();
 			return true;
 		}
 		else
@@ -117,6 +179,7 @@ public class ConfigOptions {
 		if ( validateLogin(loginName, loginPass) )
 		{
 			this.loginNameCaseSensative = loginNameCaseSensative;
+			saveToClient();
 			return true;
 		}
 		else
@@ -135,6 +198,7 @@ public class ConfigOptions {
 		if ( validateLogin(loginName, loginPass) )
 		{
 			this.loginPassCaseSensative = loginPassCaseSensative;
+			saveToClient();
 			return true;
 		}
 		else
@@ -153,6 +217,7 @@ public class ConfigOptions {
 		if ( validateLogin(loginName, loginPass) && newUserName.length() > 0 )
 		{
 			this.loginName = newUserName;
+			saveToClient();
 			return true;
 		}
 		else
@@ -171,6 +236,7 @@ public class ConfigOptions {
 		if ( validateLogin(loginName, loginPass) && newPassword.length() > 0 )
 		{
 			this.loginPass = newPassword;
+			saveToClient();
 			return true;
 		}
 		else

@@ -33,6 +33,7 @@ public class HabitatConfig implements EntryPoint {
 		mainWindow = new MainWindow(this);
 		loginWindow = new LoginWindow(this);
 		configOptions = new ConfigOptions();
+		landingGrid = new LandingGrid();
 		
 		// Load the program's configuration options
 		configOptions.load();
