@@ -28,7 +28,7 @@ public class HabitatConfig implements EntryPoint {
 	 * Starts the Habitat Configuration Software
 	 */
 	public void onModuleLoad() {
-		
+				
 		// Call all constructors
 		mainWindow = new MainWindow(this);
 		loginWindow = new LoginWindow(this);
