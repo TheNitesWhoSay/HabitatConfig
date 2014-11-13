@@ -24,6 +24,10 @@ public class MainWindow extends GwtWindow {
 		this.root = root;
 	}
 	
+	/**
+	 * This method will create the main window
+	 * @return true if window creation was successful
+	 */
 	protected boolean create() {
 		
 		// Create the main window...
@@ -33,7 +37,7 @@ public class MainWindow extends GwtWindow {
 		{
 			public void onClick(ClickEvent event)
 			{
-				removeFromParent();
+				hide();
 				root.loginWindow.show(RootPanel.get());
 			}
 		});

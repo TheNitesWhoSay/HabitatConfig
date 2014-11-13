@@ -7,7 +7,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
 
-/** This is the login window for the habitat configuration software */
+/**
+ * This is the login window for the habitat configuration software
+ */
 public class LoginWindow extends GwtWindow {
 	
 	private HabitatConfig root; // A reference to the root class
@@ -22,7 +24,7 @@ public class LoginWindow extends GwtWindow {
 	}
 	
 	/**
-	 * This method will create the login window within the panel
+	 * This method will create the login window
 	 * @return true if window creation was successful
 	 */
 	protected boolean create() {
@@ -34,7 +36,7 @@ public class LoginWindow extends GwtWindow {
 		{
 			public void onClick(ClickEvent event)
 			{
-				removeFromParent();
+				hide();
 				root.mainWindow.show(RootPanel.get());
 			}
 		});

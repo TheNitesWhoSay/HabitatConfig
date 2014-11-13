@@ -7,7 +7,9 @@ public class ConfigOptions {
 
 	private boolean loginRequired;
 	
-	/** Sets all default configuration settings */
+	/**
+	 * Sets all default configuration settings
+	 */
 	public ConfigOptions() {
 		
 		loginRequired = true;

@@ -3,11 +3,19 @@ package main.client.Data;
 /** Enumerates module types and provides conversion to types from codes */
 public class ModuleTypes {
 
+	/**
+	 * Enumerates the various module types
+	 */
 	public enum MODULE_TYPE {
 		Unknown, Plain, Dormitory, Sanitation, FoodAndWater,
 		GymAndRelaxation, Canteen, Power, Control, Airlock, Medical
 	};
 	
+	/**
+	 * Gets the module type based on the given code
+	 * @param code the code of the module
+	 * @return the module type for the given code
+	 */
 	public static MODULE_TYPE getType(int code) {
 		
 		if ( code >= 1 && code <= 40 )

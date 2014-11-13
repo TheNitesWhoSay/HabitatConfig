@@ -1,7 +1,8 @@
 package main.client.Data;
 
-/** Holds information about terrain and
-	modules within the landing zone */
+/**
+ * Holds information about terrain and modules within the landing zone
+ */
 public class LandingGrid {
 
 	private int width;
@@ -11,6 +12,10 @@ public class LandingGrid {
 	@SuppressWarnings("unused")
 	private Module modules[/*X*/][/*Y*/];
 	
+	/**
+	 * Constructs a basic landing grid,
+	 * fills it with buildingable, traversable terrain and null modules
+	 */
 	public LandingGrid() {
 		
 		width = 0; // Replace with actual landing zone width

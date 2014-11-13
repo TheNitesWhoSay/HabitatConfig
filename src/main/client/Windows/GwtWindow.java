@@ -4,19 +4,32 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
- * This is a simple abstraction for a window (or subwindow)
- * in gwt to share common commands
+ * This is a simple abstraction for a window (or subwindow) in gwt
+ * 
+ * Allows for easy creation, showing, and hiding of windows
  */
 public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 
-	private boolean created;
+	private boolean created; // Whether the window has been created
 	
+	/**
+	 * Constructor, calls FlowPanel's constructor
+	 * and sets default variable values
+	 */
 	public GwtWindow() {
 		
-		super();
+		super(); // Call FlowPanel's constructor
 		created = false;
 	}
 	
+	/**
+	 * Shows the window
+	 * 
+	 * Creates the window before showing
+	 * if it has not already been created
+	 * 
+	 * @param the panel this window is shown in
+	 */
 	public void show(Panel parent) {
 		
 		if ( !created )
@@ -25,12 +38,18 @@ public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 		parent.add(this);
 	}
 	
+	/**
+	 * Hides the window
+	 */
 	public void hide() {
 		
-		if ( created )
-			removeFromParent();
+		removeFromParent();
 	}
 	
+	/**
+	 * The create method, write this method in inheriting classes
+	 * @return true if the method has been overriden and window creation was sucessful.
+	 */
 	protected boolean create() {
 		
 		return false; // must be overriden
