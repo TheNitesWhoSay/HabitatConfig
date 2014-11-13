@@ -8,7 +8,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * The root (or main) class for the Habitat Configuration Software
+ * The root (or main, or program) class for the Habitat Configuration Software
  * 
  * Subclasses may use a reference to this class to access various parts
  * of the program when responding to user events.
