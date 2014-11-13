@@ -17,7 +17,8 @@
   <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
-  <!-- Other module inherits                                      -->
+  <!-- Other module inherits -->  
+  <inherits name="com.google.gwt.json.JSON" />
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='main.client.HabitatConfig'/>
