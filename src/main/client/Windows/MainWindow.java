@@ -40,8 +40,8 @@ public class MainWindow extends GwtWindow {
 		settingsTab = new SettingsTab(root);
 	}
 	
-	public void selectTab(int tabNum)
-	{
+	public void selectTab(int tabNum) {
+		
 		tabs.selectTab(tabNum);
 	}
 	
@@ -55,10 +55,8 @@ public class MainWindow extends GwtWindow {
 		
 		HorizontalPanel hpLogout = new HorizontalPanel();
 		final Button logout = new Button("Logout");
-		logout.addClickHandler(new ClickHandler()
-		{
-			public void onClick(ClickEvent event)
-			{
+		logout.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				hide();
 				root.loginWindow.show(RootPanel.get());
 			}

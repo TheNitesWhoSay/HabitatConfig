@@ -8,15 +8,45 @@ import main.client.Data.ModuleTypes.MODULE_TYPE;
  */
 public class Module {
 	
+	private int xc;
+	private int yc;
 	private int moduleCode;
 	private int rotationsTillUpright;
 	private MODULE_STATUS status;
+	
+	public Module() {
+		
+		xc = -1;
+		yc = -1;
+		moduleCode = 0;
+		rotationsTillUpright = -1;
+		status = MODULE_STATUS.Unknown;
+	}
+	
+	/**
+	 * Gets this modules current x coordinate
+	 * @return the current x coordinate
+	 */
+	public int getXPos() {
+		
+		return xc;
+	}
+	
+	/**
+	 * Gets this modules current y coordinate
+	 * @return the current y coordinate
+	 */
+	public int getYPos() {
+		
+		return yc;
+	}
 	
 	/**
 	 * Get the module type based on the code
 	 * @return the module type (ex: MODULE_TYPE.Plain)
 	 */
 	public MODULE_TYPE getType() {
+		
 		return ModuleTypes.getType(moduleCode);
 	}
 	
@@ -25,6 +55,7 @@ public class Module {
 	 * @return the module's code number
 	 */
 	public int getCode() {
+		
 		return moduleCode;
 	}
 	
@@ -33,6 +64,7 @@ public class Module {
 	 * @return the number of rotations required to get a module uprigth
 	 */
 	public int getRotationsTillUpright() {
+		
 		return rotationsTillUpright;
 	}
 	
@@ -41,23 +73,56 @@ public class Module {
 	 * @return the damage/usability status of a module
 	 */
 	public MODULE_STATUS getStatus() {
+		
 		return status;
 	}
 	
 	/**
+	 * Sets this modules current x coordinate for bookeeping's sake
+	 * This should NOT be used except by the LandingGrid class
+	 * Use methods in the landing grid class to set module coordinates
+	 * Fails and no change occurs if xPos is negative
+	 * @param xPos the current x coordinate
+	 */
+	public void setBookeepingXPos(int xPos) {
+		
+		if ( xPos >= 0 )
+			xc = xPos;
+	}
+	
+	/**
+	 * Sets this modules current y coordainte for bookeeping's sake
+	 * This should NOT be used except by the LandingGrid class
+	 * Use methods in the landing grid class to set module coordinates
+	 * Fails and no change occurs if yPos is negative
+	 * @param yPos the current y coordinate
+	 */
+	public void setBookeepingYPos(int yPos) {
+		
+		if ( yPos >= 0 )
+			yc = yPos;
+	}
+	
+	/**
 	 * Sets the code number of the module
+	 * Fails and no change occurs unless 1 <= moduleCode <= 190
 	 * @param moduleCode the new code number of the module
 	 */
 	public void setCode(int moduleCode) {
-		this.moduleCode = moduleCode;
+		
+		if ( moduleCode >= 1 && moduleCode <= 190 )
+			this.moduleCode = moduleCode;
 	}
 	
 	/**
 	 * Sets the rotations required to get the module upright
+	 * Fails and no change occurs unless 0 <= rotationsTillUpright <= 2
 	 * @param rotationsTillUpright the new number of rotations required to get the module upright
 	 */
 	public void setRotationsTillUpright(int rotationsTillUpright) {
-		this.rotationsTillUpright = rotationsTillUpright;
+		
+		if ( rotationsTillUpright >= 0 && rotationsTillUpright <= 2 )
+			this.rotationsTillUpright = rotationsTillUpright;
 	}
 	
 	/**
@@ -65,6 +130,7 @@ public class Module {
 	 * @param status the new damage/usability status of the module
 	 */
 	public void setDamageStatus(MODULE_STATUS status) {
+		
 		this.status = status;
 	}
 }

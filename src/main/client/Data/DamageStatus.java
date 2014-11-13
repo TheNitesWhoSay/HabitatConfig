@@ -12,5 +12,4 @@ public class DamageStatus {
 		Usable, UsableAfterRepair, DamagedBeyondRepair 
 	};
 	
-	
 }

@@ -32,10 +32,8 @@ public class LoginWindow extends GwtWindow {
 		// Create login window...
 		
 	    final Button login = new Button("Login");
-		login.addClickHandler(new ClickHandler()
-		{
-			public void onClick(ClickEvent event)
-			{
+		login.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				hide();
 				root.mainWindow.show(RootPanel.get());
 			}

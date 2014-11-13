@@ -20,8 +20,8 @@ public class LandingGrid {
 	 */
 	public LandingGrid() {
 		
-		width = 0; // Replace with actual landing zone width
-		depth = 0; // Replace with actual landing zone depth
+		width = 100;
+		depth = 50;
 		
 		terrain = new TerrainSquare[width][depth]; // Ensure dimensions equate to the actual landing zone size
 		modules = new Module[width][depth]; // Ensure dimensions equate to the actual landing zone size
@@ -38,6 +38,24 @@ public class LandingGrid {
 	}
 	
 	/**
+	 * Gets the current landing grid width
+	 * @return the current landing grid width
+	 */
+	public int getWidth() {
+		
+		return width;
+	}
+	
+	/**
+	 * Gets the current landing grid depth
+	 * @return the current landing grid depth
+	 */
+	public int getDepth() {
+		
+		return depth;
+	}
+	
+	/**
 	 * Creates or replaces module info at the specified coordinates
 	 * @param x the x coordinate of the module
 	 * @param y the y coordinate of the module
@@ -50,6 +68,9 @@ public class LandingGrid {
 		
 		if ( x >= 0 && x < width && y >= 0 && y < depth )
 		{
+			modules[x][y] = new Module();
+			modules[x][y].setBookeepingXPos(x);
+			modules[x][y].setBookeepingYPos(y);
 			modules[x][y].setCode(code);
 			modules[x][y].setRotationsTillUpright(rotationsTillUpright);
 			modules[x][y].setDamageStatus(status);
@@ -57,6 +78,34 @@ public class LandingGrid {
 		}
 		else
 			return false;
+	}
+	
+	/**
+	 * Moves a module to a new position
+	 * @param currX the current xPos of a module
+	 * @param currY the current yPos of a module
+	 * @param newX the destination xPos of a module
+	 * @param newY the destination yPos of a module
+	 * @return whether the move was successful
+	 */
+	public boolean moveModule(int currX, int currY, int newX, int newY) {
+		
+		if ( newX >= 0 && newX < width && newY >= 0 && newY < depth &&
+			 currX >= 0 && currX < width && currY >= 0 && currY < depth )
+		{
+			if ( modules[currX][currY] != null &&
+				 modules[newX][newY] == null &&
+				 terrain[newX][newY].isTraversable() )
+			{
+				modules[newX][newY] = modules[currX][currY];
+				modules[newX][newY].setBookeepingXPos(newX);
+				modules[newX][newY].setBookeepingYPos(newY);
+				modules[currX][currY] = null;
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -76,4 +125,5 @@ public class LandingGrid {
 		}
 		return moduleList;
 	}
+	
 }

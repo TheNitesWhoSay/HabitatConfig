@@ -7,7 +7,7 @@ public class ModuleTypes {
 	 * Enumerates the various module types
 	 */
 	public enum MODULE_TYPE {
-		Unknown, Plain, Dormitory, Sanitation, FoodAndWater,
+		Unknown, Reserved, Plain, Dormitory, Sanitation, FoodAndWater,
 		GymAndRelaxation, Canteen, Power, Control, Airlock, Medical
 	};
 	
@@ -38,6 +38,8 @@ public class ModuleTypes {
 			return MODULE_TYPE.Airlock;
 		else if ( code >= 181 && code <= 184 )
 			return MODULE_TYPE.Medical;
+		else if ( code >= 1 && code <= 190)
+			return MODULE_TYPE.Reserved;
 		else
 			return MODULE_TYPE.Unknown;
 	}
