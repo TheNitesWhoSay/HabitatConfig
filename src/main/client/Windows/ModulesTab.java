@@ -25,7 +25,6 @@ public class ModulesTab extends GwtWindow  {
 	protected boolean create() {
 	
 		add(new HTML("Modules"));
-		Window.alert("Grant made change");
 		return true;
 	}
 }
