@@ -5,7 +5,9 @@ import main.client.HabitatConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * This is the login window for the habitat configuration software
@@ -30,16 +32,27 @@ public class LoginWindow extends GwtWindow {
 	protected boolean create() {
 		
 		// Create login window...
-		
-	    final Button login = new Button("Login");
+		final Label usernameLbl = new Label ("Username: ");
+		final Label passwordLbl = new Label ("Password: ");
+		final TextBox username = new TextBox ();
+		final TextBox pass = new TextBox ();
+	    final Button login = new Button("Sign on");
 		login.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				hide();
 				root.mainWindow.show(RootPanel.get());
 			}
 		});
-		    
+		
+		username.setFocus(true);
+		
+		add(usernameLbl);
+		add (username);
+		add (passwordLbl);
+		add (pass);
 		add(login);
-		return true;
+		
+		
+		return true; //window creation successful
 	}
 }
