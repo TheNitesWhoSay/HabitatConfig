@@ -58,6 +58,7 @@ public class MainWindow extends GwtWindow {
 		logout.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				hide();
+				root.loginWindow.ClearCredentials(true);
 				root.loginWindow.show(RootPanel.get());
 			}
 		});

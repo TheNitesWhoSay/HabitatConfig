@@ -1,7 +1,5 @@
 package main.client.Windows;
 
-import java.awt.Dimension;
-
 import main.client.HabitatConfig;
 import main.client.Data.Module;
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
@@ -9,16 +7,13 @@ import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class ModulesTab extends GwtWindow  {
@@ -43,7 +38,7 @@ private int storedmodcount = 0;
 		add(new HTML("Modules"));
 		HorizontalPanel modLabel = new HorizontalPanel();
 		
-		Label start = new Label("");
+		//Label start = new Label("");
 		Label modID = new Label("ID");
 		Label xcor = new Label("X-Cor");
 		Label ycor = new Label("Y-Cor");
@@ -58,7 +53,7 @@ private int storedmodcount = 0;
 		modLabel.add(status);
 		modLabel.add(orientation);
 		modLabel.add(type);
-		modLabel.setHorizontalAlignment(modLabel.ALIGN_LEFT);
+		modLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		modLabel.setSpacing(30);
 		add(modLabel);
 		
@@ -77,7 +72,7 @@ private int storedmodcount = 0;
 		logpanel.add(id);
 		logpanel.add(xcord);
 		logpanel.add(ycord);
-		logpanel.setHorizontalAlignment(logpanel.ALIGN_LEFT);
+		logpanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		logpanel.setSpacing(22);
 		id.setPixelSize(20, 10);
 		xcord.setPixelSize(20, 10);
@@ -117,13 +112,13 @@ private int storedmodcount = 0;
 				MODULE_TYPE mt = null;
 				
 				if(statbox.getTabIndex()==0){
-					ms = ms.Usable;
+					ms = MODULE_STATUS.Usable;
 				}
 				else if(statbox.getTabIndex()==1){
-					ms = ms.UsableAfterRepair;
+					ms = MODULE_STATUS.UsableAfterRepair;
 				}
 				else{
-					ms = ms.DamagedBeyondRepair;
+					ms = MODULE_STATUS.DamagedBeyondRepair;
 				}
 				if(orienbox.getTabIndex()==0){
 					rotations = 0;
@@ -135,34 +130,34 @@ private int storedmodcount = 0;
 					rotations = 2;
 				}
 				if(typebox.getTabIndex()==0){
-				     mt = mt.Plain;
+				     mt = MODULE_TYPE.Plain;
 				}
 				else if(typebox.getTabIndex()==1){
-					mt = mt.Dormitory;
+					mt = MODULE_TYPE.Dormitory;
 				}
 				else if(typebox.getTabIndex()==2){
-					mt = mt.Sanitation;
+					mt = MODULE_TYPE.Sanitation;
 				}
 				else if(typebox.getTabIndex()==3){
-					mt = mt.FoodAndWater;
+					mt = MODULE_TYPE.FoodAndWater;
 				}
 				else if(typebox.getTabIndex()==4){
-					mt = mt.GymAndRelaxation;
+					mt = MODULE_TYPE.GymAndRelaxation;
 				}
 				else if(typebox.getTabIndex()==5){
-					mt = mt.Canteen;
+					mt = MODULE_TYPE.Canteen;
 				}
 				else if(typebox.getTabIndex()==6){
-					mt = mt.Power;
+					mt = MODULE_TYPE.Power;
 				}
 				else if(typebox.getTabIndex()==7){
-					mt = mt.Control;
+					mt = MODULE_TYPE.Control;
 				}
 				else if(typebox.getTabIndex()==8){
-					mt = mt.Airlock;
+					mt = MODULE_TYPE.Airlock;
 				}
 				else{
-					mt = mt.Medical;
+					mt = MODULE_TYPE.Medical;
 				}
 				storem.setCode(Integer.parseInt(id.getText()));
 				storem.setBookeepingXPos(Integer.parseInt(xcord.getText()));
