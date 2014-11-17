@@ -13,6 +13,7 @@ public class Module {
 	private int moduleCode;
 	private int rotationsTillUpright;
 	private MODULE_STATUS status;
+	private MODULE_TYPE type;
 	
 	public Module() {
 		
@@ -132,5 +133,8 @@ public class Module {
 	public void setDamageStatus(MODULE_STATUS status) {
 		
 		this.status = status;
+	}
+	public void setType(MODULE_TYPE type){
+		this.type = type;
 	}
 }
