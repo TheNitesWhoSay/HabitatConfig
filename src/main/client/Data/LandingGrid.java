@@ -67,7 +67,7 @@ public class LandingGrid {
 	public boolean setModuleInfo(int x, int y, int code, int rotationsTillUpright, MODULE_STATUS status) {
 		
 		if ( x >= 0 && x < width && y >= 0 && y < depth )
-		{
+		{	
 			modules[x][y] = new Module();
 			modules[x][y].setBookeepingXPos(x);
 			modules[x][y].setBookeepingYPos(y);

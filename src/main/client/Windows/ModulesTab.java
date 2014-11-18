@@ -1,15 +1,19 @@
 package main.client.Windows;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 import main.client.HabitatConfig;
 import main.client.Data.Module;
+import main.client.Data.ModuleTypes;
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -17,9 +21,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class ModulesTab extends GwtWindow  {
-private int storedmodcount = 0;
-	@SuppressWarnings("unused")
+
 	private HabitatConfig root;
+	private FlexTable storetable;
 	
 	/**
 	 * Default constructor
@@ -35,7 +39,6 @@ private int storedmodcount = 0;
 	 */
 	protected boolean create() {
 		
-		add(new HTML("Modules"));
 		HorizontalPanel modLabel = new HorizontalPanel();
 		
 		//Label start = new Label("");
@@ -44,7 +47,6 @@ private int storedmodcount = 0;
 		Label ycor = new Label("Y-Cor");
 		Label status = new Label("Status");
 		Label orientation = new Label("Orientation");
-		Label type = new Label("Type");
 		Button addb = new Button("Add");
 	
 		modLabel.add(modID);
@@ -52,7 +54,6 @@ private int storedmodcount = 0;
 		modLabel.add(ycor);
 		modLabel.add(status);
 		modLabel.add(orientation);
-		modLabel.add(type);
 		modLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		modLabel.setSpacing(30);
 		add(modLabel);
@@ -63,8 +64,7 @@ private int storedmodcount = 0;
 		final TextBox ycord = new TextBox();
 		final ListBox statbox = new ListBox();
 		final ListBox orienbox = new ListBox();
-		final ListBox typebox = new ListBox();
-		final FlexTable storetable = new FlexTable();
+		storetable = new FlexTable();
 		
 		statbox.addItem("Usable");
 		statbox.addItem("Usable after repair");
@@ -85,98 +85,119 @@ private int storedmodcount = 0;
 		orienbox.addItem("2-Upside down");
 		orienbox.setPixelSize(80, 25);
 		
-		typebox.addItem("Plain");
-		typebox.addItem("Dormitory");
-		typebox.addItem("Sanitation");
-		typebox.addItem("Food & Water");
-		typebox.addItem("Gym & Relaxation");
-		typebox.addItem("Canteen");
-		typebox.addItem("Power");
-		typebox.addItem("Control");
-		typebox.addItem("Airlock");
-		typebox.addItem("Medical");
-		typebox.setPixelSize(70, 25);
-		
 		logpanel.add(orienbox);
-		logpanel.add(typebox);
 		logpanel.add(addb);
 		
 		add(logpanel);
 		add(storetable);
 		
-		addb.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event){
-				Module storem = new Module();
-				MODULE_STATUS ms = null;
-				int rotations = 0;
-				MODULE_TYPE mt = null;
+		addb.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+
+				MODULE_STATUS ms = MODULE_STATUS.Unknown;
+				int rotations = -1;
 				
-				if(statbox.getTabIndex()==0){
+				if ( statbox.getSelectedIndex() == 0 ) {
 					ms = MODULE_STATUS.Usable;
 				}
-				else if(statbox.getTabIndex()==1){
+				else if ( statbox.getSelectedIndex() == 1 ) {
 					ms = MODULE_STATUS.UsableAfterRepair;
 				}
-				else{
+				else {
 					ms = MODULE_STATUS.DamagedBeyondRepair;
 				}
-				if(orienbox.getTabIndex()==0){
+				
+				if ( orienbox.getSelectedIndex() == 0 ) {
 					rotations = 0;
 				}
-				else if(orienbox.getTabIndex()==1){
+				else if ( orienbox.getSelectedIndex() == 1 ) {
 					rotations = 1;
 				}
-				else{
+				else {
 					rotations = 2;
 				}
-				if(typebox.getTabIndex()==0){
-				     mt = MODULE_TYPE.Plain;
-				}
-				else if(typebox.getTabIndex()==1){
-					mt = MODULE_TYPE.Dormitory;
-				}
-				else if(typebox.getTabIndex()==2){
-					mt = MODULE_TYPE.Sanitation;
-				}
-				else if(typebox.getTabIndex()==3){
-					mt = MODULE_TYPE.FoodAndWater;
-				}
-				else if(typebox.getTabIndex()==4){
-					mt = MODULE_TYPE.GymAndRelaxation;
-				}
-				else if(typebox.getTabIndex()==5){
-					mt = MODULE_TYPE.Canteen;
-				}
-				else if(typebox.getTabIndex()==6){
-					mt = MODULE_TYPE.Power;
-				}
-				else if(typebox.getTabIndex()==7){
-					mt = MODULE_TYPE.Control;
-				}
-				else if(typebox.getTabIndex()==8){
-					mt = MODULE_TYPE.Airlock;
-				}
-				else{
-					mt = MODULE_TYPE.Medical;
-				}
-				storem.setCode(Integer.parseInt(id.getText()));
-				storem.setBookeepingXPos(Integer.parseInt(xcord.getText()));
-				storem.setBookeepingYPos(Integer.parseInt(ycord.getText()));
-				storem.setDamageStatus(ms);
-				storem.setRotationsTillUpright(rotations);
-				storem.setType(mt);
 				
-				storetable.setText(storedmodcount, 0, ""+storem.getCode());
-				storetable.setText(storedmodcount, 1, ""+storem.getXPos());
-				storetable.setText(storedmodcount, 2, ""+storem.getYPos());
-				storetable.setText(storedmodcount, 3, ""+storem.getStatus());
-				storetable.setText(storedmodcount, 4, ""+storem.getRotationsTillUpright());
-				storetable.setText(storedmodcount, 5, ""+storem.getType());
+				int code = 0, xc = -1, yc = -1; // Init to invalid values
+				try { code = Integer.parseInt(   id.getText()); } catch ( NumberFormatException nfe ) { }
+				try {   xc = Integer.parseInt(xcord.getText()); } catch ( NumberFormatException nfe ) { }
+				try {   yc = Integer.parseInt(ycord.getText()); } catch ( NumberFormatException nfe ) { }
 				
-				storedmodcount++;
+				if ( validateCode(code) && validateXc(xc) && validateYc(yc) )
+				{
+					// Add the module to the programs collection of stored modules
+					if ( root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms) )
+						refreshDisplayedModules(); // Refreshes storetable
+				}
 			}
 		});
 		return true;
+	}
+	
+	/**
+	 * Refreshes the display(s) of stored modules
+	 */
+	public void refreshDisplayedModules() {
+		
+		LinkedList<Module> modules = root.landingGrid.getModuleList();
+		ListIterator<Module> i = modules.listIterator();
+		int moduleCount = 0;
+		while ( i.hasNext() ) {
+			
+			Module curr = i.next();
+			storetable.setText(moduleCount, 0, ""+curr.getCode());
+			storetable.setText(moduleCount, 1, ""+curr.getXPos());
+			storetable.setText(moduleCount, 2, ""+curr.getYPos());
+			storetable.setText(moduleCount, 3, ""+curr.getStatus());
+			storetable.setText(moduleCount, 4, ""+curr.getRotationsTillUpright());
+			storetable.setText(moduleCount, 5, ""+ModuleTypes.getType(curr.getCode()));
+			moduleCount++;
+		}
+	}
+	
+	/**
+	 * Checks whether a code number is valid
+	 * @param code the given code number
+	 * @return whether the code number matches up with a real module type
+	 */
+	private boolean validateCode(int code) {
+		
+		MODULE_TYPE mt = ModuleTypes.getType(code);
+		if ( mt == MODULE_TYPE.Unknown || mt == MODULE_TYPE.Reserved ) {
+			Window.alert("Invalid module code.");
+			return false;
+		}
+		else
+			return true;
+	}
+	
+	/**
+	 * Checks whether a xc is valid
+	 * @param xc the given xc
+	 * @return whether the xc is within the landing grid
+	 */
+	private boolean validateXc(int xc) {
+		
+		if ( xc < 0 || xc >= root.landingGrid.getWidth() ) {
+			Window.alert("Invalid xc: " + xc);
+			return false;
+		}
+		else
+			return true;
+	}
+	
+	/**
+	 * Checks whether a yc is valid
+	 * @param yc the given yc
+	 * @return whether the yc is within the landing grid
+	 */
+	private boolean validateYc(int yc) {
+		
+		if ( yc < 0 || yc >= root.landingGrid.getDepth() ) {
+			Window.alert("Invalid yc.");
+			return false;
+		}
+		else
+			return true;
 	}
 	
 }

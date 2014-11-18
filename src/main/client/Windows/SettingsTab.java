@@ -5,7 +5,6 @@ import main.client.HabitatConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
 
 public class SettingsTab extends GwtWindow {
 
@@ -41,7 +40,6 @@ public class SettingsTab extends GwtWindow {
 					toggleLoginRequired.setText("Add Login Requirement");
 			}
 		});
-		add(new HTML("Settings"));
 		add(toggleLoginRequired);
 		return true;
 	}
