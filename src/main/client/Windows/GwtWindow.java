@@ -67,6 +67,15 @@ public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 	}
 	
 	/**
+	 * Checks whether this window has been created
+	 * @return whether the window has been created
+	 */
+	public boolean isCreated() {
+	
+		return created;
+	}
+	
+	/**
 	 * The create method, write this method in inheriting classes
 	 * @return true if the method has been overriden and window creation was sucessful.
 	 */

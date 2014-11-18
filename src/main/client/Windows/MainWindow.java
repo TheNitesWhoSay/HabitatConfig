@@ -24,6 +24,7 @@ public class MainWindow extends GwtWindow {
 	private CommunicationsTab communicationsTab;
 	private SettingsTab settingsTab;
 	
+	private HorizontalPanel hpLogout;
 	private TabPanel tabs;
 	
 	/**
@@ -40,9 +41,29 @@ public class MainWindow extends GwtWindow {
 		settingsTab = new SettingsTab(root);
 	}
 	
+	/**
+	 * Selects the given tab number
+	 * @param tabNum the given tab number
+	 */
 	public void selectTab(int tabNum) {
 		
 		tabs.selectTab(tabNum);
+	}
+	
+	/**
+	 * Shows the logout button
+	 */
+	public void showLogout() {
+		
+		hpLogout.setVisible(true);
+	}
+	
+	/**
+	 * Hides the logout button
+	 */
+	public void hideLogout() {
+		
+		hpLogout.setVisible(false);
 	}
 	
 	/**
@@ -53,20 +74,25 @@ public class MainWindow extends GwtWindow {
 		
 		// Create the main window...
 		
-		HorizontalPanel hpLogout = new HorizontalPanel();
+		hpLogout = new HorizontalPanel();
 		final Button logout = new Button("Logout");
 		logout.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				hide();
-				root.loginWindow.ClearCredentials(true);
+				if ( root.loginWindow.isCreated() )
+					root.loginWindow.ClearCredentials(true);
+				
 				root.loginWindow.show(RootPanel.get());
 			}
 		});
 		hpLogout.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		hpLogout.setWidth("100%");
 		hpLogout.add(logout);
+		hpLogout.setVisible(false);
 		add(hpLogout);
-		
+		if ( root.configOptions.loginRequired() )
+			showLogout();
+			
 		tabs = new TabPanel();
 		tabs.setWidth("100%");
 		homeTab.show(tabs, "Home");

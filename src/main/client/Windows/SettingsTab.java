@@ -34,10 +34,14 @@ public class SettingsTab extends GwtWindow {
 			public void onClick(ClickEvent event) {
 				
 				root.configOptions.setLoginRequired("mars", "12345", !root.configOptions.loginRequired());
-				if ( root.configOptions.loginRequired() )
+				if ( root.configOptions.loginRequired() ) {
+					root.mainWindow.showLogout();
 					toggleLoginRequired.setText("Remove Login Requirement");
-				else
+				}
+				else {
+					root.mainWindow.hideLogout();
 					toggleLoginRequired.setText("Add Login Requirement");
+				}
 			}
 		});
 		add(toggleLoginRequired);
