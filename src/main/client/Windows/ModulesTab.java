@@ -20,10 +20,20 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 
+/**
+ * 
+ * @author Grant
+ *
+ */
 public class ModulesTab extends GwtWindow  {
-
-	private HabitatConfig root;
-	private FlexTable storetable;
+	/**
+	 * 
+	 */
+private HabitatConfig root;
+	/**
+	 * 
+	 */
+private FlexTable storetable;
 	
 	/**
 	 * Default constructor
@@ -201,3 +211,4 @@ public class ModulesTab extends GwtWindow  {
 	}
 	
 }
+
