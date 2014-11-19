@@ -49,6 +49,7 @@ private HabitatConfig root;
 	 * 
 	 */
 private FlexTable storetable;
+private boolean alerted = false;
 	protected Widget rp;
 	protected String mod;
 	
@@ -272,6 +273,10 @@ private FlexTable storetable;
 	 * @return
 	 */
 	private boolean hasMinConfig(LinkedList<Module> moduleList) {
+		if(alerted == true){
+			return false;
+		}
+		else{
 		ListIterator<Module> i = moduleList.listIterator();
 		boolean hasAir = false;
 		boolean hasPower = false;
@@ -314,11 +319,14 @@ private FlexTable storetable;
 			hasAir = true;
 		}
 		}
+		
 		if(hasPlains == true && hasDorm == true && hasSanitation == true && hasFood == true && hasCanteen == true && hasPower == true && hasControl == true && hasAir == true){
+			alerted = true;
 			return true;
 		}
 		else{
 			return false;
+		}
 		}
 	}
 
