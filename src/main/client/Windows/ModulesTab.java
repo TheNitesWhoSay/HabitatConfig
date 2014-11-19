@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -103,7 +104,7 @@ private FlexTable storetable;
 		
 		addb.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-
+				
 				MODULE_STATUS ms = MODULE_STATUS.Unknown;
 				int rotations = -1;
 				
@@ -134,6 +135,18 @@ private FlexTable storetable;
 				
 				if ( validateCode(code) && validateXc(xc) && validateYc(yc) )
 				{
+					Button removebutton = new Button("X");
+					LinkedList<Module> modules = root.landingGrid.getModuleList();
+					ListIterator<Module> i = modules.listIterator();
+					int moduleCount = 0;
+					while ( i.hasNext() ) {
+						
+					Module curr = i.next();
+					if(curr.getCode() == code){
+						root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
+						refreshDisplayedModules();
+					}
+					}
 					// Add the module to the programs collection of stored modules
 					if ( root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms) )
 						refreshDisplayedModules(); // Refreshes storetable
@@ -147,19 +160,30 @@ private FlexTable storetable;
 	 * Refreshes the display(s) of stored modules
 	 */
 	public void refreshDisplayedModules() {
-		
+		Button removebutton = new Button("X");
 		LinkedList<Module> modules = root.landingGrid.getModuleList();
 		ListIterator<Module> i = modules.listIterator();
 		int moduleCount = 0;
 		while ( i.hasNext() ) {
 			
-			Module curr = i.next();
+			final Module curr = i.next();
 			storetable.setText(moduleCount, 0, ""+curr.getCode());
 			storetable.setText(moduleCount, 1, ""+curr.getXPos());
 			storetable.setText(moduleCount, 2, ""+curr.getYPos());
 			storetable.setText(moduleCount, 3, ""+curr.getStatus());
 			storetable.setText(moduleCount, 4, ""+curr.getRotationsTillUpright());
 			storetable.setText(moduleCount, 5, ""+ModuleTypes.getType(curr.getCode()));
+			storetable.setWidget(moduleCount, 6, removebutton = new Button("X"));
+			final int modcount = moduleCount;
+			
+			removebutton.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					int modscount = modcount;
+					storetable.removeRow(modscount);
+					root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
+					return;
+				}
+			});
 			moduleCount++;
 		}
 	}
@@ -170,7 +194,6 @@ private FlexTable storetable;
 	 * @return whether the code number matches up with a real module type
 	 */
 	private boolean validateCode(int code) {
-		
 		MODULE_TYPE mt = ModuleTypes.getType(code);
 		if ( mt == MODULE_TYPE.Unknown || mt == MODULE_TYPE.Reserved ) {
 			Window.alert("Invalid module code.");
@@ -211,4 +234,3 @@ private FlexTable storetable;
 	}
 	
 }
-

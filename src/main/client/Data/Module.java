@@ -110,7 +110,7 @@ public class Module {
 	 */
 	public void setCode(int moduleCode) {
 		
-		if ( moduleCode >= 1 && moduleCode <= 190 )
+		if ( moduleCode >= 1 && moduleCode <= 190)
 			this.moduleCode = moduleCode;
 	}
 	

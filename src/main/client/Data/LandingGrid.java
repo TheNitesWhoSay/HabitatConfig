@@ -1,8 +1,12 @@
 package main.client.Data;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
+
+import com.google.gwt.user.client.Window;
 
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
+import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 /**
  * Holds information about terrain and modules within the landing zone
@@ -68,6 +72,17 @@ public class LandingGrid {
 		
 		if ( x >= 0 && x < width && y >= 0 && y < depth )
 		{	
+			LinkedList<Module> mods = getModuleList();
+			ListIterator<Module> i = mods.listIterator();
+			int moduleCount = 0;
+			while ( i.hasNext() ) {
+				
+				Module curr = i.next();
+				if(curr.getCode()==code){
+					removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
+					
+				}
+			}
 			modules[x][y] = new Module();
 			modules[x][y].setBookeepingXPos(x);
 			modules[x][y].setBookeepingYPos(y);
@@ -94,7 +109,6 @@ public class LandingGrid {
 			 currX >= 0 && currX < width && currY >= 0 && currY < depth )
 		{
 			if ( modules[currX][currY] != null &&
-				 modules[newX][newY] == null &&
 				 terrain[newX][newY].isTraversable() )
 			{
 				modules[newX][newY] = modules[currX][currY];
@@ -119,11 +133,18 @@ public class LandingGrid {
 		{
 			for ( int y=0; y<depth; y++ )
 			{
-				if ( modules[x][y] != null )
+				if (modules[x][y] != null ){
 					moduleList.add(modules[x][y]);
 			}
 		}
+		}
 		return moduleList;
 	}
+
+	public void removeModule(int code, int xPos, int yPos) {
+		modules[xPos][yPos]=null;
+		code = 0;
+	}
+	
 	
 }
