@@ -250,13 +250,14 @@ private FlexTable storetable;
 					int modscount = modcount;
 					storetable.removeRow(modscount);
 					root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
+					root.landingGrid.getModuleList();
 					return;
 				}
 			});
 			moduleCount++;
 		}
 		if(hasMinConfig(root.landingGrid.getModuleList())){
-			Window.alert("Found min config");
+			Window.confirm("Check out configuration available?");
 		}
 	}
 	/**
