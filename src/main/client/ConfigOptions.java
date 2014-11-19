@@ -18,7 +18,7 @@ public class ConfigOptions {
 	 */
 	public ConfigOptions() {
 		
-		this.loginRequired = true;
+		loginRequired = true;
 		loginNameCaseSensative = false;
 		loginPassCaseSensative = true;
 		loginName = "mars";

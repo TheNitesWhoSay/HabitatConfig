@@ -18,11 +18,9 @@ public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 	 * and sets default variable values
 	 */
 	public GwtWindow() {
-		
 		super(); // Call FlowPanel's constructor
 		created = false;
 	}
-	
 	/**
 	 * Shows the window
 	 * 
