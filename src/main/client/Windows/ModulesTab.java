@@ -13,6 +13,7 @@ import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.server.testing.Parent;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
@@ -257,7 +258,10 @@ private FlexTable storetable;
 			moduleCount++;
 		}
 		if(hasMinConfig(root.landingGrid.getModuleList())){
-			Window.confirm("Check out configuration available?");
+			boolean b = Window.confirm("Check out configuration available?");
+			if(b == true){
+				root.mainWindow.selectTab(2);
+			}
 		}
 	}
 	/**
