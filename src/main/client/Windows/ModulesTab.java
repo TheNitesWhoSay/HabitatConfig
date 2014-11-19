@@ -213,9 +213,11 @@ private FlexTable storetable;
 						
 					Module curr = i.next();
 					if(curr.getCode() == code){
+						storetable.removeRow(moduleCount);
 						root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
-						refreshDisplayedModules();
+						root.landingGrid.getModuleList();
 					}
+					moduleCount++;
 					}
 					// Add the module to the programs collection of stored modules
 					if ( root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms) )
