@@ -12,13 +12,13 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class ConfigTab extends GwtWindow {
 
-	@SuppressWarnings("unused")
 	private HabitatConfig root;
-	Grid g;
+	public Grid g;
 	ScrollPanel p;
 	/**
 	 * Default constructor
@@ -59,12 +59,17 @@ public class ConfigTab extends GwtWindow {
 		g.setText(curr.getXPos(), curr.getYPos(), "Module");
 		
 		}
-	
-		//add(canvas);
+		p = new ScrollPanel();
+		p.setSize("1200px", "600px");
+		p.add(g);
+		add(p);
 		return true;
 		}
 		else{
 		return false;
 		}
+	}
+	public void setGrid(int rowNum, int colNum, Image type){
+		g.setWidget(rowNum, colNum, type);
 	}
 }

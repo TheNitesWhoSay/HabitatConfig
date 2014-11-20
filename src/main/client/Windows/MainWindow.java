@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
@@ -46,7 +47,6 @@ public class MainWindow extends GwtWindow {
 	 * @param tabNum the given tab number
 	 */
 	public void selectTab(int tabNum) {
-		
 		tabs.selectTab(tabNum);
 	}
 	
@@ -65,7 +65,9 @@ public class MainWindow extends GwtWindow {
 		
 		hpLogout.setVisible(false);
 	}
-	
+	public void setGrid(int rowNum, int colNum, Image type){
+		configTab.setGrid(rowNum, colNum, type);
+	}
 	/**
 	 * This method will create the main window
 	 * @return true if window creation was successful

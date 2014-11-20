@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
@@ -225,6 +226,63 @@ private boolean alerted = false;
 					// Add the module to the programs collection of stored modules
 					if ( root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms) )
 						refreshDisplayedModules(); // Refreshes storetable
+						Image im = new Image();
+						
+						if(code > 0 && code < 41){
+					    im = new Image("images/Plain.jpg");
+					    im.setSize("50px", "50px");
+						root.mainWindow.setGrid(xc, yc, im);
+						}
+						else if(code >=61 && code <= 80){
+							im = new Image("images/Dormitory.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=91 && code <= 100){
+							im = new Image("images/Sanitation.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=61 && code <= 80){
+							im = new Image("images/Dormitory.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=111 && code <= 120){
+							im = new Image("images/Food.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=61 && code <= 80){
+							im = new Image("images/Dormitory.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=141 && code <= 144){
+							im = new Image("images/Canteen.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=61 && code <= 80){
+							im = new Image("images/Dormitory.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=151 && code <= 154){
+							im = new Image("images/Power.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=161 && code <= 164){
+							im = new Image("images/Control.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
+						else if(code >=171 && code <= 174){
+							im = new Image("images/Airlock.jpg");
+							im.setSize("50px", "50px");
+							root.mainWindow.setGrid(xc, yc, im);
+							}
 				}
 			}
 		});
