@@ -18,11 +18,22 @@ public class ConfigOptions {
 	 */
 	public ConfigOptions() {
 		
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+		this.loginRequired = true;
+		this.loginNameCaseSensative = false;
+		this.loginPassCaseSensative = true;
+		this.loginName = "mars";
+		this.loginPass = "12345";
+=======
+>>>>>>> Stashed changes
 		loginRequired = true;
 		loginNameCaseSensative = false;
 		loginPassCaseSensative = true;
 		loginName = "mars";
 		loginPass = "12345";
+>>>>>>> FETCH_HEAD
 	}
 	
 	/**
@@ -176,10 +187,10 @@ public class ConfigOptions {
 	 */
 	public boolean setLoginNameCaseSensative(String loginName, String loginPass, boolean loginNameCaseSensative) {
 		
-		if ( validateLogin(loginName, loginPass) )
+		if ( this.validateLogin(loginName, loginPass) )
 		{
 			this.loginNameCaseSensative = loginNameCaseSensative;
-			saveToClient();
+			this.saveToClient();
 			return true;
 		}
 		else
@@ -193,12 +204,12 @@ public class ConfigOptions {
 	 * @param loginPassCaseSensative whether the password should be case sensative
 	 * @return if the change to the login name being case sensative/not case sensative was successful
 	 */
-	public boolean setLoginPassCaseSensative(String loginName, String loginPass, boolean loginPassCaseSensative) {
+	public boolean setLoginPassCaseSensative(final String loginName, final String loginPass, final boolean loginPassCaseSensative) {
 		
-		if ( validateLogin(loginName, loginPass) )
+		if ( this.validateLogin(loginName, loginPass) )
 		{
 			this.loginPassCaseSensative = loginPassCaseSensative;
-			saveToClient();
+			this.saveToClient();
 			return true;
 		}
 		else
@@ -214,10 +225,10 @@ public class ConfigOptions {
 	 */
 	public boolean setUserName(String loginName, String loginPass, String newUserName) {
 		
-		if ( validateLogin(loginName, loginPass) && newUserName.length() > 0 )
+		if ( this.validateLogin(loginName, loginPass) && newUserName.length() > 0 )
 		{
 			this.loginName = newUserName;
-			saveToClient();
+			this.saveToClient();
 			return true;
 		}
 		else
@@ -236,7 +247,7 @@ public class ConfigOptions {
 		if ( validateLogin(loginName, loginPass) && newPassword.length() > 0 )
 		{
 			this.loginPass = newPassword;
-			saveToClient();
+			this.saveToClient();
 			return true;
 		}
 		else
