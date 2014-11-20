@@ -316,6 +316,7 @@ private boolean alerted = false;
 					root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
 					root.landingGrid.getModuleList();
 					refreshDisplayedModules();
+					root.mainWindow.setGrid(curr.getXPos(), curr.getYPos(), null);
 					return;
 				}
 			});
