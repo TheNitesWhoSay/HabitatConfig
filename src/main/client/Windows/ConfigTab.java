@@ -36,7 +36,7 @@ public class ConfigTab extends GwtWindow {
 	
 		add(new HTML("Config"));
 		Canvas canvas;
-		g = new Grid(50, 100);
+		g = new Grid(100, 50);
 		canvas = Canvas.createIfSupported();
 		if(canvas != null){
 		canvas.setWidth(""+root.landingGrid.getWidth());
@@ -46,9 +46,10 @@ public class ConfigTab extends GwtWindow {
 		Context2d context = canvas.getContext2d(); // a rendering context
 		for(int i = 0; i<50; i++){
 			for(int j = 0; j<100; j++){
-				//g.setText(i, j, "E");
+				g.setCellPadding(50);
 			}
 		}
+		g.setBorderWidth(5);
 		LinkedList<Module> modules = root.landingGrid.getModuleList();
 		ListIterator<Module> i = modules.listIterator();
 		int moduleCount = 0;

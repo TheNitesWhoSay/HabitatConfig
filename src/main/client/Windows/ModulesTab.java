@@ -32,9 +32,11 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -200,7 +202,9 @@ private boolean alerted = false;
 					rotations = 2;
 				}
 				
-				int code = 0, xc = -1, yc = -1; // Init to invalid values
+				int code = 0; // Init to invalid values
+				int xc = -1;
+				int yc = -1;
 				try { code = Integer.parseInt(   id.getText()); } catch ( NumberFormatException nfe ) { }
 				try {   xc = Integer.parseInt(xcord.getText()); } catch ( NumberFormatException nfe ) { }
 				try {   yc = Integer.parseInt(ycord.getText()); } catch ( NumberFormatException nfe ) { }
@@ -211,14 +215,23 @@ private boolean alerted = false;
 					LinkedList<Module> modules = root.landingGrid.getModuleList();
 					ListIterator<Module> i = modules.listIterator();
 					int moduleCount = 0;
-
+					final int codec = code;
+					final int xcc = xc;
+					final int ycc = yc;
+					final MODULE_STATUS m = ms;
+					final int rot = rotations;
+					final MODULE_TYPE mt = ModuleTypes.getType(code);
 					while ( i.hasNext() ) {
 						
 					Module curr = i.next();
 					if(curr.getCode() == code){
 						storetable.removeRow(moduleCount);
+
 						root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
 						root.landingGrid.getModuleList();
+						root.mainWindow.setGrid(curr.getXPos(), curr.getYPos(), null);
+						root.landingGrid.moveModule(curr.getXPos(), curr.getYPos(), xc, yc);
+						
 						refreshDisplayedModules();
 					}
 					moduleCount++;
@@ -230,56 +243,320 @@ private boolean alerted = false;
 						
 						if(code > 0 && code < 41){
 					    im = new Image("images/Plain.jpg");
+					    im.addClickHandler(new ClickHandler(){
+							public void onClick(ClickEvent event){
+								PopupPanel p = new PopupPanel();
+								p.setPopupPosition(event.getClientX(), event.getClientY());
+								VerticalPanel pan = new VerticalPanel();
+								p.add(pan);
+								pan.add(new Label("ID: "+codec));
+								pan.add(new Label("X-Coordinate: "+xcc));
+								pan.add(new Label("Y-Coordinate: "+ycc));
+								pan.add(new Label("Status: "+m));
+								if(rot == 0){
+									pan.add(new Label("Orientation: Upright"));
+								}
+								else if(rot == 1){
+									pan.add(new Label("Orientation: On Side"));
+								}
+								else{
+									pan.add(new Label("Orientation: Upside Down"));
+								}
+								pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+								p.show();
+								p.setAutoHideEnabled(true);
+							}
+						});
 					    im.setSize("50px", "50px");
 						root.mainWindow.setGrid(xc, yc, im);
 						}
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=91 && code <= 100){
 							im = new Image("images/Sanitation.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=111 && code <= 120){
 							im = new Image("images/Food.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=141 && code <= 144){
 							im = new Image("images/Canteen.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=151 && code <= 154){
 							im = new Image("images/Power.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=161 && code <= 164){
 							im = new Image("images/Control.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
 						else if(code >=171 && code <= 174){
 							im = new Image("images/Airlock.jpg");
+							im.addClickHandler(new ClickHandler(){
+								public void onClick(ClickEvent event){
+									PopupPanel p = new PopupPanel();
+									p.setPopupPosition(event.getClientX(), event.getClientY());
+									VerticalPanel pan = new VerticalPanel();
+									p.add(pan);
+									pan.add(new Label("ID: "+codec));
+									pan.add(new Label("X-Coordinate: "+xcc));
+									pan.add(new Label("Y-Coordinate: "+ycc));
+									pan.add(new Label("Status: "+m));
+									if(rot == 0){
+										pan.add(new Label("Orientation: Upright"));
+									}
+									else if(rot == 1){
+										pan.add(new Label("Orientation: On Side"));
+									}
+									else{
+										pan.add(new Label("Orientation: Upside Down"));
+									}
+									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
+									p.show();
+									p.setAutoHideEnabled(true);
+								}
+							});
 							im.setSize("50px", "50px");
 							root.mainWindow.setGrid(xc, yc, im);
 							}
