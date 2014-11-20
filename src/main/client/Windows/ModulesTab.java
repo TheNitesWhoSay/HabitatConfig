@@ -218,6 +218,7 @@ private boolean alerted = false;
 						storetable.removeRow(moduleCount);
 						root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
 						root.landingGrid.getModuleList();
+						refreshDisplayedModules();
 					}
 					moduleCount++;
 					}
@@ -256,6 +257,7 @@ private boolean alerted = false;
 					storetable.removeRow(modscount);
 					root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
 					root.landingGrid.getModuleList();
+					refreshDisplayedModules();
 					return;
 				}
 			});
