@@ -17,23 +17,14 @@ public class ConfigOptions {
 	 * Sets all default configuration settings
 	 */
 	public ConfigOptions() {
-		
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
+
 		this.loginRequired = true;
 		this.loginNameCaseSensative = false;
 		this.loginPassCaseSensative = true;
 		this.loginName = "mars";
 		this.loginPass = "12345";
-=======
->>>>>>> Stashed changes
-		loginRequired = true;
-		loginNameCaseSensative = false;
-		loginPassCaseSensative = true;
-		loginName = "mars";
-		loginPass = "12345";
->>>>>>> FETCH_HEAD
+
+
 	}
 	
 	/**

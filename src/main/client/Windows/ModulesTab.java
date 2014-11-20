@@ -13,6 +13,7 @@ import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.i18n.server.testing.Parent;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
