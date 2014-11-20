@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -18,7 +19,7 @@ public class LoginWindow extends GwtWindow {
 	
 	private HabitatConfig root; // A reference to the root class
 	private TextBox usernameTextBox;
-	private TextBox passwordTextBox;
+	private PasswordTextBox passwordTextBox;
 	
 	/**
 	 * Sets default variable values
@@ -50,7 +51,7 @@ public class LoginWindow extends GwtWindow {
 		final Label usernameLbl = new Label("Username: ");
 		final Label passwordLbl = new Label("Password: ");
 		usernameTextBox = new TextBox();
-		passwordTextBox = new TextBox();
+		passwordTextBox = new PasswordTextBox();
 	    final Button login = new Button("Sign on");
 		login.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
