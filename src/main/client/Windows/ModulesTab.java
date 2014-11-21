@@ -3,8 +3,6 @@ package main.client.Windows;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.json.JSONStringer;
-
 import main.client.HabitatConfig;
 import main.client.Data.Module;
 import main.client.Data.ModuleTypes;
@@ -13,19 +11,9 @@ import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.i18n.server.testing.Parent;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -33,8 +21,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -45,25 +31,24 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ModulesTab extends GwtWindow  {
-	/**
-	 * 
-	 */
-private HabitatConfig root;
-	/**
-	 * 
-	 */
-private FlexTable storetable;
-private boolean alerted = false;
-	protected Widget rp;
-	protected String mod;
+	
+	private HabitatConfig root;
+	
+	private FlexTable storetable;
+	private boolean alerted;
+	@SuppressWarnings("unused")
+	private Widget rp;
+	@SuppressWarnings("unused")
+	private String mod;
 	
 	/**
 	 * Default constructor
 	 */
-	public ModulesTab(HabitatConfig root) {
+	public ModulesTab(final HabitatConfig root) {
 		
 		super();
 		this.root = root;
+		alerted = false;
 	}
 	
 	/**
@@ -75,22 +60,23 @@ private boolean alerted = false;
 		
 		//Label start = new Label("");
 		Label modID = new Label("ID");
-		Label xcor = new Label("X-Cor");
-		Label ycor = new Label("Y-Cor");
-		Label status = new Label("Status");
-		Label orientation = new Label("Orientation");
-		Button addb = new Button("Add");
+		final Label xcor = new Label("X-Cor");
+		final Label ycor = new Label("Y-Cor");
+		final Label status = new Label("Status");
+		final Label orientation = new Label("Orientation");
+		final Button addb = new Button("Add");
 		Button save = new Button("Save to local storage");
 		add(save);
 		
 	
-		save.addClickHandler(new ClickHandler(){
+		save.addClickHandler(new ClickHandler() {
+			@SuppressWarnings("unused")
 			private Panel rp;
 
-			public void onClick(ClickEvent e){
+			public void onClick(final ClickEvent e){
 				LinkedList<Module> modules = root.landingGrid.getModuleList();
+				@SuppressWarnings("unused")
 				ListIterator<Module> i = modules.listIterator();
-				int moduleCount = 0;
 				/**
 				while ( i.hasNext() ) {
 					
@@ -143,7 +129,7 @@ private boolean alerted = false;
 		modLabel.setSpacing(30);
 		add(modLabel);
 		
-		HorizontalPanel logpanel = new HorizontalPanel();
+		final HorizontalPanel logpanel = new HorizontalPanel();
 		final TextBox id = new TextBox();
 		final TextBox xcord = new TextBox();
 		final TextBox ycord = new TextBox();
@@ -177,7 +163,7 @@ private boolean alerted = false;
 		add(storetable);
 		
 		addb.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
+			public void onClick(final ClickEvent event) {
 				
 				MODULE_STATUS ms = MODULE_STATUS.Unknown;
 				int rotations = -1;
@@ -211,6 +197,7 @@ private boolean alerted = false;
 				
 				if ( validateCode(code) && validateXc(xc) && validateYc(yc) )
 				{
+					@SuppressWarnings("unused")
 					Button removebutton = new Button("X");
 					LinkedList<Module> modules = root.landingGrid.getModuleList();
 					ListIterator<Module> i = modules.listIterator();
@@ -220,6 +207,7 @@ private boolean alerted = false;
 					final int ycc = yc;
 					final MODULE_STATUS m = ms;
 					final int rot = rotations;
+					@SuppressWarnings("unused")
 					final MODULE_TYPE mt = ModuleTypes.getType(code);
 					while ( i.hasNext() ) {
 						
@@ -227,7 +215,7 @@ private boolean alerted = false;
 					if(curr.getCode() == code){
 						storetable.removeRow(moduleCount);
 
-						root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
+						root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
 						root.landingGrid.getModuleList();
 						root.mainWindow.setGrid(curr.getXPos(), curr.getYPos(), null);
 						root.landingGrid.moveModule(curr.getXPos(), curr.getYPos(), xc, yc);
@@ -244,7 +232,7 @@ private boolean alerted = false;
 						if(code > 0 && code < 41){
 					    im = new Image("images/Plain.jpg");
 					    im.addClickHandler(new ClickHandler(){
-							public void onClick(ClickEvent event){
+							public void onClick(final ClickEvent event){
 								PopupPanel p = new PopupPanel();
 								p.setPopupPosition(event.getClientX(), event.getClientY());
 								VerticalPanel pan = new VerticalPanel();
@@ -273,7 +261,7 @@ private boolean alerted = false;
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -302,7 +290,7 @@ private boolean alerted = false;
 						else if(code >=91 && code <= 100){
 							im = new Image("images/Sanitation.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -331,7 +319,7 @@ private boolean alerted = false;
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -360,7 +348,7 @@ private boolean alerted = false;
 						else if(code >=111 && code <= 120){
 							im = new Image("images/Food.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -389,7 +377,7 @@ private boolean alerted = false;
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -418,7 +406,7 @@ private boolean alerted = false;
 						else if(code >=141 && code <= 144){
 							im = new Image("images/Canteen.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -447,7 +435,7 @@ private boolean alerted = false;
 						else if(code >=61 && code <= 80){
 							im = new Image("images/Dormitory.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -476,7 +464,7 @@ private boolean alerted = false;
 						else if(code >=151 && code <= 154){
 							im = new Image("images/Power.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -505,7 +493,7 @@ private boolean alerted = false;
 						else if(code >=161 && code <= 164){
 							im = new Image("images/Control.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -534,7 +522,7 @@ private boolean alerted = false;
 						else if(code >=171 && code <= 174){
 							im = new Image("images/Airlock.jpg");
 							im.addClickHandler(new ClickHandler(){
-								public void onClick(ClickEvent event){
+								public void onClick(final ClickEvent event){
 									PopupPanel p = new PopupPanel();
 									p.setPopupPosition(event.getClientX(), event.getClientY());
 									VerticalPanel pan = new VerticalPanel();
@@ -584,13 +572,14 @@ private boolean alerted = false;
 			storetable.setText(moduleCount, 3, ""+curr.getStatus());
 			storetable.setText(moduleCount, 4, ""+curr.getRotationsTillUpright());
 			storetable.setText(moduleCount, 5, ""+ModuleTypes.getType(curr.getCode()));
-			storetable.setWidget(moduleCount, 6, removebutton = new Button("X"));
+			removebutton = new Button("X");
+			storetable.setWidget(moduleCount, 6, removebutton);
 			final int modcount = moduleCount;
 			removebutton.addClickHandler(new ClickHandler() {
-				public void onClick(ClickEvent event) {
+				public void onClick(final ClickEvent event) {
 					int modscount = modcount;
 					storetable.removeRow(modscount);
-					root.landingGrid.removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
+					root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
 					root.landingGrid.getModuleList();
 					refreshDisplayedModules();
 					root.mainWindow.setGrid(curr.getXPos(), curr.getYPos(), null);
@@ -599,23 +588,26 @@ private boolean alerted = false;
 			});
 			moduleCount++;
 		}
-		if(hasMinConfig(root.landingGrid.getModuleList())){
+		
+		if ( hasMinConfig(root.landingGrid.getModuleList()) ) {
+			
 			boolean b = Window.confirm("Check out configuration available?");
-			if(b == true){
+			if ( b ) {
 				root.mainWindow.selectTab(2);
 			}
 		}
 	}
+	
 	/**
 	 * Confirms whether or not a possible min configuration is available
 	 * @param moduleList
 	 * @return
 	 */
-	private boolean hasMinConfig(LinkedList<Module> moduleList) {
-		if(alerted == true){
+	private boolean hasMinConfig(final LinkedList<Module> moduleList) {
+		if ( alerted ) {
 			return false;
 		}
-		else{
+		else {
 		ListIterator<Module> i = moduleList.listIterator();
 		boolean hasAir = false;
 		boolean hasPower = false;
@@ -626,7 +618,6 @@ private boolean alerted = false;
 		boolean hasSanitation = false;
 		boolean hasPlains = false;
 		int plainCount = 0;
-		int moduleCount = 0;
 		while ( i.hasNext() ) {
 		Module curr = i.next();
 		
@@ -659,11 +650,11 @@ private boolean alerted = false;
 		}
 		}
 		
-		if(hasPlains == true && hasDorm == true && hasSanitation == true && hasFood == true && hasCanteen == true && hasPower == true && hasControl == true && hasAir == true){
+		if ( hasPlains && hasDorm && hasSanitation && hasFood && hasCanteen && hasPower && hasControl && hasAir ) {
 			alerted = true;
 			return true;
 		}
-		else{
+		else {
 			return false;
 		}
 		}
@@ -674,7 +665,7 @@ private boolean alerted = false;
 	 * @param code the given code number
 	 * @return whether the code number matches up with a real module type
 	 */
-	private boolean validateCode(int code) {
+	private boolean validateCode(final int code) {
 		MODULE_TYPE mt = ModuleTypes.getType(code);
 		if ( mt == MODULE_TYPE.Unknown || mt == MODULE_TYPE.Reserved ) {
 			Window.alert("Invalid module code.");
@@ -689,7 +680,7 @@ private boolean alerted = false;
 	 * @param xc the given xc
 	 * @return whether the xc is within the landing grid
 	 */
-	private boolean validateXc(int xc) {
+	private boolean validateXc(final int xc) {
 		
 		if ( xc < 0 || xc >= root.landingGrid.getWidth() ) {
 			Window.alert("Invalid xc: " + xc);
@@ -704,7 +695,7 @@ private boolean alerted = false;
 	 * @param yc the given yc
 	 * @return whether the yc is within the landing grid
 	 */
-	private boolean validateYc(int yc) {
+	private boolean validateYc(final int yc) {
 		
 		if ( yc < 0 || yc >= root.landingGrid.getDepth() ) {
 			Window.alert("Invalid yc.");

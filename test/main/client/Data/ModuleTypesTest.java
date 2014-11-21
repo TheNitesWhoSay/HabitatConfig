@@ -7,6 +7,10 @@ import org.junit.Test;
 
 public class ModuleTypesTest {
 
+	public ModuleTypesTest() {
+		
+	}
+	
 	@Test
 	public void testModuleTypes() {
 		

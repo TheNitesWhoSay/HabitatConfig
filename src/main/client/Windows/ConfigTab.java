@@ -4,26 +4,23 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import main.client.HabitatConfig;
+import main.client.Data.LandingGrid;
 import main.client.Data.Module;
 
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class ConfigTab extends GwtWindow {
 
 	private HabitatConfig root;
-	public Grid g;
-	ScrollPanel p;
+	private Grid g;
+	private ScrollPanel p;
 	/**
 	 * Default constructor
 	 */
-	public ConfigTab(HabitatConfig root) {
+	public ConfigTab(final HabitatConfig root) {
 		
 		super();
 		this.root = root;
@@ -34,36 +31,38 @@ public class ConfigTab extends GwtWindow {
 	 */
 	protected boolean create() {
 	
-		add(new HTML("Config"));
+		LandingGrid landingGrid = this.root.landingGrid;
+		int width = landingGrid.getWidth();
+		int depth = landingGrid.getDepth();
+		
 		Canvas canvas;
-		g = new Grid(100, 50);
+		this.g = new Grid(width, depth);
 		canvas = Canvas.createIfSupported();
 		if(canvas != null){
-		canvas.setWidth(""+root.landingGrid.getWidth());
-		canvas.setHeight(""+root.landingGrid.getDepth());
-		canvas.setCoordinateSpaceHeight(root.landingGrid.getDepth());
-		canvas.setCoordinateSpaceWidth(root.landingGrid.getWidth());
-		Context2d context = canvas.getContext2d(); // a rendering context
-		for(int i = 0; i<50; i++){
-			for(int j = 0; j<100; j++){
-				g.setCellPadding(50);
+		canvas.setWidth(""+width);
+		canvas.setHeight(""+depth);
+		canvas.setCoordinateSpaceHeight(depth);
+		canvas.setCoordinateSpaceWidth(width);
+		
+		for ( int i = 0; i<depth; i++ ) {
+			for( int j = 0; j<width; j++ ) {
+				this.g.setCellPadding(50);
 			}
 		}
-		g.setBorderWidth(5);
-		LinkedList<Module> modules = root.landingGrid.getModuleList();
+		this.g.setBorderWidth(5);
+		LinkedList<Module> modules = landingGrid.getModuleList();
 		ListIterator<Module> i = modules.listIterator();
-		int moduleCount = 0;
 		
 		while ( i.hasNext() ) {
 			
 			Module curr = i.next();
-			g.setText(curr.getXPos(), curr.getYPos(), "Module");
+			this.g.setText(curr.getXPos(), curr.getYPos(), "Module");
 		
 		}
-			p = new ScrollPanel();
-			p.setSize("1200px", "600px");
-			p.add(g);
-			add(p);
+			this.p = new ScrollPanel();
+			this.p.setSize("1200px", "600px");
+			this.p.add(this.g);
+			add(this.p);
 			return true;
 		}
 		else {
@@ -72,8 +71,8 @@ public class ConfigTab extends GwtWindow {
 		}
 	}
 	
-	public void setGrid(int rowNum, int colNum, Image type){
+	public void setGrid(final int rowNum, final int colNum, final Image type){
 		
-		g.setWidget(rowNum, colNum, type);
+		this.g.setWidget(rowNum, colNum, type);
 	}
 }

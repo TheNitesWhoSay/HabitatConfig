@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class ConfigOptionsTest {
-
-	private String strmars = "mars";
 	
 	public ConfigOptionsTest() {
 		

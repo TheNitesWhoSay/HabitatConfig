@@ -28,6 +28,13 @@ public class HabitatConfig implements EntryPoint {
 	public LinkedList<LandingGrid> configurations;
 	
 	/**
+	 * Constructs the HabitatConfig program
+	 */
+	public HabitatConfig() {
+		
+	}
+	
+	/**
 	 * This is the entry point method.
 	 * 
 	 * Starts the Habitat Configuration Software

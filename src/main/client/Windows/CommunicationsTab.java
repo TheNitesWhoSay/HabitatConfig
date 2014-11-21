@@ -12,7 +12,7 @@ public class CommunicationsTab extends GwtWindow {
 	/**
 	 * Default constructor
 	 */
-	public CommunicationsTab(HabitatConfig root) {
+	public CommunicationsTab(final HabitatConfig root) {
 		
 		super();
 		this.root = root;

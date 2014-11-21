@@ -3,10 +3,7 @@ package main.client.Data;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import com.google.gwt.user.client.Window;
-
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
-import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 /**
  * Holds information about terrain and modules within the landing zone
@@ -15,8 +12,8 @@ public class LandingGrid {
 
 	private int width;
 	private int depth;
-	private TerrainSquare terrain[/*X*/][/*Y*/];
-	private Module modules[/*X*/][/*Y*/];
+	private TerrainSquare[/*X*/][/*Y*/] terrain;
+	private Module[/*X*/][/*Y*/] modules;
 	
 	/**
 	 * Constructs a basic landing grid,
@@ -68,19 +65,18 @@ public class LandingGrid {
 	 * @param status the status of the module
 	 * @return whether the module was successfully updated
 	 */
-	public boolean setModuleInfo(int x, int y, int code, int rotationsTillUpright, MODULE_STATUS status) {
+	public boolean setModuleInfo(final int x, final int y, final int code, final int rotationsTillUpright, final MODULE_STATUS status) {
 		
 		if ( x >= 0 && x < width && y >= 0 && y < depth )
 		{	
 			LinkedList<Module> mods = getModuleList();
 			ListIterator<Module> i = mods.listIterator();
-			int moduleCount = 0;
 			while ( i.hasNext() ) {
 				
 				Module curr = i.next();
 				if(curr.getCode()==code){
-					removeModule(curr.getCode(), curr.getXPos(), curr.getYPos());
 					
+					removeModule(curr.getXPos(), curr.getYPos());
 				}
 			}
 			modules[x][y] = new Module();
@@ -103,7 +99,7 @@ public class LandingGrid {
 	 * @param newY the destination yPos of a module
 	 * @return whether the move was successful
 	 */
-	public boolean moveModule(int currX, int currY, int newX, int newY) {
+	public boolean moveModule(final int currX, final int currY, final int newX, final int newY) {
 		
 		if ( newX >= 0 && newX < width && newY >= 0 && newY < depth &&
 			 currX >= 0 && currX < width && currY >= 0 && currY < depth )
@@ -141,11 +137,9 @@ public class LandingGrid {
 		return moduleList;
 	}
 
-	public void removeModule(int code, int xPos, int yPos) {
+	public void removeModule(final int xPos, final int yPos) {
 		
-		modules[xPos][yPos]=null;
-		code = 0;
+		modules[xPos][yPos] = null;
 	}
-	
-	
+		
 }

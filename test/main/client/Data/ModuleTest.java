@@ -8,6 +8,10 @@ import org.junit.Test;
 
 public class ModuleTest {
 
+	public ModuleTest() {
+		
+	}
+	
 	@Test
 	public void testModuleConstructorAndAccessors() {
 		

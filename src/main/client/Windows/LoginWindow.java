@@ -25,7 +25,7 @@ public class LoginWindow extends GwtWindow {
 	 * Sets default variable values
 	 * @param root a reference to the root class
 	 */
-	public LoginWindow(HabitatConfig root) {
+	public LoginWindow(final HabitatConfig root) {
 		
 		this.root = root;
 	}
@@ -34,7 +34,7 @@ public class LoginWindow extends GwtWindow {
 	 * Clears the password and optionally the username from this window
 	 * @param clearUsername whether the username should be cleared
 	 */
-	public void ClearCredentials(boolean clearUsername) {
+	public void ClearCredentials(final boolean clearUsername) {
 		
 		passwordTextBox.setText("");
 		if ( clearUsername )
@@ -54,7 +54,7 @@ public class LoginWindow extends GwtWindow {
 		passwordTextBox = new PasswordTextBox();
 	    final Button login = new Button("Sign on");
 		login.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
+			public void onClick(final ClickEvent event) {
 				
 				ConfigOptions config = root.configOptions;
 				if ( config.validateLogin(usernameTextBox.getText(), passwordTextBox.getText()) )
@@ -65,8 +65,8 @@ public class LoginWindow extends GwtWindow {
 				else
 				{
 					String errorText = "Invalid Username or Password!";
-					boolean nameCaseSensative = config.loginNameCaseSensative(),
-							passCaseSensative = config.loginPassCaseSensative();
+					boolean nameCaseSensative = config.loginNameCaseSensative();
+					boolean passCaseSensative = config.loginPassCaseSensative();
 					
 					if ( nameCaseSensative && passCaseSensative )
 						errorText += "\n\n\nNote: The username and password are case sensative!";

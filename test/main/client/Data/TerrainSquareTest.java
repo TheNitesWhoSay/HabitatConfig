@@ -6,6 +6,10 @@ import org.junit.Test;
 
 public class TerrainSquareTest {
 
+	public TerrainSquareTest() {
+		
+	}
+	
 	@Test
 	public void testTerrainSquare() {
 		

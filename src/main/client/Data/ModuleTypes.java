@@ -4,6 +4,13 @@ package main.client.Data;
 public class ModuleTypes {
 
 	/**
+	 * Constructs a ModuleTypes object
+	 */
+	public ModuleTypes() {
+		
+	}
+	
+	/**
 	 * Enumerates the various module types
 	 */
 	public enum MODULE_TYPE {
@@ -16,7 +23,7 @@ public class ModuleTypes {
 	 * @param code the code of the module
 	 * @return the module type for the given code
 	 */
-	public static MODULE_TYPE getType(int code) {
+	public static MODULE_TYPE getType(final int code) {
 		
 		if ( code >= 1 && code <= 40 )
 			return MODULE_TYPE.Plain;

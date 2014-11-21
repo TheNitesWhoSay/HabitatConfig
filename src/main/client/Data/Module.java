@@ -84,7 +84,7 @@ public class Module {
 	 * Fails and no change occurs if xPos is negative
 	 * @param xPos the current x coordinate
 	 */
-	public void setBookeepingXPos(int xPos) {
+	public void setBookeepingXPos(final int xPos) {
 		
 		if ( xPos >= 0 )
 			xc = xPos;
@@ -97,7 +97,7 @@ public class Module {
 	 * Fails and no change occurs if yPos is negative
 	 * @param yPos the current y coordinate
 	 */
-	public void setBookeepingYPos(int yPos) {
+	public void setBookeepingYPos(final int yPos) {
 		
 		if ( yPos >= 0 )
 			yc = yPos;
@@ -108,7 +108,7 @@ public class Module {
 	 * Fails and no change occurs unless 1 <= moduleCode <= 190
 	 * @param moduleCode the new code number of the module
 	 */
-	public void setCode(int moduleCode) {
+	public void setCode(final int moduleCode) {
 		
 		if ( moduleCode >= 1 && moduleCode <= 190)
 			this.moduleCode = moduleCode;
@@ -119,7 +119,7 @@ public class Module {
 	 * Fails and no change occurs unless 0 <= rotationsTillUpright <= 2
 	 * @param rotationsTillUpright the new number of rotations required to get the module upright
 	 */
-	public void setRotationsTillUpright(int rotationsTillUpright) {
+	public void setRotationsTillUpright(final int rotationsTillUpright) {
 		
 		if ( rotationsTillUpright >= 0 && rotationsTillUpright <= 2 )
 			this.rotationsTillUpright = rotationsTillUpright;
@@ -129,7 +129,7 @@ public class Module {
 	 * Sets the damage/usability status
 	 * @param status the new damage/usability status of the module
 	 */
-	public void setDamageStatus(MODULE_STATUS status) {
+	public void setDamageStatus(final MODULE_STATUS status) {
 		
 		this.status = status;
 	}

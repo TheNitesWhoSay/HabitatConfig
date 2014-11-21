@@ -58,8 +58,8 @@ public class ConfigOptions {
 			String sLoginRequired = storage.getItem("loginRequired");
 			String sLoginNameCaseSensative = storage.getItem("loginNameCaseSensative");
 			String sLoginPassCaseSensative = storage.getItem("loginPassCaseSensative");
-			String sLoginName = storage.getItem("loginName");
-			String sLoginPass = storage.getItem("loginPass");
+			final String sLoginName = storage.getItem("loginName");
+			final String sLoginPass = storage.getItem("loginPass");
 			
 			if ( sLoginRequired != null )
 			{
@@ -103,24 +103,26 @@ public class ConfigOptions {
 	 * @param loginPass the given password
 	 * @return whether the username and password are correct
 	 */
-	public boolean validateLogin(String loginName, String loginPass) {
+	public boolean validateLogin(final String loginName, final String loginPass) {
 		
-		String compareName = this.loginName,
-			   comparePass = this.loginPass;
+		String inputName = loginName;
+		String inputPass = loginPass;
+		String compareName = this.loginName;
+		String comparePass = this.loginPass;
 		
-		if ( loginNameCaseSensative == false )
+		if ( !loginNameCaseSensative )
 		{
-			loginName = loginName.toUpperCase();
+			inputName = inputName.toUpperCase();
 			compareName = this.loginName.toUpperCase();
 		}
-		if ( loginPassCaseSensative == false )
+		if ( !loginPassCaseSensative )
 		{
-			loginPass = loginPass.toUpperCase();
+			inputPass = inputPass.toUpperCase();
 			comparePass = this.loginPass.toUpperCase();
 		}
 		
-		return compareName.equals(loginName) &&
-			   comparePass.equals(loginPass);
+		return compareName.equals(inputName) &&
+			   comparePass.equals(inputPass);
 	}
 	
 	/**
@@ -157,7 +159,7 @@ public class ConfigOptions {
 	 * @param loginRequired whether a login should be required
 	 * @return if the the change to a login being required/not required was successful
 	 */
-	public boolean setLoginRequired(String loginName, String loginPass, boolean loginRequired) {
+	public boolean setLoginRequired(final String loginName, final String loginPass, final boolean loginRequired) {
 		
 		if ( validateLogin(loginName, loginPass) )
 		{
@@ -176,7 +178,7 @@ public class ConfigOptions {
 	 * @param loginNameCaseSensative whether the login name should be case sensative
 	 * @return if the change to the login name being case sensative/not case sensative was successful
 	 */
-	public boolean setLoginNameCaseSensative(String loginName, String loginPass, boolean loginNameCaseSensative) {
+	public boolean setLoginNameCaseSensative(final String loginName, final String loginPass, final boolean loginNameCaseSensative) {
 		
 		if ( this.validateLogin(loginName, loginPass) )
 		{
@@ -214,7 +216,7 @@ public class ConfigOptions {
 	 * @param newUserName the new user name
 	 * @return whether the username change was successful
 	 */
-	public boolean setUserName(String loginName, String loginPass, String newUserName) {
+	public boolean setUserName(final String loginName, final String loginPass, final String newUserName) {
 		
 		if ( this.validateLogin(loginName, loginPass) && newUserName.length() > 0 )
 		{
@@ -233,7 +235,7 @@ public class ConfigOptions {
 	 * @param newPassword the new password
 	 * @return whether the password change was successful
 	 */
-	public boolean setPassword(String loginName, String loginPass, String newPassword) {
+	public boolean setPassword(final String loginName, final String loginPass, final String newPassword) {
 		
 		if ( validateLogin(loginName, loginPass) && newPassword.length() > 0 )
 		{

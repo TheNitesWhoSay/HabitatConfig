@@ -6,6 +6,13 @@ package main.client.Data;
 public class DamageStatus {
 
 	/**
+	 * Constructs a DamageStatus class
+	 */
+	public DamageStatus() {
+		
+	}
+	
+	/**
 	 * An enumeration of the module damage/usability status
 	 */
 	public enum STATUS {

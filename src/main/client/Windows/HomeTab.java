@@ -12,7 +12,7 @@ public class HomeTab extends GwtWindow {
 	/**
 	 * Default constructor
 	 */
-	public HomeTab(HabitatConfig root) {
+	public HomeTab(final HabitatConfig root) {
 		
 		super();
 		this.root = root;

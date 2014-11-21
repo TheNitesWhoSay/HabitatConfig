@@ -32,7 +32,7 @@ public class MainWindow extends GwtWindow {
 	 * Sets default variable values
 	 * @param root a reference to the root class
 	 */
-	public MainWindow(HabitatConfig root) {
+	public MainWindow(final HabitatConfig root) {
 		
 		this.root = root;
 		homeTab = new HomeTab(root);
@@ -46,7 +46,7 @@ public class MainWindow extends GwtWindow {
 	 * Selects the given tab number
 	 * @param tabNum the given tab number
 	 */
-	public void selectTab(int tabNum) {
+	public void selectTab(final int tabNum) {
 		tabs.selectTab(tabNum);
 	}
 	
@@ -65,9 +65,11 @@ public class MainWindow extends GwtWindow {
 		
 		hpLogout.setVisible(false);
 	}
-	public void setGrid(int rowNum, int colNum, Image type){
+	
+	public void setGrid(final int rowNum, final int colNum, final Image type){
 		configTab.setGrid(rowNum, colNum, type);
 	}
+	
 	/**
 	 * This method will create the main window
 	 * @return true if window creation was successful
@@ -79,7 +81,7 @@ public class MainWindow extends GwtWindow {
 		hpLogout = new HorizontalPanel();
 		final Button logout = new Button("Logout");
 		logout.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
+			public void onClick(final ClickEvent event) {
 				hide();
 				if ( root.loginWindow.isCreated() )
 					root.loginWindow.ClearCredentials(true);

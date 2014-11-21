@@ -37,7 +37,7 @@ public class TerrainSquare {
 	 * Sets whether the given terrain square can be traversed
 	 * @param traversable indicates if this terrain square can be traversed
 	 */
-	public void setTraversable(boolean traversable) {
+	public void setTraversable(final boolean traversable) {
 		
 		this.traversable = traversable;
 	}
@@ -46,7 +46,7 @@ public class TerrainSquare {
 	 * Sets whether the given terrain square can be built on
 	 * @param buildable indicates if this terrain square can be built on
 	 */
-	public void setBuildable(boolean buildable) {
+	public void setBuildable(final boolean buildable) {
 		
 		this.buildable = buildable;
 	}

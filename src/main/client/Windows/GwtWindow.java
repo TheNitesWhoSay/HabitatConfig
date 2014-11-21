@@ -18,9 +18,11 @@ public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 	 * and sets default variable values
 	 */
 	public GwtWindow() {
+		
 		super(); // Call FlowPanel's constructor
 		created = false;
 	}
+	
 	/**
 	 * Shows the window
 	 * 
@@ -29,7 +31,7 @@ public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 	 * 
 	 * @param the panel this window is shown in
 	 */
-	public void show(Panel parent) {
+	public void show(final Panel parent) {
 		
 		if ( !created )
 			created = create();
@@ -47,7 +49,7 @@ public class GwtWindow extends FlowPanel { // IS A FlowPanel (a blank panel)
 	 * @param parent the TabPanel this is inserted into
 	 * @param tabTitle the title of this tab
 	 */
-	public void show(TabPanel parent, String tabTitle) {
+	public void show(final TabPanel parent, final String tabTitle) {
 		
 		if ( !created )
 			created = create();

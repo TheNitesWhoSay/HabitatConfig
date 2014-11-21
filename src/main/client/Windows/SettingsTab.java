@@ -13,7 +13,7 @@ public class SettingsTab extends GwtWindow {
 	/**
 	 * Default constructor
 	 */
-	public SettingsTab(HabitatConfig root) {
+	public SettingsTab(final HabitatConfig root) {
 		
 		super();
 		this.root = root;
@@ -31,7 +31,7 @@ public class SettingsTab extends GwtWindow {
 			toggleLoginRequired.setText("Add Login Requirement");
 		
 		toggleLoginRequired.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
+			public void onClick(final ClickEvent event) {
 				
 				root.configOptions.setLoginRequired("mars", "12345", !root.configOptions.loginRequired());
 				if ( root.configOptions.loginRequired() ) {
