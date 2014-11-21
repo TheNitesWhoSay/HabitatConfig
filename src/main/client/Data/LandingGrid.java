@@ -142,6 +142,7 @@ public class LandingGrid {
 	}
 
 	public void removeModule(int code, int xPos, int yPos) {
+		
 		modules[xPos][yPos]=null;
 		code = 0;
 	}

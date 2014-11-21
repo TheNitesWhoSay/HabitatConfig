@@ -6,6 +6,13 @@ import org.junit.Test;
 
 public class ConfigOptionsTest {
 
+	private String strmars = "mars";
+	
+	public ConfigOptionsTest() {
+		
+		
+	}
+	
 	@Test
 	public void testBasicLogin() {
 		

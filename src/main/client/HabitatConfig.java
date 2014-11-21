@@ -1,5 +1,7 @@
 package main.client;
 
+import java.util.LinkedList;
+
 import main.client.Data.LandingGrid;
 import main.client.Windows.ConfigTab;
 import main.client.Windows.LoginWindow;
@@ -23,6 +25,7 @@ public class HabitatConfig implements EntryPoint {
 	public LoginWindow loginWindow;
 	public ConfigTab configTab;
 	public LandingGrid landingGrid;
+	public LinkedList<LandingGrid> configurations;
 	
 	/**
 	 * This is the entry point method.

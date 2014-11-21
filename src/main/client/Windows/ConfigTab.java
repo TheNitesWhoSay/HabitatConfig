@@ -56,21 +56,24 @@ public class ConfigTab extends GwtWindow {
 		
 		while ( i.hasNext() ) {
 			
-		Module curr = i.next();
-		g.setText(curr.getXPos(), curr.getYPos(), "Module");
+			Module curr = i.next();
+			g.setText(curr.getXPos(), curr.getYPos(), "Module");
 		
 		}
-		p = new ScrollPanel();
-		p.setSize("1200px", "600px");
-		p.add(g);
-		add(p);
-		return true;
+			p = new ScrollPanel();
+			p.setSize("1200px", "600px");
+			p.add(g);
+			add(p);
+			return true;
 		}
-		else{
-		return false;
+		else {
+			
+			return false;
 		}
 	}
+	
 	public void setGrid(int rowNum, int colNum, Image type){
+		
 		g.setWidget(rowNum, colNum, type);
 	}
 }
