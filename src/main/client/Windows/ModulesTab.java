@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
- * @author Grant
+ * @author Marsellie
  *
  */
 public class ModulesTab extends GwtWindow  {
