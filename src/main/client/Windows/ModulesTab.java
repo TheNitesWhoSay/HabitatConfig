@@ -6,21 +6,21 @@ import java.util.ListIterator;
 import main.client.HabitatConfig;
 import main.client.Data.Module;
 import main.client.Data.ModuleTypes;
-import main.client.Data.ModuleStatuses.MODULE_STATUS;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,16 +31,22 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ModulesTab extends GwtWindow  {
-	
+	private DockPanel comppanel = new DockPanel();
 	private HabitatConfig root;
-	
+	private HorizontalPanel logpanel = new HorizontalPanel();
+	private Button save = new Button("Save to Local Storage");
 	private FlexTable storetable;
 	private boolean alerted;
+	private Grid g;
+	private ScrollPanel p;
 	@SuppressWarnings("unused")
 	private Widget rp;
+	private Button addb = new Button("Add");
+	private Canvas canvas;
+	private VerticalPanel leftpanel = new VerticalPanel();
 	@SuppressWarnings("unused")
 	private String mod;
-	
+	ClickHandler addHandler;
 	/**
 	 * Default constructor
 	 */
@@ -64,14 +70,11 @@ public class ModulesTab extends GwtWindow  {
 		final Label ycor = new Label("Y-Cor");
 		final Label status = new Label("Status");
 		final Label orientation = new Label("Orientation");
-		final Button addb = new Button("Add");
-		Button save = new Button("Save to local storage");
-		add(save);
-		
-	
+		leftpanel.add(save);
+					
 		save.addClickHandler(new ClickHandler() {
 			@SuppressWarnings("unused")
-			private Panel rp;
+			//private Panel rp;
 
 			public void onClick(final ClickEvent e){
 				LinkedList<Module> modules = root.landingGrid.getModuleList();
@@ -127,15 +130,67 @@ public class ModulesTab extends GwtWindow  {
 		modLabel.add(orientation);
 		modLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		modLabel.setSpacing(30);
-		add(modLabel);
+		storetable = new FlexTable();
+		createTable(storetable);
+		leftpanel.add(modLabel);
+		leftpanel.add(logpanel);
+		leftpanel.add(storetable);
+		createLanding();
+		comppanel.add(leftpanel, DockPanel.WEST);
+		comppanel.add(p, DockPanel.EAST);
+		add(comppanel);
+		return true;
+	}
+	/**
+	 * Creates the landing zone for logging modules(Non-Configuration grid)
+	 */
+	private void createLanding() {
+		this.g = new Grid(50, 100);
+		canvas = Canvas.createIfSupported();
+		if(canvas != null){
+		canvas.setWidth(""+100);
+		canvas.setHeight(""+50);
+		canvas.setCoordinateSpaceHeight(50);
+		canvas.setCoordinateSpaceWidth(100);
 		
-		final HorizontalPanel logpanel = new HorizontalPanel();
+		for ( int i = 0; i<50; i++ ) {
+			for( int j = 0; j<100; j++ ) {
+				this.g.setCellPadding(5);
+			}
+		}
+		this.g.setBorderWidth(5);
+		LinkedList<Module> modules = root.landingGrid.getModuleList();
+		ListIterator<Module> i = modules.listIterator();
+		
+		while ( i.hasNext() ) {
+			
+			Module curr = i.next();
+			this.g.setText(curr.getXPos(), curr.getYPos(), "Module");
+		
+		}
+			this.p = new ScrollPanel();
+			this.p.setSize("850px", "500px");
+			this.p.add(this.g);
+			
+			//add(this.p);
+			
+		}
+		//TO DO: Add handler for loading modules onto the map
+	}
+	/**
+	 * Creates the flex table that 
+	 * handles logging modules
+	 * @param storetable2 the storetable to make
+	 */
+	private void createTable(FlexTable storetable2) {
+		// TODO Auto-generated method stub
+	
 		final TextBox id = new TextBox();
 		final TextBox xcord = new TextBox();
 		final TextBox ycord = new TextBox();
 		final ListBox statbox = new ListBox();
 		final ListBox orienbox = new ListBox();
-		storetable = new FlexTable();
+		
 		
 		statbox.addItem("Usable");
 		statbox.addItem("Usable after repair");
@@ -158,400 +213,12 @@ public class ModulesTab extends GwtWindow  {
 		
 		logpanel.add(orienbox);
 		logpanel.add(addb);
+		//add(logpanel);
+		//add(storetable);
 		
-		add(logpanel);
-		add(storetable);
+		//TO DO: Add handler for add button and supporting methods
 		
-		addb.addClickHandler(new ClickHandler() {
-			public void onClick(final ClickEvent event) {
-				
-				MODULE_STATUS ms = MODULE_STATUS.Unknown;
-				int rotations = -1;
-				
-				if ( statbox.getSelectedIndex() == 0 ) {
-					ms = MODULE_STATUS.Usable;
-				}
-				else if ( statbox.getSelectedIndex() == 1 ) {
-					ms = MODULE_STATUS.UsableAfterRepair;
-				}
-				else {
-					ms = MODULE_STATUS.DamagedBeyondRepair;
-				}
-				
-				if ( orienbox.getSelectedIndex() == 0 ) {
-					rotations = 0;
-				}
-				else if ( orienbox.getSelectedIndex() == 1 ) {
-					rotations = 1;
-				}
-				else {
-					rotations = 2;
-				}
-				
-				int code = 0; // Init to invalid values
-				int xc = -1;
-				int yc = -1;
-				try { code = Integer.parseInt(   id.getText()); } catch ( NumberFormatException nfe ) { }
-				try {   xc = Integer.parseInt(xcord.getText()); } catch ( NumberFormatException nfe ) { }
-				try {   yc = Integer.parseInt(ycord.getText()); } catch ( NumberFormatException nfe ) { }
-				
-				if ( validateCode(code) && validateXc(xc) && validateYc(yc) )
-				{
-					@SuppressWarnings("unused")
-					Button removebutton = new Button("X");
-					LinkedList<Module> modules = root.landingGrid.getModuleList();
-					ListIterator<Module> i = modules.listIterator();
-					int moduleCount = 0;
-					final int codec = code;
-					final int xcc = xc;
-					final int ycc = yc;
-					final MODULE_STATUS m = ms;
-					final int rot = rotations;
-					@SuppressWarnings("unused")
-					final MODULE_TYPE mt = ModuleTypes.getType(code);
-					while ( i.hasNext() ) {
-						
-					Module curr = i.next();
-					if(curr.getCode() == code){
-						storetable.removeRow(moduleCount);
-
-						root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
-						root.landingGrid.getModuleList();
-						root.mainWindow.setGrid(curr.getXPos(), curr.getYPos(), null);
-						root.landingGrid.moveModule(curr.getXPos(), curr.getYPos(), xc, yc);
-						
-						refreshDisplayedModules();
-					}
-					moduleCount++;
-					}
-					// Add the module to the programs collection of stored modules
-					if ( root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms) )
-						refreshDisplayedModules(); // Refreshes storetable
-						Image im = new Image();
-						
-						if(code > 0 && code < 41){
-					    im = new Image("images/Plain.jpg");
-					    im.addClickHandler(new ClickHandler(){
-							public void onClick(final ClickEvent event){
-								PopupPanel p = new PopupPanel();
-								p.setPopupPosition(event.getClientX(), event.getClientY());
-								VerticalPanel pan = new VerticalPanel();
-								p.add(pan);
-								pan.add(new Label("ID: "+codec));
-								pan.add(new Label("X-Coordinate: "+xcc));
-								pan.add(new Label("Y-Coordinate: "+ycc));
-								pan.add(new Label("Status: "+m));
-								if(rot == 0){
-									pan.add(new Label("Orientation: Upright"));
-								}
-								else if(rot == 1){
-									pan.add(new Label("Orientation: On Side"));
-								}
-								else{
-									pan.add(new Label("Orientation: Upside Down"));
-								}
-								pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-								p.show();
-								p.setAutoHideEnabled(true);
-							}
-						});
-					    im.setSize("50px", "50px");
-						root.mainWindow.setGrid(xc, yc, im);
-						}
-						else if(code >=61 && code <= 80){
-							im = new Image("images/Dormitory.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=91 && code <= 100){
-							im = new Image("images/Sanitation.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=61 && code <= 80){
-							im = new Image("images/Dormitory.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=111 && code <= 120){
-							im = new Image("images/Food.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=61 && code <= 80){
-							im = new Image("images/Dormitory.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=141 && code <= 144){
-							im = new Image("images/Canteen.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=61 && code <= 80){
-							im = new Image("images/Dormitory.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=151 && code <= 154){
-							im = new Image("images/Power.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=161 && code <= 164){
-							im = new Image("images/Control.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-						else if(code >=171 && code <= 174){
-							im = new Image("images/Airlock.jpg");
-							im.addClickHandler(new ClickHandler(){
-								public void onClick(final ClickEvent event){
-									PopupPanel p = new PopupPanel();
-									p.setPopupPosition(event.getClientX(), event.getClientY());
-									VerticalPanel pan = new VerticalPanel();
-									p.add(pan);
-									pan.add(new Label("ID: "+codec));
-									pan.add(new Label("X-Coordinate: "+xcc));
-									pan.add(new Label("Y-Coordinate: "+ycc));
-									pan.add(new Label("Status: "+m));
-									if(rot == 0){
-										pan.add(new Label("Orientation: Upright"));
-									}
-									else if(rot == 1){
-										pan.add(new Label("Orientation: On Side"));
-									}
-									else{
-										pan.add(new Label("Orientation: Upside Down"));
-									}
-									pan.add(new Label("Type: "+ModuleTypes.getType(codec)));
-									p.show();
-									p.setAutoHideEnabled(true);
-								}
-							});
-							im.setSize("50px", "50px");
-							root.mainWindow.setGrid(xc, yc, im);
-							}
-				}
-			}
-		});
-		return true;
+		
 	}
 	
 
@@ -582,7 +249,7 @@ public class ModulesTab extends GwtWindow  {
 					root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
 					root.landingGrid.getModuleList();
 					refreshDisplayedModules();
-					root.mainWindow.setGrid(curr.getXPos(), curr.getYPos(), null);
+					
 					return;
 				}
 			});

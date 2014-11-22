@@ -66,10 +66,6 @@ public class MainWindow extends GwtWindow {
 		hpLogout.setVisible(false);
 	}
 	
-	public void setGrid(final int rowNum, final int colNum, final Image type){
-		configTab.setGrid(rowNum, colNum, type);
-	}
-	
 	/**
 	 * This method will create the main window
 	 * @return true if window creation was successful
