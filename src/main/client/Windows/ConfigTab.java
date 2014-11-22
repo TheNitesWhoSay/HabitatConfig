@@ -1,20 +1,12 @@
 package main.client.Windows;
 
-import java.util.LinkedList;
-import java.util.ListIterator;
-
 import main.client.HabitatConfig;
-import main.client.Data.LandingGrid;
-import main.client.Data.Module;
-
-import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class ConfigTab extends GwtWindow {
 
+	@SuppressWarnings("unused")
 	private HabitatConfig root;
+	
 	/**
 	 * Default constructor
 	 */

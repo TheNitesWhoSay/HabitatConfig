@@ -46,7 +46,9 @@ public class ModulesTab extends GwtWindow  {
 	private VerticalPanel leftpanel = new VerticalPanel();
 	@SuppressWarnings("unused")
 	private String mod;
-	ClickHandler addHandler;
+	@SuppressWarnings("unused")
+	private ClickHandler addHandler;
+	
 	/**
 	 * Default constructor
 	 */
@@ -78,7 +80,6 @@ public class ModulesTab extends GwtWindow  {
 
 			public void onClick(final ClickEvent e){
 				LinkedList<Module> modules = root.landingGrid.getModuleList();
-				@SuppressWarnings("unused")
 				ListIterator<Module> i = modules.listIterator();
 				/**
 				while ( i.hasNext() ) {
@@ -182,7 +183,7 @@ public class ModulesTab extends GwtWindow  {
 	 * handles logging modules
 	 * @param storetable2 the storetable to make
 	 */
-	private void createTable(FlexTable storetable2) {
+	private void createTable(final FlexTable storetable2) {
 		// TODO Auto-generated method stub
 	
 		final TextBox id = new TextBox();
@@ -332,6 +333,7 @@ public class ModulesTab extends GwtWindow  {
 	 * @param code the given code number
 	 * @return whether the code number matches up with a real module type
 	 */
+	@SuppressWarnings("unused")
 	private boolean validateCode(final int code) {
 		MODULE_TYPE mt = ModuleTypes.getType(code);
 		if ( mt == MODULE_TYPE.Unknown || mt == MODULE_TYPE.Reserved ) {
@@ -347,6 +349,7 @@ public class ModulesTab extends GwtWindow  {
 	 * @param xc the given xc
 	 * @return whether the xc is within the landing grid
 	 */
+	@SuppressWarnings("unused")
 	private boolean validateXc(final int xc) {
 		
 		if ( xc < 0 || xc >= root.landingGrid.getWidth() ) {
@@ -362,6 +365,7 @@ public class ModulesTab extends GwtWindow  {
 	 * @param yc the given yc
 	 * @return whether the yc is within the landing grid
 	 */
+	@SuppressWarnings("unused")
 	private boolean validateYc(final int yc) {
 		
 		if ( yc < 0 || yc >= root.landingGrid.getDepth() ) {
