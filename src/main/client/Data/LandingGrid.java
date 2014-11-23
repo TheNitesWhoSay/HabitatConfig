@@ -21,7 +21,7 @@ public class LandingGrid {
 	 */
 	public LandingGrid() {
 		
-		width = 101;
+		width = 101;//+1ed these values because the grid cannot contain (0,0).
 		depth = 51;
 		
 		terrain = new TerrainSquare[width][depth]; // Ensure dimensions equate to the actual landing zone size

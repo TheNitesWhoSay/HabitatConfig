@@ -71,7 +71,7 @@ public class ModulesTab extends GwtWindow {
 	 * Creates the contents of the modules tab
 	 */
 	protected boolean create() {
-
+		/** Label header for logging modules */
 		HorizontalPanel modLabel = new HorizontalPanel();
 
 		// Label start = new Label("");
@@ -81,7 +81,8 @@ public class ModulesTab extends GwtWindow {
 		final Label status = new Label("Status");
 		final Label orientation = new Label("Orientation");
 		leftpanel.add(save);
-
+		
+		/**Potential save handler for landing grid moduleList. (Maybe) Thinking eventBus for loading modules */
 		save.addClickHandler(new ClickHandler() {
 			@SuppressWarnings("unused")
 			// private Panel rp;
@@ -133,8 +134,8 @@ public class ModulesTab extends GwtWindow {
 		leftpanel.add(logpanel);
 		leftpanel.add(storetable);
 		createLanding();
-		comppanel.add(leftpanel, DockPanel.WEST);
-		comppanel.add(p, DockPanel.EAST);
+		comppanel.add(leftpanel, DockPanel.WEST); //Adding logging components on the west side
+		comppanel.add(p, DockPanel.EAST);  //Add grid components on the east side
 		add(comppanel);
 		return true;
 	}
@@ -150,7 +151,8 @@ public class ModulesTab extends GwtWindow {
 			canvas.setHeight("" + 50);
 			canvas.setCoordinateSpaceHeight(50);
 			canvas.setCoordinateSpaceWidth(100);
-
+			
+			/** Sets the unbuildable area design */
 			for (int i = 0; i < 50; i++) {
 				for (int j = 0; j < 100; j++) {
 					if(i>=40 && i<=50 && j>=40 && j<=50){
@@ -159,17 +161,14 @@ public class ModulesTab extends GwtWindow {
 				}
 			}
 			g.setCellPadding(5);
-			//this.g.setBorderWidth(5);
 			
 			this.p = new ScrollPanel();
 			this.p.setSize("900px", "600px");
 			this.p.add(this.g);
 			g.addStyleName("landingStyle");
 			
-			// add(this.p);
 		}
 		
-		// TO DO: Add handler for loading modules onto the map
 	}
 
 	/**
@@ -179,8 +178,7 @@ public class ModulesTab extends GwtWindow {
 	 *            the storetable to make
 	 */
 	private void createTable(FlexTable storetable2) {
-		// TODO Auto-generated method stub
-
+		//Initialize module logging entry components.
 		final TextBox id = new TextBox();
 		final TextBox xcord = new TextBox();
 		final TextBox ycord = new TextBox();
@@ -208,10 +206,8 @@ public class ModulesTab extends GwtWindow {
 
 		logpanel.add(orienbox);
 		logpanel.add(addb);
-		// add(logpanel);
-		// add(storetable);
-
-		// TO DO: Add handler for add button and supporting methods
+		
+		/** Handler for adding events to moduleList. */
 		addb.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent e){
 				MODULE_STATUS ms = MODULE_STATUS.Unknown;
@@ -240,9 +236,9 @@ public class ModulesTab extends GwtWindow {
 				code = 0; // Init to invalid values
 				xc = -1;
 				yc = -1;
-				try { code = Integer.parseInt(   id.getText()); } catch ( NumberFormatException nfe ) { }
-				try {   xc = Integer.parseInt(xcord.getText()); } catch ( NumberFormatException nfe ) { }
-				try {   yc = Integer.parseInt(ycord.getText()); } catch ( NumberFormatException nfe ) { }
+				try { code = Integer.parseInt(   id.getText()); } catch ( NumberFormatException nfe ) { }//Make sure valid input for text box information 
+				try {   xc = Integer.parseInt(xcord.getText()); } catch ( NumberFormatException nfe ) { }//Make sure valid input for text box information
+				try {   yc = Integer.parseInt(ycord.getText()); } catch ( NumberFormatException nfe ) { }//Make sure valid input for text box information
 				
 				if ( validateCode(code) && validateXc(xc) && validateYc(yc) && validateLocation(xc, yc) )
 				{
@@ -265,7 +261,8 @@ public class ModulesTab extends GwtWindow {
 
 						root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
 						root.landingGrid.getModuleList();
-						//root.landingGrid.moveModule(curr.getXPos(), curr.getYPos(), xc, yc);
+						
+						/** Using -50 and -1 in order to change the natural layout of the grid */
 						g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 						g.setWidget(50-yc, xc-1, getImage(code));
 				 	refreshDisplayedModules();
@@ -280,7 +277,13 @@ public class ModulesTab extends GwtWindow {
 			}
 		});
 	}
-
+	/**
+	 * Validates that the module attempted to be added
+	 * is not within an unbuildable area.
+	 * @param xc2 the unbuildable x-coordinate area the robot reported.
+	 * @param yc2 the unbuildable y-coordinate are the robot reported.
+	 * @return whether or not module was attempting to be built in unbuildable area.
+	 */
 	protected boolean validateLocation(int xc2, int yc2) {
 		if((xc2>=40 && xc2<=40)&&(yc2>=40 && yc2<=50)){
 			Window.alert("Unbuildable Area");
@@ -290,7 +293,10 @@ public class ModulesTab extends GwtWindow {
 		return true;
 		}
 	}
-
+	/**
+	 * Renders modules and their information on the map
+	 * as they are loaded into the moduleList.
+	 */
 	protected void refreshLandingMap() {
 		ima = new Image();
 		ima = getImage(code);
@@ -344,7 +350,7 @@ public class ModulesTab extends GwtWindow {
 		ListIterator<Module> i = modules.listIterator();
 		int moduleCount = 0;
 		while (i.hasNext()) {
-
+								//Iterates through the list of items on the module list and adds additional items
 			final Module curr = i.next();
 			storetable.setText(moduleCount, 0, "" + curr.getCode());
 			storetable.setText(moduleCount, 1, "" + curr.getXPos());
@@ -357,6 +363,8 @@ public class ModulesTab extends GwtWindow {
 			removebutton = new Button("X");
 			storetable.setWidget(moduleCount, 6, removebutton);
 			final int modcount = moduleCount;
+			
+			/** Handler to remove items from the landing grid list, as well as the UI */
 			removebutton.addClickHandler(new ClickHandler() {
 				public void onClick(final ClickEvent event) {
 					int modscount = modcount;
@@ -385,7 +393,7 @@ public class ModulesTab extends GwtWindow {
 	/**
 	 * Confirms whether or not a possible min configuration is available
 	 * 
-	 * @param moduleList
+	 * @param moduleList of logged items on the landing grid
 	 * @return
 	 */
 	private boolean hasMinConfig(final LinkedList<Module> moduleList) {
