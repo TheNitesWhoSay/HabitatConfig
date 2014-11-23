@@ -9,7 +9,9 @@ h1 {
   margin: 40px 0px 70px;
   text-align: center;
 }
-
+.landingStyle{
+	background-image: url("images/LandingArea.jpg");
+}
 .sendButton {
   display: block;
   font-size: 16pt;

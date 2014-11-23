@@ -55,6 +55,7 @@ public class ModulesTab extends GwtWindow {
 	@SuppressWarnings("unused")
 	private String mod;
 	ClickHandler addHandler;
+	private Image ima;
 
 	/**
 	 * Default constructor
@@ -152,10 +153,11 @@ public class ModulesTab extends GwtWindow {
 
 			for (int i = 0; i < 50; i++) {
 				for (int j = 0; j < 100; j++) {
-					this.g.setCellPadding(5);
+					//this.g.setCellPadding(5);
 				}
 			}
-			this.g.setBorderWidth(5);
+			g.setCellPadding(5);
+			//this.g.setBorderWidth(5);
 			LinkedList<Module> modules = root.landingGrid.getModuleList();
 			ListIterator<Module> i = modules.listIterator();
 
@@ -166,9 +168,9 @@ public class ModulesTab extends GwtWindow {
 
 			}
 			this.p = new ScrollPanel();
-			this.p.setSize("850px", "500px");
+			this.p.setSize("850px", "600px");
 			this.p.add(this.g);
-			g.setStylePrimaryName("landingStyle");
+			g.addStyleName("landingStyle");
 			
 			// add(this.p);
 		}
@@ -270,8 +272,9 @@ public class ModulesTab extends GwtWindow {
 						root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
 						root.landingGrid.getModuleList();
 						root.landingGrid.moveModule(curr.getXPos(), curr.getYPos(), xc, yc);
-						
-						refreshDisplayedModules();
+						g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
+						g.setWidget(50-yc, xc-1, getImage(code));
+				 	refreshDisplayedModules();
 					}
 					moduleCount++;
 					}
@@ -285,38 +288,47 @@ public class ModulesTab extends GwtWindow {
 	}
 
 	protected void refreshLandingMap() {
-		Image im = new Image();
-		
+		ima = new Image();
+		ima = getImage(code);
+		if(ima == null){
+			return;
+		}
+		else{
+		ima.setSize("10px", "10px");
+		g.setWidget(50-yc, xc-1, ima);
+		}
+	}
+
+	private Image getImage(int code2) {
+	  Image im = null;
 		if(code > 0 && code < 41){
-	    im = new Image("images/Plain.jpg");
-		}
-		else if(code >=61 && code <= 80){
-			im = new Image("images/Dormitory.jpg");
-		}
-		else if(code >=91 && code <= 100){
-			im = new Image("images/Sanitation.jpg");
-		}
-		else if(code >=61 && code <= 80){
-			im = new Image("images/Dormitory.jpg");
-		}
-		else if(code >=111 && code <= 120){
-			im = new Image("images/Food.jpg");
-		}
-		else if(code >=141 && code <= 144){
-			im = new Image("images/Canteen.jpg");
-		}
-		else if(code >=151 && code <= 154){
-			im = new Image("images/Power.jpg");
-		}
-		else if(code >=161 && code <= 164){
-			im = new Image("images/Control.jpg");
-		}
-		else if(code >=171 && code <= 174){
-			im = new Image("images/Airlock.jpg");
-		}
-		im.setSize("10px", "10px");
-		g.setWidget(50-yc, xc-1, im);
-	
+		    im = new Image("images/Plain.jpg");
+			}
+			else if(code >=61 && code <= 80){
+				im = new Image("images/Dormitory.jpg");
+			}
+			else if(code >=91 && code <= 100){
+				im = new Image("images/Sanitation.jpg");
+			}
+			else if(code >=61 && code <= 80){
+				im = new Image("images/Dormitory.jpg");
+			}
+			else if(code >=111 && code <= 120){
+				im = new Image("images/Food.jpg");
+			}
+			else if(code >=141 && code <= 144){
+				im = new Image("images/Canteen.jpg");
+			}
+			else if(code >=151 && code <= 154){
+				im = new Image("images/Power.jpg");
+			}
+			else if(code >=161 && code <= 164){
+				im = new Image("images/Control.jpg");
+			}
+			else if(code >=171 && code <= 174){
+				im = new Image("images/Airlock.jpg");
+			}
+		return im;
 	}
 
 	/**
@@ -347,7 +359,7 @@ public class ModulesTab extends GwtWindow {
 					storetable.removeRow(modscount);
 					//g.setWidget(curr.getYPos()-50,curr.getXPos()-1, null);
 					root.landingGrid.removeModule(curr.getXPos(),curr.getYPos());
-					g.setWidget(50 - curr.getYPos(), curr.getXPos()-1, null);
+					g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 					root.landingGrid.getModuleList();
 					refreshDisplayedModules();
 
