@@ -244,7 +244,7 @@ public class ModulesTab extends GwtWindow {
 				try {   xc = Integer.parseInt(xcord.getText()); } catch ( NumberFormatException nfe ) { }
 				try {   yc = Integer.parseInt(ycord.getText()); } catch ( NumberFormatException nfe ) { }
 				
-				if ( validateCode(code) && validateXc(xc) && validateYc(yc) )
+				if ( validateCode(code) && validateXc(xc) && validateYc(yc) && validateLocation(xc, yc) )
 				{
 					@SuppressWarnings("unused")
 					Button removebutton = new Button("X");
@@ -279,6 +279,16 @@ public class ModulesTab extends GwtWindow {
 				}
 			}
 		});
+	}
+
+	protected boolean validateLocation(int xc2, int yc2) {
+		if((xc2>=40 && xc2<=40)&&(yc2>=40 && yc2<=50)){
+			Window.alert("Unbuildable Area");
+			return false;
+		}
+		else{
+		return true;
+		}
 	}
 
 	protected void refreshLandingMap() {
@@ -463,10 +473,6 @@ public class ModulesTab extends GwtWindow {
 			Window.alert("Invalid xc: " + xc);
 			return false;
 		} 
-		else if(xc>=40 && xc<=50){
-			Window.alert("Unbuildable Area");
-			return false;
-		}
 			else
 			return true;
 	}
@@ -482,10 +488,6 @@ public class ModulesTab extends GwtWindow {
 
 		if (yc <= 0 || yc >= root.landingGrid.getDepth()) {
 			Window.alert("Invalid yc.");
-			return false;
-		}
-		else if(yc>=40 && yc<=50){
-			Window.alert("Unbuildable Area");
 			return false;
 		}
 		else
