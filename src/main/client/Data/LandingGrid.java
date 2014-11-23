@@ -208,5 +208,44 @@ public class LandingGrid {
          modlist += "}";
          return modlist;
 	}
+
+	public void pullStorage(String modtext) {
+		modtext = modtext.substring(1, modtext.length()-1);
+		while(modtext.length()>0){
+			int endMark = modtext.indexOf('}');
+			modtext = modtext.substring(endMark+1);
+            int endId = modtext.indexOf(':');
+            int endX = modtext.indexOf(':', endId+1);
+            int endY = modtext.length();
+            int code = 0;
+            int xc = -1;
+            int yc = -1;
+            try { code = Integer.parseInt(modtext.substring(0,endId));} catch ( StringIndexOutOfBoundsException sob ) {} catch (NumberFormatException nfe){}
+            try { xc = Integer.parseInt(modtext.substring(endId+1,endX)); } catch ( StringIndexOutOfBoundsException sob ) {} catch (NumberFormatException nfe){}
+            try { yc = Integer.parseInt(modtext.substring(endX+1,endY)); } catch ( StringIndexOutOfBoundsException sob ) {} catch (NumberFormatException nfe) {}
+            // here we alter the given id to match the x,y locations
+            if(validateString(code, xc, yc)){
+            for (int i = 0; i < getModuleList().size() ; i++){
+                    Module m = getModuleList().get(i);
+                    if (m.getCode() == code){
+                            m.setBookeepingXPos(xc);
+                            m.setBookeepingYPos(yc);
+                            break;
+                    }
+            }
+            }
+		}
+		
+	}
+
+	private boolean validateString(int code, int xc, int yc) {
+		if(code != 0 && xc != -1 && yc != -1){
+			return true;
+		}
+		else{
+			return false;
+		}
+		
+	}
 		
 }

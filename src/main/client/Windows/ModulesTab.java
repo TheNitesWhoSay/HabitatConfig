@@ -40,6 +40,9 @@ public class ModulesTab extends GwtWindow {
 	private HabitatConfig root;
 	private HorizontalPanel logpanel = new HorizontalPanel();
 	private Button save = new Button("Save to Local Storage");
+	private Button load = new Button("Load Modules");
+	private Button clear = new Button("Clear Modules");
+	private Module emptyMod = new Module();
 	private FlexTable storetable;
 	private boolean alerted;
 	private Grid g;
@@ -86,42 +89,24 @@ public class ModulesTab extends GwtWindow {
 		final Label status = new Label("Status");
 		final Label orientation = new Label("Orientation");
 		leftpanel.add(save);
-		
+		leftpanel.add(load);
+		leftpanel.add(clear);
 		/**Potential save handler for landing grid moduleList. (Maybe) Thinking eventBus for loading modules */
 		save.addClickHandler(new ClickHandler() {
 			@SuppressWarnings("unused")
 			// private Panel rp;
 			public void onClick(final ClickEvent e) {
 				storeList();
-				/**
-				 * while ( i.hasNext() ) {
-				 * 
-				 * Module curr = i.next(); mod =
-				 * "["+"{code: "+curr.getCode()+", "
-				 * +"Status: "+curr.getStatus()+
-				 * " turns: "+curr.getRotationsTillUpright
-				 * ()+" X: "+curr.getXPos()+" Y:"+curr.getYPos()+"}";
-				 * 
-				 * } Storage moduleStore = Storage.getLocalStorageIfSupported();
-				 * if(moduleStore != null){ moduleStore.setItem("mod1", mod); }
-				 * String mod1 = moduleStore.getItem("mod1"); JSONArray jA =
-				 * 
-				 * (JSONArray)JSONParser.parseLenient(mod1); JSONNumber jN;
-				 * JSONString jS; double d; String s; for (int i1 = 0; i1 <
-				 * jA.size(); i1++) { JSONObject jO = (JSONObject)jA.get(i1); jN
-				 * = (JSONNumber) jO.get("code"); d = jN.doubleValue(); rp =
-				 * null; rp.add(new Label(Double.toString(d))); //TO VIEW jS =
-				 * (JSONString) jO.get("status"); s = jS.stringValue();
-				 * rp.add(new Label(s)); //TO VIEW jN = (JSONNumber)
-				 * jO.get("turns"); d = jN.doubleValue(); rp.add(new
-				 * Label(Double.toString(d))); //TO VIEW jN = (JSONNumber)
-				 * jO.get("X"); d = jN.doubleValue(); rp.add(new
-				 * Label(Double.toString(d))); //TO VIEW jN = (JSONNumber)
-				 * jO.get("Y"); d = jN.doubleValue(); rp.add(new
-				 * Label(Double.toString(d))); //TO VIEW rp.add(new HTML("
-				 * <hr />
-				 * ")); } add(rp); }
-				 */
+			}
+		});
+		load.addClickHandler(new ClickHandler(){
+			public void onClick(final ClickEvent e){
+				loadList();
+			}
+		});
+		clear.addClickHandler(new ClickHandler(){
+			public void onClick(final ClickEvent e){
+				emptyStorage();
 			}
 		});
 		modLabel.add(modID);
@@ -143,10 +128,36 @@ public class ModulesTab extends GwtWindow {
 		return true;
 	}
 
+	private void emptyStorage() {
+		 moduleStore = Storage.getLocalStorageIfSupported();
+         if (moduleStore != null){
+                 moduleStore.removeItem(moduleListKey);
+         }
+	}
+
+	private void loadList() {
+		moduleStore = Storage.getLocalStorageIfSupported();
+        if (moduleStore != null) {
+                String modtext = moduleStore.getItem(moduleListKey);
+                if (modtext != null){
+                        moduleList.pullStorage(modtext);
+                        refreshDisplayedModules();
+                        refreshDisplayedModules();
+        				refreshLandingMap();
+                }
+        }
+		
+	}
+
 	private void storeList() {
 		moduleStore = Storage.getLocalStorageIfSupported();
         if (moduleStore != null) {
-                moduleStore.setItem(moduleListKey, moduleList.generateStorage());
+                if(moduleList.getModuleList().isEmpty()){
+                }
+                else if(moduleList.getModuleList().get(0)!=emptyMod){
+                	moduleStore.setItem(moduleListKey, moduleList.generateStorage());
+                Window.alert("Module(s) Saved Successfully");
+                }
         }
 		
 	}
@@ -297,7 +308,7 @@ public class ModulesTab extends GwtWindow {
 	 * @return whether or not module was attempting to be built in unbuildable area.
 	 */
 	protected boolean validateLocation(int xc2, int yc2) {
-		if((xc2>=40 && xc2<=40)&&(yc2>=40 && yc2<=50)){
+		if((xc2>=40 && xc2<=50)&&(yc2>=40 && yc2<=50)){
 			Window.alert("Unbuildable Area");
 			return false;
 		}
