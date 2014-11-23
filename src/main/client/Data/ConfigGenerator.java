@@ -50,7 +50,7 @@ public class ConfigGenerator {
 	 			top if equal, (and then as close as possible to the average xc), then add one on the opposite end (again as
 	 			close as possible to the average xc) if more depth than width is present, perform the 3rd/4th placement 1st/2nd,
 	 			and vise versa. Damaged airlocks may have to be left off, leave off the last(s) in the order.
-	 	Step 4: Place one medical module diagonally next to the airlocks, prioritize the airlocks were placed in
+	 	Step 4: Place one medical module diagonally next to the airlocks, prioritize the order the airlocks were placed in
 	 			if all airlocks dissallow this placement move a plain module from the first airlock somewhere such that
 	 			rule 4 is still satisfiable
 	 	Step 5: Place one power and one control module as close to the medical module as possible
