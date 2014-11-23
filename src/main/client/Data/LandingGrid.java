@@ -28,12 +28,28 @@ public class LandingGrid {
 		modules = new Module[width][depth]; // Ensure dimensions equate to the actual landing zone size
 		
 		// Fill the landing grid with default values
-		for ( int x=0; x<width; x++ )
+		for ( int y=0; y<depth; y++ )
 		{
-			for ( int y=0; y<depth; y++ )
+			for ( int x=0; x<width; x++ )
 			{
 				modules[x][y] = null;
 				terrain[x][y] = new TerrainSquare();
+			}
+		}
+	}
+	
+	/**
+	 * Copies the terrain of another LandingGrid.
+	 * @param other The other LandingGrid.
+	 */
+	public void copyTerrain(final LandingGrid other) {
+		
+		for ( int y=0; y<depth; y++ )
+		{
+			for ( int x=0; x<width; x++ )
+			{
+				terrain[x][y].setTraversable(other.terrain[x][y].isTraversable());
+				terrain[x][y].setBuildable(other.terrain[x][y].isBuildable());
 			}
 		}
 	}
@@ -54,6 +70,45 @@ public class LandingGrid {
 	public int getDepth() {
 		
 		return depth;
+	}
+	
+	/**
+	 * Returns whether this landing grid can make a minimum configuration
+	 * @return
+	 */
+	public boolean hasMinimumConfiguration() {
+		
+		ModuleCount count = getUsableModuleCount();
+		return count.getNumAirlock() >= 1 &&
+			   count.getNumControl() >= 1 &&
+			   count.getNumPower() >= 1 &&
+			   count.getNumFoodAndWater() >= 1 &&
+			   count.getNumDormitory() >= 1 &&
+			   count.getNumCanteen() >= 1 &&
+			   count.getNumSanitation() >= 1 &&
+			   count.getNumPlain() >= 3;
+	}
+	
+	/**
+	 * Returns the number of each type of usable module within this landing grid
+	 * @return The number of each type of usable module within the landing grid.
+	 */
+	public ModuleCount getUsableModuleCount() {
+		
+		return getModuleCount(MODULE_STATUS.Usable);
+	}
+	
+	/**
+	 * Gets the number of each type of module within this landing grid.
+	 * @param maximumDamageStatus The maximum amount of damage any counted module should have.
+	 * @return The number of each type of module within the landing grid, with less than
+	 * 	or equal too the maximumDamage.
+	 */
+	public ModuleCount getModuleCount(final MODULE_STATUS maximumDamageStatus) {
+		
+		ModuleCount moduleCount = new ModuleCount();
+		moduleCount.getModuleCount(this, maximumDamageStatus);
+		return moduleCount;
 	}
 	
 	/**
