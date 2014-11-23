@@ -12,6 +12,9 @@ h1 {
 .landingStyle{
 	background-image: url("images/LandingArea.jpg");
 }
+.Unbuildable{
+	background-image: url("images/black.jpg");
+}
 .sendButton {
   display: block;
   font-size: 16pt;
