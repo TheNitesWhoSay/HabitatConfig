@@ -153,22 +153,16 @@ public class ModulesTab extends GwtWindow {
 
 			for (int i = 0; i < 50; i++) {
 				for (int j = 0; j < 100; j++) {
-					//this.g.setCellPadding(5);
+					if(i>=40 && i<=50 && j>=40 && j<=50){
+						g.getCellFormatter().addStyleName(49-i, j-1, "Unbuildable");
+					}
 				}
 			}
 			g.setCellPadding(5);
 			//this.g.setBorderWidth(5);
-			LinkedList<Module> modules = root.landingGrid.getModuleList();
-			ListIterator<Module> i = modules.listIterator();
-
-			while (i.hasNext()) {
-
-				Module curr = i.next();
-				this.g.setText(curr.getXPos(), curr.getYPos(), "Module");
-
-			}
+			
 			this.p = new ScrollPanel();
-			this.p.setSize("850px", "600px");
+			this.p.setSize("900px", "600px");
 			this.p.add(this.g);
 			g.addStyleName("landingStyle");
 			
@@ -271,7 +265,7 @@ public class ModulesTab extends GwtWindow {
 
 						root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
 						root.landingGrid.getModuleList();
-						root.landingGrid.moveModule(curr.getXPos(), curr.getYPos(), xc, yc);
+						//root.landingGrid.moveModule(curr.getXPos(), curr.getYPos(), xc, yc);
 						g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 						g.setWidget(50-yc, xc-1, getImage(code));
 				 	refreshDisplayedModules();
@@ -468,7 +462,12 @@ public class ModulesTab extends GwtWindow {
 		if (xc <= 0 || xc >= root.landingGrid.getWidth()) {
 			Window.alert("Invalid xc: " + xc);
 			return false;
-		} else
+		} 
+		else if(xc>=40 && xc<=50){
+			Window.alert("Unbuildable Area");
+			return false;
+		}
+			else
 			return true;
 	}
 
@@ -484,7 +483,12 @@ public class ModulesTab extends GwtWindow {
 		if (yc <= 0 || yc >= root.landingGrid.getDepth()) {
 			Window.alert("Invalid yc.");
 			return false;
-		} else
+		}
+		else if(yc>=40 && yc<=50){
+			Window.alert("Unbuildable Area");
+			return false;
+		}
+		else
 			return true;
 	}
 

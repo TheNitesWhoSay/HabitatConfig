@@ -34,6 +34,9 @@ public class LandingGrid {
 			{
 				modules[x][y] = null;
 				terrain[x][y] = new TerrainSquare();
+				if(x>=40 && x<=50 && y>=40 && y<=50){
+					terrain[x][y].setBuildable(false);
+				}
 			}
 		}
 	}
@@ -160,7 +163,7 @@ public class LandingGrid {
 			 currX >= 0 && currX < width && currY >= 0 && currY < depth )
 		{
 			if ( modules[currX][currY] != null &&
-				 terrain[newX][newY].isTraversable() )
+				 terrain[newX][newY].isTraversable() && terrain[newX][newY].isTraversable() )
 			{
 				modules[newX][newY] = modules[currX][currY];
 				modules[newX][newY].setBookeepingXPos(newX);
