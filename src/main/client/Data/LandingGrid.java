@@ -199,5 +199,14 @@ public class LandingGrid {
 		
 		modules[xPos][yPos] = null;
 	}
+
+	public String generateStorage() {
+		 String modlist = "{";
+         for(int i = 0; i < getModuleList().size(); i++){
+                 modlist += getModuleList().get(i).storageString();
+         }
+         modlist += "}";
+         return modlist;
+	}
 		
 }

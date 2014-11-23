@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import main.client.HabitatConfig;
+import main.client.Data.LandingGrid;
 import main.client.Data.Module;
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
 import main.client.Data.ModuleTypes;
@@ -12,6 +13,7 @@ import main.client.Data.ModuleTypes.MODULE_TYPE;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -56,6 +58,9 @@ public class ModulesTab extends GwtWindow {
 	private String mod;
 	ClickHandler addHandler;
 	private Image ima;
+	private Storage moduleStore;
+	private LandingGrid moduleList;
+	private String moduleListKey = "ModuleList";
 
 	/**
 	 * Default constructor
@@ -73,7 +78,7 @@ public class ModulesTab extends GwtWindow {
 	protected boolean create() {
 		/** Label header for logging modules */
 		HorizontalPanel modLabel = new HorizontalPanel();
-
+		moduleList = root.landingGrid;
 		// Label start = new Label("");
 		Label modID = new Label("ID");
 		final Label xcor = new Label("X-Cor");
@@ -87,9 +92,7 @@ public class ModulesTab extends GwtWindow {
 			@SuppressWarnings("unused")
 			// private Panel rp;
 			public void onClick(final ClickEvent e) {
-				LinkedList<Module> modules = root.landingGrid.getModuleList();
-				@SuppressWarnings("unused")
-				ListIterator<Module> i = modules.listIterator();
+				storeList();
 				/**
 				 * while ( i.hasNext() ) {
 				 * 
@@ -138,6 +141,14 @@ public class ModulesTab extends GwtWindow {
 		comppanel.add(p, DockPanel.EAST);  //Add grid components on the east side
 		add(comppanel);
 		return true;
+	}
+
+	private void storeList() {
+		moduleStore = Storage.getLocalStorageIfSupported();
+        if (moduleStore != null) {
+                moduleStore.setItem(moduleListKey, moduleList.generateStorage());
+        }
+		
 	}
 
 	/**
@@ -256,6 +267,7 @@ public class ModulesTab extends GwtWindow {
 					while ( i.hasNext() ) {
 						
 					Module curr = i.next();
+				
 					if(curr.getCode() == code){
 						storetable.removeRow(moduleCount);
 
