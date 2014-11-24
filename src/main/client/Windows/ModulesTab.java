@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -48,6 +49,11 @@ public class ModulesTab extends GwtWindow {
 	private boolean alerted;
 	private Grid g;
 	private ScrollPanel p;
+	TextBox id = new TextBox();
+	TextBox xcord = new TextBox();
+    TextBox ycord = new TextBox();
+	final ListBox statbox = new ListBox();
+	final ListBox orienbox = new ListBox();
 	int code = 0; 
 	int xc = -1;
 	int yc = -1;
@@ -183,7 +189,6 @@ public class ModulesTab extends GwtWindow {
 				}
 			}
 			g.setCellPadding(5);
-			
 			this.p = new ScrollPanel();
 			this.p.setSize("900px", "600px");
 			this.p.add(this.g);
@@ -201,15 +206,12 @@ public class ModulesTab extends GwtWindow {
 	 */
 	private void createTable(FlexTable storetable2) {
 		//Initialize module logging entry components.
-		final TextBox id = new TextBox();
-		final TextBox xcord = new TextBox();
-		final TextBox ycord = new TextBox();
-		final ListBox statbox = new ListBox();
-		final ListBox orienbox = new ListBox();
+
 
 		statbox.addItem("Usable");
 		statbox.addItem("Usable after repair");
 		statbox.addItem("Beyond repair");
+		statbox.addItem("Unknown");
 		logpanel.add(id);
 		logpanel.add(xcord);
 		logpanel.add(ycord);
@@ -278,7 +280,7 @@ public class ModulesTab extends GwtWindow {
 					while ( i.hasNext() ) {
 						
 					Module curr = i.next();
-				
+					if ( validateCode(code) && validateXc(xc) && validateYc(yc) && validateLocation(xc, yc) ){
 					if(curr.getCode() == code){
 						storetable.removeRow(moduleCount);
 						deleteHandler = storetable.getRowCount();
@@ -297,7 +299,7 @@ public class ModulesTab extends GwtWindow {
 				//refreshLandingMap(root.landingGrid.getModuleList());
 					}
 				}
-			
+			}
 		});
 	}
 	/**
@@ -335,6 +337,26 @@ public class ModulesTab extends GwtWindow {
 		}
 		else{
 		ima.setSize("10px", "10px");
+		ima.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent e){
+				id.setText(""+curr.getCode());
+				xcord.setText(""+curr.getXPos());
+				ycord.setText(""+curr.getYPos());
+				if(curr.getStatus()==MODULE_STATUS.Usable){
+					statbox.setSelectedIndex(0);
+				}
+				else if(curr.getStatus()==MODULE_STATUS.UsableAfterRepair){
+					statbox.setSelectedIndex(1);
+				}
+				else if(curr.getStatus()==MODULE_STATUS.DamagedBeyondRepair){
+					statbox.setSelectedIndex(2);
+				}
+				else{
+					statbox.setSelectedIndex(3);
+				}
+				orienbox.setSelectedIndex(curr.getRotationsTillUpright());
+			}
+		});
 		g.setWidget(50-curr.getYPos(), curr.getXPos()-1, ima);
 		}
 		}
@@ -395,6 +417,11 @@ public class ModulesTab extends GwtWindow {
 			storetable.setText(modulecount, 5,"" + ModuleTypes.getType(curr.getCode()));
 			Button removebutton = new Button("X");
 			storetable.setWidget(modulecount, 6, removebutton);
+			storetable.addClickHandler(new ClickHandler(){
+				public void onClick(ClickEvent e){
+					//getOnMap(curr.getCode(), curr.getXPos(), curr.getYPos(), curr.getStatus(), curr.getRotationsTillUpright());
+				}
+			});
 			final int modcount = modulecount;
 			yc = curr.getYPos();
 			xc = curr.getXPos();
@@ -423,7 +450,10 @@ public class ModulesTab extends GwtWindow {
 				root.mainWindow.selectTab(2);
 			}
 		}
+	}
 	
+	protected void getOnMap(int i, int j, int k, MODULE_STATUS module_STATUS, int l) {
+		//TO DO implement listener to display pop up when row on stocktable clicked
 	}
 	/**
 	 * Confirms whether or not a possible min configuration is available
