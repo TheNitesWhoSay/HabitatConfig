@@ -7,77 +7,172 @@ import org.junit.Test;
 
 public class ModuleTypesTest {
 
+	// Remove pointless magic number checkstyle warnings
+	private static final int FORTY = 40;
+	private static final int FORTY_ONE = 41;
+	private static final int SIXTY = 60;
+	private static final int SIXTY_ONE = 61;
+	private static final int EIGHTY = 80;
+	private static final int EIGHTY_ONE = 81;
+	private static final int NINETY = 90;
+	private static final int NINETY_ONE = 91;
+	private static final int HUNDRED = 100;
+	private static final int HUNDRED_ONE = 101;
+	private static final int HUNDRED_TEN = 110;
+	private static final int HUNDRED_ELEVEN = 111;
+	private static final int HUNDRED_TWENTY = 120;
+	private static final int HUN_TWENTY_ONE = 121;
+	private static final int HUNDRED_THIRTY = 130;
+	private static final int HUN_THIRTY_ONE = 131;
+	private static final int HUN_THIRTY_FOUR = 134;
+	private static final int HUN_THIRTY_FIVE = 135;
+	private static final int HUNDRED_FORTY = 140;
+	private static final int HUN_FORTY_ONE = 141;
+	private static final int HUN_FORTY_FOUR = 144;
+	private static final int HUN_FORTY_FIVE = 145;
+	private static final int HUNDRED_FIFTY = 150;
+	private static final int HUN_FIFTY_ONE = 151;
+	private static final int HUN_FIFTY_FOUR = 154;
+	private static final int HUN_FIFTY_FIVE = 155;
+	private static final int HUNDRED_SIXTY = 160;
+	private static final int HUN_SIXTY_ONE = 161;
+	private static final int HUN_SIXTY_FOUR = 164;
+	private static final int HUN_SIXTY_FIVE = 165;
+	private static final int HUNDRED_SEVENTY = 170;
+	private static final int HUN_SEVENTY_ONE = 171;
+	private static final int HUN_SEVENTY_FOUR = 174;
+	private static final int HUN_SEVENTY_FIVE = 175;
+	private static final int HUNDRED_EIGHTY = 180;
+	private static final int HUN_EIGHTY_ONE = 181;
+	private static final int HUN_EIGHTY_FOUR = 184;
+	private static final int HUN_EIGHTY_FIVE = 185;
+	private static final int HUNDRED_NINETY = 190;
+	
+	private static final int dirty_data_one = -2147483648;
+	private static final int dirty_data_two = 191;
+
 	public ModuleTypesTest() {
 		
 	}
 	
 	@Test
-	public void testModuleTypes() {
+	public void testUnknownModuleType() {
 		
 		assertTrue( ModuleTypes.getType(0) == MODULE_TYPE.Unknown );
 		assertTrue( ModuleTypes.getType(-1) == MODULE_TYPE.Unknown );
-		assertTrue( ModuleTypes.getType(-2147483648) == MODULE_TYPE.Unknown );
-		assertTrue( ModuleTypes.getType(191) == MODULE_TYPE.Unknown );
-		
-		for ( int i=1; i <= 40; i++ )
+		assertTrue( ModuleTypes.getType(dirty_data_one) == MODULE_TYPE.Unknown );
+		assertTrue( ModuleTypes.getType(dirty_data_two) == MODULE_TYPE.Unknown );
+	}
+	
+	@Test
+	public void testPlainModuleType() {
+		// i++ cannot use post increment operator via checkstyle rules
+		for ( int i=1; i <= FORTY; i = i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Plain);
+	}
+	
+	@Test
+	public void testReservedModuleType() {
 		
-		for ( int i=41; i <= 60; i++ )
+		for ( int i=FORTY_ONE; i <= SIXTY; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
 		
-		for ( int i=61; i <= 80; i++ )
+		for ( int i=EIGHTY_ONE; i <= NINETY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUNDRED_ONE; i <= HUNDRED_TEN; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUN_TWENTY_ONE; i <= HUNDRED_THIRTY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUN_THIRTY_FIVE; i <= HUNDRED_FORTY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUN_FORTY_FIVE; i <= HUNDRED_FIFTY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUN_FIFTY_FIVE; i <= HUNDRED_SIXTY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUN_SIXTY_FIVE; i <= HUNDRED_SEVENTY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUN_SEVENTY_FIVE; i <= HUNDRED_EIGHTY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+		for ( int i=HUN_EIGHTY_FIVE; i <= HUNDRED_NINETY; i=i+1 )
+			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+		
+	}
+	
+	@Test
+	public void testDormitoryModuleType() {
+		
+		for ( int i=SIXTY_ONE; i <= EIGHTY; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Dormitory);
 		
-		for ( int i=81; i <= 90; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+	}
+	
+	@Test
+	public void testSanitationModuleType () {
 		
-		for ( int i=91; i <= 100; i++ )
+		for ( int i=NINETY_ONE; i <= HUNDRED; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Sanitation);
 		
-		for ( int i=101; i <= 110; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+	}
+	
+	@Test
+	public void testFoodAndWaterModuleType() {
 		
-		for ( int i=111; i <= 120; i++ )
+		for ( int i=HUNDRED_ELEVEN; i <= HUNDRED_TWENTY; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.FoodAndWater);
 		
-		for ( int i=121; i <= 130; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+	}
+	
+	@Test
+	public void testGymAndRelaxationModuleType() {
 		
-		for ( int i=131; i <= 134; i++ )
+		for ( int i=HUN_THIRTY_ONE; i <= HUN_THIRTY_FOUR; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.GymAndRelaxation);
 		
-		for ( int i=135; i <= 140; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+	}
+	
+	@Test
+	public void testCanteenModuleType() {
 		
-		for ( int i=141; i <= 144; i++ )
+		for ( int i=HUN_FORTY_ONE; i <= HUN_FORTY_FOUR; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Canteen);
 		
-		for ( int i=145; i <= 150; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+	}
+	
+	@Test
+	public void testPowerModuleType() {
 		
-		for ( int i=151; i <= 154; i++ )
+		for ( int i=HUN_FIFTY_ONE; i <= HUN_FIFTY_FOUR; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Power);
 		
-		for ( int i=155; i <= 160; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+	}
+	
+	@Test
+	public void testControlModuleType() {
 		
-		for ( int i=161; i <= 164; i++ )
+		for ( int i=HUN_SIXTY_ONE; i <= HUN_SIXTY_FOUR; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Control);
+	}
 		
-		for ( int i=165; i <= 170; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
-		
-		for ( int i=171; i <= 174; i++ )
+	@Test
+	public void testAirlockModuleType() {
+		for ( int i=HUN_SEVENTY_ONE; i <= HUN_SEVENTY_FOUR; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Airlock);
+	}
 		
-		for ( int i=175; i <= 180; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
+	@Test 
+	public void testMedicalModuleType() {
 		
-		for ( int i=181; i <= 184; i++ )
+		for ( int i=HUN_EIGHTY_ONE; i <= HUN_EIGHTY_FOUR; i=i+1 )
 			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Medical);
 		
-		for ( int i=185; i <= 190; i++ )
-			assertTrue( ModuleTypes.getType(i) == MODULE_TYPE.Reserved);
 	}
 
 }
