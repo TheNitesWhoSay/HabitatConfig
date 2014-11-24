@@ -143,6 +143,7 @@ public class LandingGrid {
 			modules[x][y].setCode(code);
 			modules[x][y].setRotationsTillUpright(rotationsTillUpright);
 			modules[x][y].setDamageStatus(status);
+			getModuleList().add(modules[x][y]);
 			return true;
 		}
 		else
@@ -198,6 +199,7 @@ public class LandingGrid {
 	public void removeModule(final int xPos, final int yPos) {
 		
 		modules[xPos][yPos] = null;
+		getModuleList().remove(modules[xPos][yPos]);
 	}
 
 	public String generateStorage() {
@@ -211,31 +213,31 @@ public class LandingGrid {
 
 	public void pullStorage(String modtext) {
 		modtext = modtext.substring(1, modtext.length()-1);
-		while(modtext.length()>0){
-			int endMark = modtext.indexOf('}');
-			modtext = modtext.substring(endMark+1);
-            int endId = modtext.indexOf(':');
-            int endX = modtext.indexOf(':', endId+1);
-            int endY = modtext.length();
-            int code = 0;
-            int xc = -1;
-            int yc = -1;
-            try { code = Integer.parseInt(modtext.substring(0,endId));} catch ( StringIndexOutOfBoundsException sob ) {} catch (NumberFormatException nfe){}
-            try { xc = Integer.parseInt(modtext.substring(endId+1,endX)); } catch ( StringIndexOutOfBoundsException sob ) {} catch (NumberFormatException nfe){}
-            try { yc = Integer.parseInt(modtext.substring(endX+1,endY)); } catch ( StringIndexOutOfBoundsException sob ) {} catch (NumberFormatException nfe) {}
-            // here we alter the given id to match the x,y locations
-            if(validateString(code, xc, yc)){
-            for (int i = 0; i < getModuleList().size() ; i++){
-                    Module m = getModuleList().get(i);
-                    if (m.getCode() == code){
-                            m.setBookeepingXPos(xc);
-                            m.setBookeepingYPos(yc);
-                            break;
-                    }
-            }
-            }
-		}
-		
+        while(modtext.length() > 0){
+                int endBracket = modtext.indexOf('}');
+                String oneMod = modtext.substring(1,endBracket);
+                modtext = modtext.substring(endBracket+1);
+                int endid = oneMod.indexOf(':');
+                int endx = oneMod.indexOf(':', endid+1);
+                int endy = oneMod.indexOf(':', endx+1);
+                int endcond = oneMod.indexOf(':',endy+1);
+                int code = Integer.parseInt(oneMod.substring(0,endid));
+                int xc = Integer.parseInt(oneMod.substring(endid+1,endx));
+                int yc = Integer.parseInt(oneMod.substring(endx+1,endy));
+                String cond = oneMod.substring(endy+1, endcond);
+                String orient = oneMod.substring(endcond+1,oneMod.length());
+//              System.out.println(id+":"+x+":"+y+":"+cond+":"+orient);
+                if(orient.equals("0")){
+                this.setModuleInfo(xc, yc, code, 0, MODULE_STATUS.valueOf(cond));
+                }
+                else if(orient.equals("1")){
+                	this.setModuleInfo(xc, yc, code, 1, MODULE_STATUS.valueOf(cond));
+                }
+                else if(orient.equals("2")){
+                	this.setModuleInfo(xc, yc, code, 2, MODULE_STATUS.valueOf(cond));
+                }
+        }
+                
 	}
 
 	private boolean validateString(int code, int xc, int yc) {

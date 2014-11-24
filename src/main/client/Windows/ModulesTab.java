@@ -38,6 +38,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ModulesTab extends GwtWindow {
 	private DockPanel comppanel = new DockPanel();
 	private HabitatConfig root;
+	private int deleteHandler = 0;
 	private HorizontalPanel logpanel = new HorizontalPanel();
 	private Button save = new Button("Save to Local Storage");
 	private Button load = new Button("Load Modules");
@@ -140,10 +141,9 @@ public class ModulesTab extends GwtWindow {
         if (moduleStore != null) {
                 String modtext = moduleStore.getItem(moduleListKey);
                 if (modtext != null){
-                        moduleList.pullStorage(modtext);
-                        refreshDisplayedModules();
-                        refreshDisplayedModules();
-        				refreshLandingMap();
+                        root.landingGrid.pullStorage(modtext);
+                        refreshDisplayedModules(root.landingGrid.getModuleList());
+        				refreshLandingMap(root.landingGrid.getModuleList());
                 }
         }
 		
@@ -154,8 +154,8 @@ public class ModulesTab extends GwtWindow {
         if (moduleStore != null) {
                 if(moduleList.getModuleList().isEmpty()){
                 }
-                else if(moduleList.getModuleList().get(0)!=emptyMod){
-                	moduleStore.setItem(moduleListKey, moduleList.generateStorage());
+                else if(root.landingGrid.getModuleList().get(0)!=emptyMod){
+                	moduleStore.setItem(moduleListKey, root.landingGrid.generateStorage());
                 Window.alert("Module(s) Saved Successfully");
                 }
         }
@@ -281,23 +281,23 @@ public class ModulesTab extends GwtWindow {
 				
 					if(curr.getCode() == code){
 						storetable.removeRow(moduleCount);
-
+						deleteHandler = storetable.getRowCount();
 						root.landingGrid.removeModule(curr.getXPos(), curr.getYPos());
-						root.landingGrid.getModuleList();
 						
 						/** Using -50 and -1 in order to change the natural layout of the grid */
 						g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
-						g.setWidget(50-yc, xc-1, getImage(code));
-				 	refreshDisplayedModules();
+				 	//refreshDisplayedModules(root.landingGrid.getModuleList());
 					}
 					moduleCount++;
 					}
-					if(root.landingGrid.setModuleInfo(xcc, ycc, codec, rotations, ms)){
-				refreshDisplayedModules();
-				refreshLandingMap();
+				}
+					if(root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms)){
+						deleteHandler = storetable.getRowCount();
+				refreshDisplayedModules(root.landingGrid.getModuleList());
+				//refreshLandingMap(root.landingGrid.getModuleList());
 					}
 				}
-			}
+			
 		});
 	}
 	/**
@@ -319,89 +319,101 @@ public class ModulesTab extends GwtWindow {
 	/**
 	 * Renders modules and their information on the map
 	 * as they are loaded into the moduleList.
+	 * @param ycc 
+	 * @param xcc 
 	 */
-	protected void refreshLandingMap() {
+	protected void refreshLandingMap(LinkedList<Module> m) {
+		ListIterator<Module> i = m.listIterator();
+		int moduleCount = 0;
+		while (i.hasNext()) {
+		final Module curr = i.next();
+		
 		ima = new Image();
-		ima = getImage(code);
+		ima = getImage(curr.getCode());
 		if(ima == null){
 			return;
 		}
 		else{
 		ima.setSize("10px", "10px");
-		g.setWidget(50-yc, xc-1, ima);
+		g.setWidget(50-curr.getYPos(), curr.getXPos()-1, ima);
+		}
 		}
 	}
 
 	private Image getImage(int code2) {
 	  Image im = null;
-		if(code > 0 && code < 41){
+		if(code2 > 0 && code2 < 41){
 		    im = new Image("images/Plain.jpg");
 			}
-			else if(code >=61 && code <= 80){
+			else if(code2 >=61 && code2 <= 80){
 				im = new Image("images/Dormitory.jpg");
 			}
-			else if(code >=91 && code <= 100){
+			else if(code2 >=91 && code2 <= 100){
 				im = new Image("images/Sanitation.jpg");
 			}
-			else if(code >=61 && code <= 80){
+			else if(code2 >=61 && code2 <= 80){
 				im = new Image("images/Dormitory.jpg");
 			}
-			else if(code >=111 && code <= 120){
+			else if(code2 >=111 && code2 <= 120){
 				im = new Image("images/Food.jpg");
 			}
-			else if(code >=141 && code <= 144){
+			else if(code2 >=141 && code2 <= 144){
 				im = new Image("images/Canteen.jpg");
 			}
-			else if(code >=151 && code <= 154){
+			else if(code2 >=151 && code2 <= 154){
 				im = new Image("images/Power.jpg");
 			}
-			else if(code >=161 && code <= 164){
+			else if(code2 >=161 && code2 <= 164){
 				im = new Image("images/Control.jpg");
 			}
 			else if(code >=171 && code <= 174){
 				im = new Image("images/Airlock.jpg");
 			}
+		if(im != null){
+		im.setSize("5", "5");
+		}
 		return im;
 	}
 
 	/**
 	 * Refreshes the display(s) of stored modules
 	 */
-	public void refreshDisplayedModules() {
-		Button removebutton = new Button("X");
-		LinkedList<Module> modules = root.landingGrid.getModuleList();
+	public void refreshDisplayedModules(final LinkedList<Module> modules) {
+		if(modules.isEmpty()){
+			return;
+		}
 		ListIterator<Module> i = modules.listIterator();
-		int moduleCount = 0;
+		int modulecount = 0;
 		while (i.hasNext()) {
 								//Iterates through the list of items on the module list and adds additional items
 			final Module curr = i.next();
-			storetable.setText(moduleCount, 0, "" + curr.getCode());
-			storetable.setText(moduleCount, 1, "" + curr.getXPos());
-			storetable.setText(moduleCount, 2, "" + curr.getYPos());
-			storetable.setText(moduleCount, 3, "" + curr.getStatus());
-			storetable.setText(moduleCount, 4,
-					"" + curr.getRotationsTillUpright());
-			storetable.setText(moduleCount, 5,
-					"" + ModuleTypes.getType(curr.getCode()));
-			removebutton = new Button("X");
-			storetable.setWidget(moduleCount, 6, removebutton);
-			final int modcount = moduleCount;
-			
+			storetable.setText(modulecount, 0, "" + curr.getCode());
+			storetable.setText(modulecount, 1, "" + curr.getXPos());
+			storetable.setText(modulecount, 2, "" + curr.getYPos());
+			storetable.setText(modulecount, 3, "" + curr.getStatus());
+			storetable.setText(modulecount, 4,"" + curr.getRotationsTillUpright());
+			storetable.setText(modulecount, 5,"" + ModuleTypes.getType(curr.getCode()));
+			Button removebutton = new Button("X");
+			storetable.setWidget(modulecount, 6, removebutton);
+			final int modcount = modulecount;
+			yc = curr.getYPos();
+			xc = curr.getXPos();
+			code = curr.getCode();
+			//refreshDisplayedModules(root.landingGrid.getModuleList());
+			refreshLandingMap(root.landingGrid.getModuleList());
 			/** Handler to remove items from the landing grid list, as well as the UI */
 			removebutton.addClickHandler(new ClickHandler() {
-				public void onClick(final ClickEvent event) {
+				public void onClick(ClickEvent e){
 					int modscount = modcount;
-					storetable.removeRow(modscount);
-					//g.setWidget(curr.getYPos()-50,curr.getXPos()-1, null);
+						storetable.removeRow(modscount);
 					root.landingGrid.removeModule(curr.getXPos(),curr.getYPos());
 					g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
-					root.landingGrid.getModuleList();
-					refreshDisplayedModules();
-
+					refreshLandingMap(root.landingGrid.getModuleList());
+					refreshDisplayedModules(root.landingGrid.getModuleList());
 					return;
 				}
 			});
-			moduleCount++;
+			modulecount++;
 		}
 
 		if (hasMinConfig(root.landingGrid.getModuleList())) {
@@ -411,8 +423,8 @@ public class ModulesTab extends GwtWindow {
 				root.mainWindow.selectTab(2);
 			}
 		}
+	
 	}
-
 	/**
 	 * Confirms whether or not a possible min configuration is available
 	 * 
