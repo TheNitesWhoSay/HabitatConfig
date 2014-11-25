@@ -68,6 +68,8 @@ public class ModulesTab extends GwtWindow {
 	private String mod;
 	ClickHandler addHandler;
 	private Image ima;
+	private int gridTop;
+	private int gridLeft;
 	private Storage moduleStore;
 	private LandingGrid moduleList;
 	private String moduleListKey = "ModuleList";
@@ -193,7 +195,8 @@ public class ModulesTab extends GwtWindow {
 			this.p.setSize("900px", "600px");
 			this.p.add(this.g);
 			g.addStyleName("landingStyle");
-			
+			gridLeft = p.getAbsoluteLeft();//Gets top left corner of grid
+			gridTop = p.getAbsoluteTop();//"                             "(0,0)
 		}
 		
 	}
@@ -419,7 +422,7 @@ public class ModulesTab extends GwtWindow {
 			storetable.setWidget(modulecount, 6, removebutton);
 			storetable.addClickHandler(new ClickHandler(){
 				public void onClick(ClickEvent e){
-					//getOnMap(curr.getCode(), curr.getXPos(), curr.getYPos(), curr.getStatus(), curr.getRotationsTillUpright());
+					getOnMap(curr.getCode(), curr.getXPos(), curr.getYPos(), curr.getStatus(), curr.getRotationsTillUpright());
 				}
 			});
 			final int modcount = modulecount;
@@ -453,7 +456,8 @@ public class ModulesTab extends GwtWindow {
 	}
 	
 	protected void getOnMap(int i, int j, int k, MODULE_STATUS module_STATUS, int l) {
-		//TO DO implement listener to display pop up when row on stocktable clicked
+		System.out.println(""+p.getOffsetHeight()+""+p.getOffsetWidth());
+		
 	}
 	/**
 	 * Confirms whether or not a possible min configuration is available
