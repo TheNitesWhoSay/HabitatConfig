@@ -58,6 +58,25 @@ public class LandingGrid {
 	}
 	
 	/**
+	 * Copies all damaged of another LandingGrid.
+	 * @param other The other LandingGrid.
+	 */
+	public void copyDamagedModules(final LandingGrid other) {
+		
+		for ( int y=0; y<depth; y++ )
+		{
+			for ( int x=0; x<width; x++ )
+			{
+				if ( other.modules[x][y].getStatus() == MODULE_STATUS.DamagedBeyondRepair ||
+					 other.modules[x][y].getStatus() == MODULE_STATUS.UsableAfterRepair )
+				{
+					modules[x][y] = other.modules[x][y];
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Gets the current landing grid width
 	 * @return the current landing grid width
 	 */

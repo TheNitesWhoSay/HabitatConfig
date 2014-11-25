@@ -1,5 +1,12 @@
 package main.client.Data;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+import main.client.Data.ModuleStatuses.MODULE_STATUS;
+import main.client.Data.ModuleTypes.MODULE_TYPE;
+
 /**
  * A stored habitat configuration
  * 
@@ -54,6 +61,9 @@ public class Configuration extends LandingGrid {
 	@SuppressWarnings("unused")
 	private int layoutY;
 	
+	private int clusterAvgX;
+	private int clusterAvgY;
+	
 	/**
 	 * Constructs a configuration
 	 */
@@ -62,24 +72,51 @@ public class Configuration extends LandingGrid {
 		layoutIndex = 0;
 		layoutX = -1;
 		layoutY = -1;
+		clusterAvgX = 0;
+		clusterAvgY = 0;
 	}
 	
 	/**
-	 * Generates a minimum configuration from the given landing grid
-	 * @param landingGrid the landing grid containing information about modules & locations
-	 * @return whether the landing grid generation was successful
+	 * Finds a set of minimum modules with the smallest distance
+	 * (that can be generated in short time) between them.
+	 * @param landingGrid
+	 * @return
 	 */
-	public boolean generateMinConfig(final LandingGrid landingGrid) {
+	public boolean findMinimumClusterAverage(LandingGrid landingGrid) {
 		
-		if ( landingGrid == null || !landingGrid.hasMinimumConfiguration() )
-			return false;
-		
-		this.copyTerrain(landingGrid);
-		
-		@SuppressWarnings("unused")
-		ModuleCount count = landingGrid.getUsableModuleCount();
-		
+		clusterAvgX = landingGrid.getWidth()/2;
+		clusterAvgY = landingGrid.getDepth()/2;
 		return true;
+	}
+	
+	/**
+	 * Sets the type of minimum configuration this is supposed to become.
+	 * @param layoutTypeIndex The type of minimum configuration this is supposed to become.
+	 * @return Whether the layoutTypeIndex was one of the possible layouts.
+	 */
+	public boolean setLayoutType(int layoutTypeIndex) {
+		
+		if ( layoutTypeIndex >= 0 && layoutTypeIndex <= 6 ) {
+			layoutIndex = layoutTypeIndex;
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public boolean selectBuildZone() {
+		
+		return false;
+	}
+	
+	public int getMinimumClusterXc() {
+		
+		return clusterAvgX;
+	}
+	
+	public int getMinimumClusterYc() {
+		
+		return clusterAvgY;
 	}
 
 }

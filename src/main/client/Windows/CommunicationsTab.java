@@ -1,6 +1,7 @@
 package main.client.Windows;
 
 import main.client.HabitatConfig;
+import main.client.Windows.GwtWindow;
 
 import com.google.gwt.user.client.ui.HTML;
 
