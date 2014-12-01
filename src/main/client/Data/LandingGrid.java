@@ -1,9 +1,11 @@
 package main.client.Data;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
+import main.client.Windows.ModulesTab;
 
 /**
  * Holds information about terrain and modules within the landing zone
@@ -40,7 +42,6 @@ public class LandingGrid {
 			}
 		}
 	}
-	
 	/**
 	 * Copies the terrain of another LandingGrid.
 	 * @param other The other LandingGrid.
@@ -154,6 +155,7 @@ public class LandingGrid {
 				if(curr.getCode()==code){
 					
 					removeModule(curr.getXPos(), curr.getYPos());
+					ModulesTab.g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 				}
 			}
 			modules[x][y] = new Module();
@@ -162,7 +164,6 @@ public class LandingGrid {
 			modules[x][y].setCode(code);
 			modules[x][y].setRotationsTillUpright(rotationsTillUpright);
 			modules[x][y].setDamageStatus(status);
-			getModuleList().add(modules[x][y]);
 			return true;
 		}
 		else
@@ -183,11 +184,9 @@ public class LandingGrid {
 			 currX >= 0 && currX < width && currY >= 0 && currY < depth )
 		{
 			if ( modules[currX][currY] != null &&
-				 terrain[newX][newY].isTraversable() && terrain[newX][newY].isTraversable() )
+				 terrain[newX][newY].isTraversable() && terrain[newX][newY].isBuildable() )
 			{
 				modules[newX][newY] = modules[currX][currY];
-				modules[newX][newY].setBookeepingXPos(newX);
-				modules[newX][newY].setBookeepingYPos(newY);
 				modules[currX][currY] = null;
 				return true;
 			}
@@ -195,7 +194,14 @@ public class LandingGrid {
 		
 		return false;
 	}
-	
+	public boolean checkHas(int x, int y){
+		if(modules[x][y]==null){
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
 	/**
 	 * Gets a list of all modules currently logged in the landing grid
 	 * @return a LinkedList of modules in the landing grid
@@ -216,9 +222,7 @@ public class LandingGrid {
 	}
 
 	public void removeModule(final int xPos, final int yPos) {
-		
 		modules[xPos][yPos] = null;
-		getModuleList().remove(modules[xPos][yPos]);
 	}
 
 	public String generateStorage() {
@@ -247,13 +251,13 @@ public class LandingGrid {
                 String orient = oneMod.substring(endcond+1,oneMod.length());
 //              System.out.println(id+":"+x+":"+y+":"+cond+":"+orient);
                 if(orient.equals("0")){
-                this.setModuleInfo(xc, yc, code, 0, MODULE_STATUS.valueOf(cond));
+                setModuleInfo(xc, yc, code, 0, MODULE_STATUS.valueOf(cond));
                 }
                 else if(orient.equals("1")){
-                	this.setModuleInfo(xc, yc, code, 1, MODULE_STATUS.valueOf(cond));
+                	setModuleInfo(xc, yc, code, 1, MODULE_STATUS.valueOf(cond));
                 }
                 else if(orient.equals("2")){
-                	this.setModuleInfo(xc, yc, code, 2, MODULE_STATUS.valueOf(cond));
+                	setModuleInfo(xc, yc, code, 2, MODULE_STATUS.valueOf(cond));
                 }
         }
                 
@@ -268,5 +272,5 @@ public class LandingGrid {
 		}
 		
 	}
-		
+
 }

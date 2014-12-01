@@ -30,7 +30,8 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
+import com.allen_sauer.gwt.voices.client.Sound;
+import com.allen_sauer.gwt.voices.client.SoundController;
 /**
  * 
  * @author Marsellie
@@ -47,7 +48,7 @@ public class ModulesTab extends GwtWindow {
 	private Module emptyMod = new Module();
 	private FlexTable storetable;
 	private boolean alerted;
-	private Grid g;
+	public static Grid g = new Grid(50, 100);
 	private ScrollPanel p;
 	TextBox id = new TextBox();
 	TextBox xcord = new TextBox();
@@ -73,7 +74,9 @@ public class ModulesTab extends GwtWindow {
 	private Storage moduleStore;
 	private LandingGrid moduleList;
 	private String moduleListKey = "ModuleList";
-
+	SoundController soundController = new SoundController();
+   // Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_MPEG,
+     //   "http(s)/url/to/your/sound/file.mp3");
 	/**
 	 * Default constructor
 	 */
@@ -150,8 +153,8 @@ public class ModulesTab extends GwtWindow {
                 String modtext = moduleStore.getItem(moduleListKey);
                 if (modtext != null){
                         root.landingGrid.pullStorage(modtext);
+                        //refreshLandingMap(root.landingGrid.getModuleList());
                         refreshDisplayedModules(root.landingGrid.getModuleList());
-        				refreshLandingMap(root.landingGrid.getModuleList());
                 }
         }
 		
@@ -174,7 +177,6 @@ public class ModulesTab extends GwtWindow {
 	 * Creates the landing zone for logging modules(Non-Configuration grid)
 	 */
 	private void createLanding() {
-		this.g = new Grid(50, 100);
 		canvas = Canvas.createIfSupported();
 		if (canvas != null) {
 			canvas.setWidth("" + 100);
@@ -190,7 +192,9 @@ public class ModulesTab extends GwtWindow {
 					}
 				}
 			}
-			g.setCellPadding(5);
+			g.setCellPadding(2);
+			g.setCellSpacing(2);
+			//g.setSize("900px", "200px");
 			this.p = new ScrollPanel();
 			this.p.setSize("900px", "600px");
 			this.p.add(this.g);
@@ -291,6 +295,8 @@ public class ModulesTab extends GwtWindow {
 						
 						/** Using -50 and -1 in order to change the natural layout of the grid */
 						g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
+						moduleCount--;
+						refreshLandingMap(root.landingGrid.getModuleList());
 				 	//refreshDisplayedModules(root.landingGrid.getModuleList());
 					}
 					moduleCount++;
@@ -298,7 +304,7 @@ public class ModulesTab extends GwtWindow {
 				}
 					if(root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms)){
 						deleteHandler = storetable.getRowCount();
-				refreshDisplayedModules(root.landingGrid.getModuleList());
+						refreshDisplayedModules(root.landingGrid.getModuleList());
 				//refreshLandingMap(root.landingGrid.getModuleList());
 					}
 				}
@@ -332,7 +338,6 @@ public class ModulesTab extends GwtWindow {
 		int moduleCount = 0;
 		while (i.hasNext()) {
 		final Module curr = i.next();
-		
 		ima = new Image();
 		ima = getImage(curr.getCode());
 		if(ima == null){
@@ -410,14 +415,14 @@ public class ModulesTab extends GwtWindow {
 		ListIterator<Module> i = modules.listIterator();
 		int modulecount = 0;
 		while (i.hasNext()) {
-								//Iterates through the list of items on the module list and adds additional items
+
 			final Module curr = i.next();
 			storetable.setText(modulecount, 0, "" + curr.getCode());
 			storetable.setText(modulecount, 1, "" + curr.getXPos());
 			storetable.setText(modulecount, 2, "" + curr.getYPos());
 			storetable.setText(modulecount, 3, "" + curr.getStatus());
-			storetable.setText(modulecount, 4,"" + curr.getRotationsTillUpright());
-			storetable.setText(modulecount, 5,"" + ModuleTypes.getType(curr.getCode()));
+			storetable.setText(modulecount, 4, "" + curr.getRotationsTillUpright());
+			storetable.setText(modulecount, 5, "" + ModuleTypes.getType(curr.getCode()));
 			Button removebutton = new Button("X");
 			storetable.setWidget(modulecount, 6, removebutton);
 			storetable.addClickHandler(new ClickHandler(){
