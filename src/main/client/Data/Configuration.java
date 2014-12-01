@@ -84,9 +84,14 @@ public class Configuration extends LandingGrid {
 	 */
 	public boolean findMinimumClusterAverage(LandingGrid landingGrid) {
 		
-		clusterAvgX = landingGrid.getWidth()/2;
-		clusterAvgY = landingGrid.getDepth()/2;
-		return true;
+		if ( landingGrid == null )
+			return false;
+		else
+		{
+			clusterAvgX = landingGrid.getWidth()/2;
+			clusterAvgY = landingGrid.getDepth()/2;
+			return true;
+		}
 	}
 	
 	/**
