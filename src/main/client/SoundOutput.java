@@ -18,12 +18,18 @@ public class SoundOutput {
 	 */
 	public SoundOutput() {
 		loginSuccess = Audio.createIfSupported();
-		loginSuccess.addSource("http://www.d.umn.edu/~stron125/CS4531/audio/button-1.mp3",
+		loginSuccess.addSource("audio/Computer_Magic.mp3",
 				AudioElement.TYPE_MP3);
 		goodbyeMessage = null;
-		moduleLoggedMessage = null;
-		mapMessage = null;
-		firstHabitatMessage = null;
+		moduleLoggedMessage = Audio.createIfSupported();
+		moduleLoggedMessage.addSource("audio/module_details_saved.mp3", 
+				AudioElement.TYPE_MP3);
+		mapMessage = Audio.createIfSupported();
+		mapMessage.addSource("audio/modules_and_landing_pos.mp3", 
+				AudioElement.TYPE_MP3);
+		firstHabitatMessage = Audio.createIfSupported();
+		firstHabitatMessage.addSource("audio/first_habitat_config.mp3", 
+				AudioElement.TYPE_MP3);
 	}
 	
 	/**
@@ -37,7 +43,8 @@ public class SoundOutput {
 	
 	/**
 	 * Plays the selected audio for a successful logoff of an Astronaut.
-	 * @return The logoff success audio.
+	 * @return The logoff success audio.  Currently, silence.
+	 * @deprecated Do not use
 	 */
 	public void playLogoffSuccess () {
 		if (goodbyeMessage != null)

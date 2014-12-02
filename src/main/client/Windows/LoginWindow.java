@@ -2,6 +2,7 @@ package main.client.Windows;
 
 import main.client.ConfigOptions;
 import main.client.HabitatConfig;
+import main.client.SoundOutput;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -57,10 +58,12 @@ public class LoginWindow extends GwtWindow {
 			public void onClick(final ClickEvent event) {
 				
 				ConfigOptions config = root.configOptions;
+				SoundOutput out = new SoundOutput();
 				if ( config.validateLogin(usernameTextBox.getText(), passwordTextBox.getText()) )
 				{
 					hide();
 					root.mainWindow.show(RootPanel.get());
+					out.playLoginSuccess();
 				}
 				else
 				{
