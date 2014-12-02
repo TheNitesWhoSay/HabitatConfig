@@ -59,10 +59,10 @@ public class ConfigGenerator {
 	 			
 	 			Current wrap selections (in order of currently perceived quality/convenience)
 	 			
-	 			> Airlock, Control, Sanitation, Dormitory, Storage, Canteen, Power <
-	 			> Airlock, _____, Power, Sanitation, Dormitory, Storage, Canteen, Control <
-	 			> Airlock, Power, Sanitation, Dormitory, Storage, Canteen, Control <
-				> Airlock, Control, Sanitation, Dormitory, Storage, Canteen, Power, _____ <
+	 			Corner wrap 0   > Airlock, Control, Sanitation, Dormitory, Storage, Canteen, Power        <
+	 			Straight wrap 0 > Airlock, _____, Power, Sanitation, Dormitory, Storage, Canteen, Control <
+	 			Corner wrap 1   > Airlock, Power, Sanitation, Dormitory, Storage, Canteen, Control        <
+				Straight wrap 1 > Airlock, Control, Sanitation, Dormitory, Storage, Canteen, Power, _____ <
 	 		
 	Step 5: Until only two configurations remain... toss out the configuration of
 			lowest quality, if two configurations are of equal quality toss out the
@@ -101,77 +101,24 @@ public class ConfigGenerator {
 		int numStraightWrapsUsed = 0;
 		for ( int i=0; i<minConfigs.size(); i++ ) {
 		
-			// Generate minimum configuration...
 			Configuration config = minConfigs.get(i);
+			boolean goodConfig = false;
+			int numTypeWrapsUsed = config.isCornerLayout() ? numCornerWrapsUsed:numStraightWrapsUsed;
 			
-			if ( config.placePlains(count) ) {
-				
-				int layoutIndex = config.getConfigurationLayoutIndex();
-				if ( layoutIndex > 0 && layoutIndex <= 4 ) {
+			if ( config.isValidMinimumLayout() &&
+				 config.placePlains(count) )
+			{
+				if ( placeWrap(numTypeWrapsUsed, config) ) {
 					
-					if ( numCornerWrapsUsed == 0 ) {
-						
-						if ( config.placeWrap(MODULE_TYPE.Airlock, MODULE_TYPE.Control, MODULE_TYPE.Sanitation,
-							MODULE_TYPE.Dormitory, MODULE_TYPE.FoodAndWater, MODULE_TYPE.Canteen, MODULE_TYPE.Power) )
-						{
-							numCornerWrapsUsed ++;
-						}
-						else
-							minConfigs.remove(i);
-					}
-					else if ( numCornerWrapsUsed == 1 ) {
-						
-						if ( config.placeWrap(MODULE_TYPE.Airlock, MODULE_TYPE.Power, MODULE_TYPE.Sanitation,
-							MODULE_TYPE.Dormitory, MODULE_TYPE.FoodAndWater, MODULE_TYPE.Canteen, MODULE_TYPE.Control) )
-						{
-							numCornerWrapsUsed ++;
-						}
-						else
-							minConfigs.remove(i);
-					}
+					goodConfig = true;
+					if ( config.isCornerLayout() )
+						numCornerWrapsUsed ++;
 					else
-						minConfigs.remove(i); // Already have 2 corners
-				}
-				else if ( layoutIndex <=6 ) {
-					
-					LinkedList<MODULE_TYPE> moduleTypes = new LinkedList<MODULE_TYPE>();
-					if ( numStraightWrapsUsed == 0 ) {
-						
-						moduleTypes.add(MODULE_TYPE.Airlock);
-						moduleTypes.add(MODULE_TYPE.Unknown);
-						moduleTypes.add(MODULE_TYPE.Power);
-						moduleTypes.add(MODULE_TYPE.Sanitation);
-						moduleTypes.add(MODULE_TYPE.Dormitory);
-						moduleTypes.add(MODULE_TYPE.FoodAndWater);
-						moduleTypes.add(MODULE_TYPE.Canteen);
-						moduleTypes.add(MODULE_TYPE.Control);
-						
-						if ( config.placeWrap(moduleTypes) )
-							numCornerWrapsUsed ++;
-						else
-							minConfigs.remove(i); // Impossible to finish creating this configuration
-					}
-					else if ( numStraightWrapsUsed == 1 ) {
-						
-						moduleTypes.add(MODULE_TYPE.Airlock);
-						moduleTypes.add(MODULE_TYPE.Control);
-						moduleTypes.add(MODULE_TYPE.Sanitation);
-						moduleTypes.add(MODULE_TYPE.Dormitory);
-						moduleTypes.add(MODULE_TYPE.FoodAndWater);
-						moduleTypes.add(MODULE_TYPE.Canteen);
-						moduleTypes.add(MODULE_TYPE.Power);
-						moduleTypes.add(MODULE_TYPE.Unknown);
-						
-						if ( config.placeWrap(moduleTypes) )
-							numCornerWrapsUsed ++;
-						else
-							minConfigs.remove(i); // Impossible to finish creating this configuration
-					}
-					else
-						minConfigs.remove(i); // Already have 2 straights
+						numStraightWrapsUsed ++;
 				}
 			}
-			else
+			
+			if ( !goodConfig )
 				minConfigs.remove(i);
 		}
 		
@@ -201,6 +148,79 @@ public class ConfigGenerator {
 		}
 		else
 			return false;
+	}
+	
+	private boolean placeWrap(final int wrapNum, final Configuration config) {
+		
+		if ( config.isCornerLayout() ) {
+			
+			if ( wrapNum == 0 )
+				return placeCornerWrapZero(config);
+			else if ( wrapNum == 1 )
+				return placeCornerWrapOne(config);
+		}
+		else if ( config.isStraightLayout() ) {
+			
+			if ( wrapNum == 0 )
+				return placeStraightWrapZero(config);
+			else if ( wrapNum == 1 )
+				return placeStraightWrapOne(config);
+		}
+		return false;
+	}
+	
+	private boolean placeCornerWrapZero(final Configuration config) {
+		
+		return config.placeWrap(
+				MODULE_TYPE.Airlock,
+				MODULE_TYPE.Control,
+				MODULE_TYPE.Sanitation,
+				MODULE_TYPE.Dormitory,
+				MODULE_TYPE.FoodAndWater,
+				MODULE_TYPE.Canteen,
+				MODULE_TYPE.Power
+			);
+	}
+	
+	private boolean placeCornerWrapOne(final Configuration config) {
+		
+		return config.placeWrap(
+			MODULE_TYPE.Airlock,
+			MODULE_TYPE.Power,
+			MODULE_TYPE.Sanitation,
+			MODULE_TYPE.Dormitory,
+			MODULE_TYPE.FoodAndWater,
+			MODULE_TYPE.Canteen,
+			MODULE_TYPE.Control
+		);
+	}
+	
+	private boolean placeStraightWrapZero(final Configuration config) {
+		
+		LinkedList<MODULE_TYPE> moduleTypes = new LinkedList<MODULE_TYPE>();
+		moduleTypes.add(MODULE_TYPE.Airlock);
+		moduleTypes.add(MODULE_TYPE.Unknown);
+		moduleTypes.add(MODULE_TYPE.Power);
+		moduleTypes.add(MODULE_TYPE.Sanitation);
+		moduleTypes.add(MODULE_TYPE.Dormitory);
+		moduleTypes.add(MODULE_TYPE.FoodAndWater);
+		moduleTypes.add(MODULE_TYPE.Canteen);
+		moduleTypes.add(MODULE_TYPE.Control);
+		return config.placeWrap(moduleTypes);
+	}
+	
+	private boolean placeStraightWrapOne(final Configuration config) {
+		
+		LinkedList<MODULE_TYPE> moduleTypes = new LinkedList<MODULE_TYPE>();
+		moduleTypes.add(MODULE_TYPE.Airlock);
+		moduleTypes.add(MODULE_TYPE.Control);
+		moduleTypes.add(MODULE_TYPE.Sanitation);
+		moduleTypes.add(MODULE_TYPE.Dormitory);
+		moduleTypes.add(MODULE_TYPE.FoodAndWater);
+		moduleTypes.add(MODULE_TYPE.Canteen);
+		moduleTypes.add(MODULE_TYPE.Power);
+		moduleTypes.add(MODULE_TYPE.Unknown);
+		return config.placeWrap(moduleTypes);
 	}
 	
 	/*	Generating Maximum Configurations:
@@ -254,6 +274,14 @@ public class ConfigGenerator {
 	 */
 	public boolean GenerateTwoMaximumConfigs(final LandingGrid landingGrid) {
 		
-		return false;
+		if ( landingGrid == null || !landingGrid.hasMinimumConfiguration() )
+			return false;
+		
+		//LinkedList<Module> usableModules = landingGrid.getUsableModuleList();
+		//ModuleCount count = landingGrid.getModuleCount(MODULE_STATUS.Usable);
+			
+		// Generate Skeleton
+		
+		return false; // Method unfinished
 	}
 }

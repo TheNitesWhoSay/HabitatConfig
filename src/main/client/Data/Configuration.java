@@ -57,6 +57,7 @@ public class Configuration extends LandingGrid {
 	private int layoutY; // The layout y anchor point
 	private int clusterAvgX;
 	private int clusterAvgY;
+	private boolean completedConfig;
 	private NearestSquare nearestSquares;
 	private MODULE_TYPE[/*x*/][/*y*/] futureModules;
 	
@@ -77,6 +78,7 @@ public class Configuration extends LandingGrid {
 		layoutY = -1;
 		clusterAvgX = 0;
 		clusterAvgY = 0;
+		completedConfig = false;
 	}
 	
 	/**
@@ -86,6 +88,26 @@ public class Configuration extends LandingGrid {
 	public int getConfigurationLayoutIndex() {
 		
 		return layoutIndex;
+	}
+	
+	public boolean isCompletedConfig() {
+		
+		return completedConfig;
+	}
+	
+	public boolean isCornerLayout() {
+		
+		return layoutIndex >= 1 && layoutIndex <= 4;
+	}
+	
+	public boolean isStraightLayout() {
+		
+		return layoutIndex >= 5 && layoutIndex <= 6;
+	}
+	
+	public boolean isValidMinimumLayout() {
+		
+		return layoutIndex >= 1 && layoutIndex <= 6;
 	}
 	
 	/**
@@ -266,7 +288,8 @@ public class Configuration extends LandingGrid {
 		default:
 			return false;
 		}
-		return false;
+		completedConfig = true;
+		return true;
 	}
 	
 	/**
@@ -282,12 +305,18 @@ public class Configuration extends LandingGrid {
 		
 		ListIterator<MODULE_TYPE> it = moduleTypes.listIterator();
 		MODULE_TYPE currType = it.next();
+		boolean skippedSlot = false;
 		for ( int slot=0; slot<8; slot++ ) {
 			
 			if ( setSlot(slot, currType) )
 				currType = it.next();
+			else if ( !skippedSlot )
+				skippedSlot = true;
+			else
+				return false;
 		}
 		
+		completedConfig = true;
 		return true;
 	}
 	
