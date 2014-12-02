@@ -94,6 +94,13 @@ public class LandingGrid {
 		return depth;
 	}
 	
+	public boolean isBuildable(final int x, final int y) {
+		
+		return terrain[x][y].isBuildable() &&
+			   ( modules[x][y] == null ||
+			     modules[x][y].getStatus() == MODULE_STATUS.Usable );
+	}
+	
 	/**
 	 * Returns whether this landing grid can make a minimum configuration
 	 * @return
@@ -197,20 +204,67 @@ public class LandingGrid {
 	}
 	
 	/**
+	 * Attempts to get a module at the given coordinates.
+	 * @param x The given X coordinate.
+	 * @param y The given Y coordinate.
+	 * @return The module if found, null otherwise.
+	 */
+	public Module getModule(final int x, final int y) {
+		
+		if ( x >= 0 && y >= 0 && x<width && y<depth )
+			return modules[x][y];
+		else
+			return null;
+	}
+	
+	/**
+	 * Gets the first module with the given code.
+	 * @param code the given code.
+	 * @return The module if found, null otherwise.
+	 */
+	public Module getModule(final int code) {
+		
+		for ( int y=0; y<depth; y++ )
+		{
+			for ( int x=0; x<width; x++ )
+			{
+				if ( modules[x][y] != null &&
+					 modules[y][y].getCode() == code ) {
+					return modules[x][y];
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Gets a list of all modules currently logged in the landing grid
 	 * @return a LinkedList of modules in the landing grid
 	 */
 	public LinkedList<Module> getModuleList() {
 		
 		LinkedList<Module> moduleList = new LinkedList<Module>();
-		for ( int x=0; x<width; x++ )
+		for ( int y=0; y<depth; y++ )
 		{
-			for ( int y=0; y<depth; y++ )
+			for ( int x=0; x<width; x++ )
 			{
-				if (modules[x][y] != null ){
+				if ( modules[x][y] != null )
 					moduleList.add(modules[x][y]);
 			}
 		}
+		return moduleList;
+	}
+	
+	public LinkedList<Module> getUsableModuleList() {
+		
+		LinkedList<Module> moduleList = new LinkedList<Module>();
+		for ( int y=0; y<depth; y++ )
+		{
+			for ( int x=0; x<width; x++ )
+			{
+				if ( modules[x][y] != null && modules[x][y].getStatus() == MODULE_STATUS.Usable )
+					moduleList.add(modules[x][y]);
+			}
 		}
 		return moduleList;
 	}
@@ -230,8 +284,8 @@ public class LandingGrid {
          return modlist;
 	}
 
-	public void pullStorage(String modtext) {
-		modtext = modtext.substring(1, modtext.length()-1);
+	public void pullStorage(final String inModText) {
+		String modtext = inModText.substring(1, inModText.length()-1);
         while(modtext.length() > 0){
                 int endBracket = modtext.indexOf('}');
                 String oneMod = modtext.substring(1,endBracket);
@@ -259,14 +313,9 @@ public class LandingGrid {
                 
 	}
 
-	private boolean validateString(int code, int xc, int yc) {
-		if(code != 0 && xc != -1 && yc != -1){
-			return true;
-		}
-		else{
-			return false;
-		}
+	/*private boolean validateString(final int code, final int xc, final int yc) {
 		
-	}
+		return code != 0 && xc != -1 && yc != -1;
+	}*/
 		
 }

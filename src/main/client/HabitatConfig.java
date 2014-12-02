@@ -1,8 +1,8 @@
 package main.client;
 
 import java.util.LinkedList;
-import java.util.Timer;
 
+import main.client.Data.ConfigGenerator;
 import main.client.Data.LandingGrid;
 import main.client.Windows.ConfigTab;
 import main.client.Windows.LoginWindow;
@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class HabitatConfig implements EntryPoint {
 	
+	public ConfigGenerator configGenerator;
 	public ConfigOptions configOptions;
 	public MainWindow mainWindow;
 	public LoginWindow loginWindow;
@@ -33,6 +34,7 @@ public class HabitatConfig implements EntryPoint {
 	 */
 	public HabitatConfig() {
 		
+		configGenerator = new ConfigGenerator(100, 50);
 	}
 	
 	/**

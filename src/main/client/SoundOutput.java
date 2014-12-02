@@ -5,4 +5,10 @@ package main.client;
  */
 public class SoundOutput {
 	
+	/**
+	 * Constructs a SoundOutput class
+	 */
+	public SoundOutput() {
+		
+	}
 }

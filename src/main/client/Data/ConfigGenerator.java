@@ -1,8 +1,21 @@
 package main.client.Data;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
+import main.client.Data.ModuleStatuses.MODULE_STATUS;
+import main.client.Data.ModuleTypes.MODULE_TYPE;
+
+/**
+ * A class for generating multiple, unique configurations.
+ * Relys heavily on methods in the Configuration class,
+ * this class is required to work with multiple configurations
+ * at once.
+ */
 public class ConfigGenerator {
+	
+	private NearestSquare nearestSquares;
+	private LinkedList<Configuration> minimumConfigs;
 	
 	/*	General Assumptions:
 		
@@ -13,8 +26,9 @@ public class ConfigGenerator {
 	/**
 	 * Constructs a ConfigGenerator
 	 */
-	public ConfigGenerator() {
+	public ConfigGenerator(final int width, final int height) {
 		
+		nearestSquares = new NearestSquare(width, height);
 	}
 	
 	
@@ -36,9 +50,20 @@ public class ConfigGenerator {
 			no restrictions.
 	Step 3: Make a "configuration" by determing the module positions that result in the highest
 	 		module quality for each pair
-	Step 4: For every combination of two configurations... ensure that they are not
-			equivilant but rotated, if they are, toss out the one with the higher build
-			cost until none are equivilant&rotated or only two configurations remain.
+	 		
+	 		... There are 216 possible ways to wrap around a corner-shaped minimum config and
+	 			1824 possible ways to wrap around a straight-shaped config
+	 			
+	 			Select the 2 most ideal wraps for a corner-shaped minimum config and the 2 most
+	 			ideal wraps for a straight-shaped minimum config.
+	 			
+	 			Current wrap selections (in order of currently perceived quality/convenience)
+	 			
+	 			> Airlock, Control, Sanitation, Dormitory, Storage, Canteen, Power <
+	 			> Airlock, _____, Power, Sanitation, Dormitory, Storage, Canteen, Control <
+	 			> Airlock, Power, Sanitation, Dormitory, Storage, Canteen, Control <
+				> Airlock, Control, Sanitation, Dormitory, Storage, Canteen, Power, _____ <
+	 		
 	Step 5: Until only two configurations remain... toss out the configuration of
 			lowest quality, if two configurations are of equal quality toss out the
 			one with the highest build cost. */
@@ -53,22 +78,129 @@ public class ConfigGenerator {
 		if ( landingGrid == null || !landingGrid.hasMinimumConfiguration() )
 			return false;
 		
-		Configuration firstMinConfig = new Configuration();
-		firstMinConfig.copyTerrain(landingGrid);
+		LinkedList<Module> usableModules = landingGrid.getUsableModuleList();
+		ModuleCount count = landingGrid.getModuleCount(MODULE_STATUS.Usable);
 		
-		LinkedList<Module> modules = landingGrid.getModuleList();
-		firstMinConfig.findMinimumClusterAverage(landingGrid);
-		int clusterXc = firstMinConfig.getMinimumClusterXc(),
-			clusterYc = firstMinConfig.getMinimumClusterYc();
-		
-		Configuration[] config = new Configuration[6];
+		ArrayList<Configuration> minConfigs = new ArrayList<Configuration>(6);
 		for ( int i=0; i<6; i++ ) {
-			config[i].setLayoutType(i+1);
-			config[i].copyTerrain(landingGrid);
-			config[i].copyDamagedModules(landingGrid);
+			Configuration config = new Configuration(nearestSquares);
+			config.copyTerrain(landingGrid);
+			config.copyDamagedModules(landingGrid);
+			if ( config.setLayoutType(i+1) &&
+				 config.findMinimumClusterAverage(usableModules) &&
+				 config.findUsableAnchor() )
+			{	
+				minConfigs.add(config);
+			}
 		}
 		
-		return false;
+		if ( minConfigs.size() <= 0 ) // No configurations will be possible
+			return false;
+		
+		int numCornerWrapsUsed = 0;
+		int numStraightWrapsUsed = 0;
+		for ( int i=0; i<minConfigs.size(); i++ ) {
+		
+			// Generate minimum configuration...
+			Configuration config = minConfigs.get(i);
+			
+			if ( config.placePlains(count) ) {
+				
+				int layoutIndex = config.getConfigurationLayoutIndex();
+				if ( layoutIndex > 0 && layoutIndex <= 4 ) {
+					
+					if ( numCornerWrapsUsed == 0 ) {
+						
+						if ( config.placeWrap(MODULE_TYPE.Airlock, MODULE_TYPE.Control, MODULE_TYPE.Sanitation,
+							MODULE_TYPE.Dormitory, MODULE_TYPE.FoodAndWater, MODULE_TYPE.Canteen, MODULE_TYPE.Power) )
+						{
+							numCornerWrapsUsed ++;
+						}
+						else
+							minConfigs.remove(i);
+					}
+					else if ( numCornerWrapsUsed == 1 ) {
+						
+						if ( config.placeWrap(MODULE_TYPE.Airlock, MODULE_TYPE.Power, MODULE_TYPE.Sanitation,
+							MODULE_TYPE.Dormitory, MODULE_TYPE.FoodAndWater, MODULE_TYPE.Canteen, MODULE_TYPE.Control) )
+						{
+							numCornerWrapsUsed ++;
+						}
+						else
+							minConfigs.remove(i);
+					}
+					else
+						minConfigs.remove(i); // Already have 2 corners
+				}
+				else if ( layoutIndex <=6 ) {
+					
+					LinkedList<MODULE_TYPE> moduleTypes = new LinkedList<MODULE_TYPE>();
+					if ( numStraightWrapsUsed == 0 ) {
+						
+						moduleTypes.add(MODULE_TYPE.Airlock);
+						moduleTypes.add(MODULE_TYPE.Unknown);
+						moduleTypes.add(MODULE_TYPE.Power);
+						moduleTypes.add(MODULE_TYPE.Sanitation);
+						moduleTypes.add(MODULE_TYPE.Dormitory);
+						moduleTypes.add(MODULE_TYPE.FoodAndWater);
+						moduleTypes.add(MODULE_TYPE.Canteen);
+						moduleTypes.add(MODULE_TYPE.Control);
+						
+						if ( config.placeWrap(moduleTypes) )
+							numCornerWrapsUsed ++;
+						else
+							minConfigs.remove(i); // Impossible to finish creating this configuration
+					}
+					else if ( numStraightWrapsUsed == 1 ) {
+						
+						moduleTypes.add(MODULE_TYPE.Airlock);
+						moduleTypes.add(MODULE_TYPE.Control);
+						moduleTypes.add(MODULE_TYPE.Sanitation);
+						moduleTypes.add(MODULE_TYPE.Dormitory);
+						moduleTypes.add(MODULE_TYPE.FoodAndWater);
+						moduleTypes.add(MODULE_TYPE.Canteen);
+						moduleTypes.add(MODULE_TYPE.Power);
+						moduleTypes.add(MODULE_TYPE.Unknown);
+						
+						if ( config.placeWrap(moduleTypes) )
+							numCornerWrapsUsed ++;
+						else
+							minConfigs.remove(i); // Impossible to finish creating this configuration
+					}
+					else
+						minConfigs.remove(i); // Already have 2 straights
+				}
+			}
+			else
+				minConfigs.remove(i);
+		}
+		
+		if ( minConfigs.size() > 2 ) {
+			
+			if ( numCornerWrapsUsed == 2 && numStraightWrapsUsed == 2 && minConfigs.size() == 4 ) {
+				minConfigs.remove(3); // Remove the 2nd straight
+				minConfigs.remove(1); // Remove the 1st corner
+			}
+			else if ( numCornerWrapsUsed == 2 && numStraightWrapsUsed == 1 && minConfigs.size() == 3 ) {
+				minConfigs.remove(1); // Remove the 2nd corner
+			}
+			else if ( numCornerWrapsUsed == 1 && numStraightWrapsUsed == 2 && minConfigs.size() == 3 ) {
+				minConfigs.remove(2); // Remove the 2nd straight
+			}
+		}
+		
+		minimumConfigs.clear();
+		if ( minConfigs.size() == 1 ) {
+			minimumConfigs.add(minConfigs.get(0));
+			return true; // ish...
+		}
+		else if ( minConfigs.size() >= 2 ) {
+			minimumConfigs.add(minConfigs.get(0));
+			minimumConfigs.add(minConfigs.get(1));
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	/*	Generating Maximum Configurations:

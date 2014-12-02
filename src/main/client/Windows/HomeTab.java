@@ -25,7 +25,8 @@ public class HomeTab extends GwtWindow {
 
 	@SuppressWarnings("unused")
 	private HabitatConfig root;
-	private JSONValue city;//Zipcode of user based on geolocation data
+	@SuppressWarnings("unused")
+	private JSONValue city; // Zipcode of user based on geolocation data
 	/**
 	 * Default constructor
 	 */

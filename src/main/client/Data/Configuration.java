@@ -1,10 +1,8 @@
 package main.client.Data;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import main.client.Data.ModuleStatuses.MODULE_STATUS;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 /**
@@ -25,7 +23,7 @@ public class Configuration extends LandingGrid {
 	 * $: Where an x and y value for a layout would point to (anchor)
 	 * 
 	 *  
-	 * ------- All @ spaces required -------
+	 * ------- All @ Spaces required -------
 	 *  
 	 * Space 1   Space 2   Space 3   Space 4
 	 * $@@       $@        $@@       $ @
@@ -33,42 +31,47 @@ public class Configuration extends LandingGrid {
 	 * @#@   or  @##@  or   @#@  or  @##@
 	 *  @         @@         @        @@
 	 *  
-	 *  
-	 * ------- 7/8 @ spaces Required -------
+	 * ------- 7/8 @ Spaces Required -------
 	 * 
 	 * Space 5    Space 6  
 	 *            $@
 	 * $@@@       @#@      
-	 * @###@  or  @#@
+	 * @###@      @#@
 	 *  @@@       @#@       
 	 *             @
+	 *  
+	 * ------ Space 5/6 Slot Numbering -----
+	 *  
+	 *            $0
+	 * $123       7#1      
+	 * 0###4      6#2
+	 *  765       5#3       
+	 *             4
 	 *  
 	 * Is one more preferrable than the other? TBD.
 	 * In the meantime, 1=2=3=4>5>6 will be used
 	 */
-	@SuppressWarnings("unused")
 	private int layoutIndex;
 	
-	/**
-	 * The layout x anchor point
-	 */
-	@SuppressWarnings("unused")
-	private int layoutX;
-	
-	/**
-	 * The layout y anchor point
-	 */
-	@SuppressWarnings("unused")
-	private int layoutY;
-	
+	private int layoutX; // The layout x anchor point
+	private int layoutY; // The layout y anchor point
 	private int clusterAvgX;
 	private int clusterAvgY;
+	private NearestSquare nearestSquares;
+	private MODULE_TYPE[/*x*/][/*y*/] futureModules;
 	
 	/**
 	 * Constructs a configuration
 	 */
-	public Configuration() {
+	public Configuration(final NearestSquare nearestSquares) {
 		
+		futureModules = new MODULE_TYPE[getWidth()][getDepth()];
+		for ( int y=0; y<getDepth(); y++ )
+		{
+			for ( int x=0; x<getWidth(); x++ )
+				futureModules[x][y] = null;
+		}
+		this.nearestSquares = nearestSquares;
 		layoutIndex = 0;
 		layoutX = -1;
 		layoutY = -1;
@@ -77,21 +80,215 @@ public class Configuration extends LandingGrid {
 	}
 	
 	/**
+	 * Returns the configuration layout type index.
+	 * @return The configuration layout type index.
+	 */
+	public int getConfigurationLayoutIndex() {
+		
+		return layoutIndex;
+	}
+	
+	/**
 	 * Finds a set of minimum modules with the smallest distance
 	 * (that can be generated in short time) between them.
 	 * @param landingGrid
 	 * @return
 	 */
-	public boolean findMinimumClusterAverage(LandingGrid landingGrid) {
+	public boolean findMinimumClusterAverage(final LinkedList<Module> usableModules) {
 		
-		if ( landingGrid == null )
+		if ( usableModules == null )
 			return false;
 		else
 		{
-			clusterAvgX = landingGrid.getWidth()/2;
-			clusterAvgY = landingGrid.getDepth()/2;
+			clusterAvgX = getWidth()/2;
+			clusterAvgY = getDepth()/2;
 			return true;
 		}
+	}
+	
+	/**
+	 * Finds a usable anchor point for this minimum configuration.
+	 * @return Whether an anchor point for this layout could be found.
+	 */
+	public boolean findUsableAnchor() {
+		
+		/* Directions...
+		
+			Mirroring scheme
+			
+		      1 1 1
+		 	  1 1 1 0 0 0
+			  1 1 1 0 0 0
+		 	2 2 2 $ 0 0 0
+		 	2 2 2 3 3 3
+		 	2 2 2 3 3 3
+		 	      3 3 3
+		 	      
+		 	To translate from mirror part 0...
+		 	
+		 	1: x =  y, y = -x
+		 	2: x = -x, y = -y
+		 	3: x = -y, y =  x
+		 	      
+			Need to circle around the anchor point that is nearest
+			to the cluster average until a usable space is found.
+		*/
+		
+		int maxSquareIndex = nearestSquares.getNumSquares();
+		for ( int i=0; i<maxSquareIndex; i++ ) {
+			
+			int x = nearestSquares.getX(i);
+			int y = nearestSquares.getY(i);
+			
+			if ( layoutFits(x, y) )
+			{
+				layoutX = x;
+				layoutY = y;
+				return true;
+			}
+			else if ( layoutFits(y, -x) ) // 1
+			{
+				layoutX = y;
+				layoutY = -x;
+				return true;
+			}
+			else if ( layoutFits(-x, -y) ) // 2
+			{
+				layoutX = -x;
+				layoutY = -y;
+				return true;
+			}
+			else if ( layoutFits(-y, x) ) // 3
+			{
+				layoutX = -y;
+				layoutY = x;
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Attempts to place all the plain modules.
+	 * @return Whether the layout type index dictates where they should go.
+	 */
+	public boolean placePlains(final ModuleCount count) {
+		
+		switch ( layoutIndex ) {
+		case 1:
+			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
+			break;
+		case 2:
+			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
+			futureModules[layoutX+2][layoutY+2] = MODULE_TYPE.Plain;
+			break;
+		case 3:
+			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+2][layoutY+2] = MODULE_TYPE.Plain;
+			break;
+		case 4:
+			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
+			futureModules[layoutX+2][layoutY+2] = MODULE_TYPE.Plain;
+			break;
+		case 5:
+			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+3][layoutY+1] = MODULE_TYPE.Plain;
+			break;
+		case 6:
+			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
+			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
+			futureModules[layoutX+1][layoutY+3] = MODULE_TYPE.Plain;
+			break;
+		default:
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Attemps to wrap modules around the plains in the specified order.
+	 * @param m1 The first module (at present this should always be an airlock).
+	 * @param m2 The second module.
+	 * @param m3 The third module.
+	 * @param m4 The fourth module.
+	 * @param m5 The fifth module.
+	 * @param m6 The sixth module.
+	 * @param m7 The seventh module.
+	 * @return Whether module placement planning was successful.
+	 */
+	public boolean placeWrap( final MODULE_TYPE m1, final MODULE_TYPE m2, final MODULE_TYPE m3, final MODULE_TYPE m4, 
+							  final MODULE_TYPE m5, final MODULE_TYPE m6, final MODULE_TYPE m7 )
+	{
+		switch ( layoutIndex ) {
+		case 1:
+			futureModules[layoutX+1][layoutY+3] = m1;
+			futureModules[layoutX+2][layoutY+2] = m2;
+			futureModules[layoutX+3][layoutY+1] = m3;
+			futureModules[layoutX+2][layoutY+0] = m4;
+			futureModules[layoutX+1][layoutY+0] = m5;
+			futureModules[layoutX+0][layoutY+1] = m6;
+			futureModules[layoutX+0][layoutY+2] = m7;
+			break;
+		case 2:
+			futureModules[layoutX+1][layoutY+0] = m1;
+			futureModules[layoutX+2][layoutY+1] = m2;
+			futureModules[layoutX+3][layoutY+2] = m3;
+			futureModules[layoutX+2][layoutY+3] = m4;
+			futureModules[layoutX+1][layoutY+3] = m5;
+			futureModules[layoutX+0][layoutY+2] = m6;
+			futureModules[layoutX+0][layoutY+1] = m7;
+			break;
+		case 3:
+			futureModules[layoutX+2][layoutY+3] = m1;
+			futureModules[layoutX+1][layoutY+2] = m2;
+			futureModules[layoutX+0][layoutY+1] = m3;
+			futureModules[layoutX+1][layoutY+0] = m4;
+			futureModules[layoutX+2][layoutY+0] = m5;
+			futureModules[layoutX+3][layoutY+1] = m6;
+			futureModules[layoutX+3][layoutY+2] = m7;
+			break;
+		case 4:
+			futureModules[layoutX+2][layoutY+0] = m1;
+			futureModules[layoutX+1][layoutY+1] = m2;
+			futureModules[layoutX+0][layoutY+2] = m3;
+			futureModules[layoutX+1][layoutY+3] = m4;
+			futureModules[layoutX+2][layoutY+3] = m5;
+			futureModules[layoutX+3][layoutY+2] = m6;
+			futureModules[layoutX+3][layoutY+1] = m7;
+			break;
+		default:
+			return false;
+		}
+		return false;
+	}
+	
+	/**
+	 * Attemps to wrap modules around the plains in the specified order.
+	 * Use MODULE_TYPE.Unknown for the blank space.
+	 * @param moduleTypes An ordered list of module types to be wrapped around the plains.
+	 * @return Whether module placement planning was successful.
+	 */
+	public boolean placeWrap(final LinkedList<MODULE_TYPE> moduleTypes)
+	{
+		if ( moduleTypes.size() < 8 )
+			return false;
+		
+		ListIterator<MODULE_TYPE> it = moduleTypes.listIterator();
+		MODULE_TYPE currType = it.next();
+		for ( int slot=0; slot<8; slot++ ) {
+			
+			if ( setSlot(slot, currType) )
+				currType = it.next();
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -99,7 +296,7 @@ public class Configuration extends LandingGrid {
 	 * @param layoutTypeIndex The type of minimum configuration this is supposed to become.
 	 * @return Whether the layoutTypeIndex was one of the possible layouts.
 	 */
-	public boolean setLayoutType(int layoutTypeIndex) {
+	public boolean setLayoutType(final int layoutTypeIndex) {
 		
 		if ( layoutTypeIndex >= 0 && layoutTypeIndex <= 6 ) {
 			layoutIndex = layoutTypeIndex;
@@ -122,6 +319,200 @@ public class Configuration extends LandingGrid {
 	public int getMinimumClusterYc() {
 		
 		return clusterAvgY;
+	}
+	
+	/**
+	 * Checks if a layout fits at a given anchor point.
+	 * @param x The xc of the anchor point to be tested.
+	 * @param y The yc of the anchor point to be tested.
+	 * @return Whether the layout fits in this spot.
+	 */
+	private boolean layoutFits(final int x, final int y) {
+		
+		switch ( layoutIndex ) {
+		case 1:
+			return
+										 isBuildable(x+1, y  ) && isBuildable(x+2, y  ) &&
+				isBuildable(x  , y+1) && isBuildable(x+1, y+1) && isBuildable(x+2, y+1) && isBuildable(x+3, y+1) &&
+				isBuildable(x  , y+2) && isBuildable(x+1, y+2) && isBuildable(x+2, y+2) &&
+										 isBuildable(x+1, y+3);
+		case 2:
+			return
+										 isBuildable(x+1, y  ) &&
+				isBuildable(x  , y+1) && isBuildable(x+1, y+1) && isBuildable(x+2, y+1) &&
+				isBuildable(x  , y+2) && isBuildable(x+1, y+2) && isBuildable(x+2, y+2) && isBuildable(x+3, y+2) &&
+										 isBuildable(x+1, y+3) && isBuildable(x+2, y+3);
+		case 3:
+			return
+										 isBuildable(x+1, y  ) && isBuildable(x+2, y  ) &&
+				isBuildable(x  , y+1) && isBuildable(x+1, y+1) && isBuildable(x+2, y+1) && isBuildable(x+3, y+1) &&
+										 isBuildable(x+1, y+2) && isBuildable(x+2, y+2) && isBuildable(x+3, y+2) &&
+										 						  isBuildable(x+2, y+3);
+		case 4:
+			return
+																  isBuildable(x+2, y  ) &&
+										 isBuildable(x+1, y+1) && isBuildable(x+2, y+1) && isBuildable(x+3, y+1) &&
+				isBuildable(x  , y+2) && isBuildable(x+1, y+2) && isBuildable(x+2, y+2) && isBuildable(x+3, y+2) &&
+										 isBuildable(x+1, y+3) && isBuildable(x+2, y+3);
+		case 5:
+		{
+			final boolean goodPlains =
+										 
+										 isBuildable(x+1, y+1) && isBuildable(x+2, y+1) && isBuildable(x+3, y+1);
+				 						 
+			
+			int numSpaces = 0;
+			if ( isBuildable(x+1, y  ) )
+				numSpaces ++;
+			if ( isBuildable(x+2, y  ) )
+				numSpaces ++;
+			if ( isBuildable(x+3, y  ) )
+				numSpaces ++;
+			if ( isBuildable(x  , y+1) )
+				numSpaces ++;
+			if ( isBuildable(x+4, y+1) )
+				numSpaces ++;
+			if ( isBuildable(x+1, y+2) )
+				numSpaces ++;
+			if ( isBuildable(x+2, y+2) )
+				numSpaces ++;
+			if ( isBuildable(x+3, y+2) )
+				numSpaces ++;
+			
+			return goodPlains && numSpaces >= 7;
+		}	
+		case 6:
+		{
+			final boolean goodPlains =
+										 
+										 isBuildable(x+1, y+1) &&
+										 isBuildable(x+1, y+2) && 
+										 isBuildable(x+1, y+3);
+			
+			int numSpaces = 0;
+			if ( isBuildable(x+1, y  ) )
+				numSpaces ++;
+			if ( isBuildable(x  , y+1) )
+				numSpaces ++;
+			if ( isBuildable(x+2, y+1) )
+				numSpaces ++;
+			if ( isBuildable(x  , y+2) )
+				numSpaces ++;
+			if ( isBuildable(x+2, y+2) )
+				numSpaces ++;
+			if ( isBuildable(x  , y+3) )
+				numSpaces ++;
+			if ( isBuildable(x+2, y+3) )
+				numSpaces ++;
+			if ( isBuildable(x+1, y+4) )
+				numSpaces ++;
+			
+			return goodPlains && numSpaces >= 7;
+		}
+		default:
+			return false;
+		}
+	}
+	
+	/**
+	 * Sets a slot in layout 5 or 6.
+	 * @param slotNum The number of the slot to be set.
+	 * @param type A module type that will go in this slot.
+	 * @return Whether the slot was set successfully.
+	 */
+	private boolean setSlot(final int slotNum, final MODULE_TYPE type) {
+		
+		int x = layoutX;
+		int y = layoutY;
+		MODULE_TYPE newType = null;
+		if ( type != MODULE_TYPE.Unknown )
+			newType = type;
+		
+		if ( layoutIndex == 5 ) {
+			
+			switch ( slotNum ) {
+			case 0:
+				x += 0;
+				y += 1;
+				break;
+			case 1:
+				x += 1;
+				y += 0;
+				break;
+			case 2:
+				x += 2;
+				y += 0;
+				break;
+			case 3:
+				x += 3;
+				y += 0;
+				break;
+			case 4:
+				x += 4;
+				y += 1;
+				break;
+			case 5:
+				x += 3;
+				y += 2;
+				break;
+			case 6:
+				x += 2;
+				y += 2;
+				break;
+			case 7:
+				x += 1;
+				y += 2;
+				break;
+			default:
+				return false;
+			}
+		}
+		else if ( layoutIndex == 6 ) {
+			switch ( slotNum ) {
+			case 0:
+				x += 1;
+				y += 0;
+				break;
+			case 1:
+				x += 2;
+				y += 1;
+				break;
+			case 2:
+				x += 2;
+				y += 2;
+				break;
+			case 3:
+				x += 2;
+				y += 3;
+				break;
+			case 4:
+				x += 1;
+				y += 4;
+				break;
+			case 5:
+				x += 0;
+				y += 3;
+				break;
+			case 6:
+				x += 0;
+				y += 2;
+				break;
+			case 7:
+				x += 0;
+				y += 1;
+				break;
+			default:
+				return false;
+			}
+		}
+		else // Layout index doesn't support this method
+			return false;
+		
+		if ( isBuildable(x, y) ) {
+			futureModules[x][y] = newType;
+			return true;
+		}
+		return newType == null;
 	}
 
 }

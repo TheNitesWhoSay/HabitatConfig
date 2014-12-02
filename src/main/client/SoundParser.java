@@ -5,4 +5,10 @@ package main.client;
  */
 public class SoundParser {
 
+	/**
+	 * Constructs a SoundParser class
+	 */
+	public SoundParser() {
+		
+	}
 }

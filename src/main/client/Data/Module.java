@@ -134,7 +134,7 @@ public class Module {
 		this.status = status;
 	}
 	public String storageString() {
-		return "{"+moduleCode+":"+(xc)+":"+(yc)+":"+status+":"+rotationsTillUpright+"}";
+		return "{"+moduleCode+":"+xc+":"+yc+":"+status+":"+rotationsTillUpright+"}";
 	}
 	
 }

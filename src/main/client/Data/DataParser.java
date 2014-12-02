@@ -5,4 +5,9 @@ package main.client.Data;
  */
 public class DataParser {
 
+	public DataParser() {
+		
+	}
+	
+	
 }
