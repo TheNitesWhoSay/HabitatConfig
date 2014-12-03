@@ -11,15 +11,34 @@ import main.client.Data.ModuleTypes;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -27,7 +46,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -45,9 +66,12 @@ public class ModulesTab extends GwtWindow {
 	private Button load = new Button("Load Modules");
 	private Button clear = new Button("Clear Modules");
 	private Module emptyMod = new Module();
+	private ListBox tests = new ListBox();
 	private FlexTable storetable;
+	ScrollPanel sp;
+	TreeItem modTree = new TreeItem();
 	private boolean alerted;
-	private Grid g;
+	public static Grid g = new Grid(50, 100);
 	private ScrollPanel p;
 	TextBox id = new TextBox();
 	TextBox xcord = new TextBox();
@@ -73,7 +97,8 @@ public class ModulesTab extends GwtWindow {
 	private Storage moduleStore;
 	private LandingGrid moduleList;
 	private String moduleListKey = "ModuleList";
-
+   // Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_MPEG,
+     //   "http(s)/url/to/your/sound/file.mp3");
 	/**
 	 * Default constructor
 	 */
@@ -97,9 +122,22 @@ public class ModulesTab extends GwtWindow {
 		final Label ycor = new Label("Y-Cor");
 		final Label status = new Label("Status");
 		final Label orientation = new Label("Orientation");
+		tests.addItem("Test 1");
+		tests.addItem("Test 2");
+		tests.addItem("Test 3");
+		tests.addItem("Test 4");
+		tests.addItem("Test 5");
+		tests.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event) {
+				int selection = tests.getSelectedIndex()+1;
+				loadTests(selection);
+				
+			}
+		});
 		leftpanel.add(save);
 		leftpanel.add(load);
 		leftpanel.add(clear);
+		leftpanel.add(tests);
 		/**Potential save handler for landing grid moduleList. (Maybe) Thinking eventBus for loading modules */
 		save.addClickHandler(new ClickHandler() {
 			@SuppressWarnings("unused")
@@ -136,6 +174,88 @@ public class ModulesTab extends GwtWindow {
 		add(comppanel);
 		return true;
 	}
+	private void loadTests(int search){
+		String proxy = "http://d.umn.edu/~phil0837/Proxy.php?url=";
+        String url =proxy+"http://www.d.umn.edu/~abrooks/SomeTests.php?q="+search;
+        url = URL.encode(url);
+        getResponse(url);
+	}
+	private void getResponse(String url2) {
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url2);
+		try {
+		 Request request = builder.sendRequest(null, new RequestCallback() {
+			 
+		 public void onError(Request request, Throwable exception) {
+		 Window.alert("onError: Couldn't retrieve JSON");
+		 }
+
+		 public void onResponseReceived(Request request, Response response) {
+
+		 if (200 == response.getStatusCode()) {
+             String rt = response.getText();
+             String sAll = rt;
+             JSONArray jA = 
+             (JSONArray)JSONParser.parseLenient(sAll);
+             JSONNumber jN1,jN2,jN3,jN4;
+             JSONString jS1;
+             double id;
+             double x;
+             double y;
+             String cond;
+             double orient;
+             for (int i = 0; i < jA.size(); i++) {
+                     JSONObject jO = (JSONObject)jA.get(i);
+                     jN1 = (JSONNumber) jO.get("code");
+                     id = jN1.doubleValue();
+                     jS1 = (JSONString) jO.get("status");
+                     cond = jS1.stringValue();
+                     jN4 = (JSONNumber) jO.get("turns");
+                     orient = jN4.doubleValue();
+                     jN2 = (JSONNumber) jO.get("X");
+                     x = jN2.doubleValue();
+                     jN3 = (JSONNumber) jO.get("Y");
+                     y = jN3.doubleValue();
+                     int intx = (int) x;
+                     int inty = (int) y;
+                     int intid = (int) id;
+                     MODULE_STATUS s;
+                     if(cond.equals("undamaged")){
+                     	s = MODULE_STATUS.Usable;
+                     }
+                     else if(cond.equals("usable after repair")){
+                     	s = MODULE_STATUS.UsableAfterRepair;
+                     }
+                     else if(cond.equals("damaged beyond repair")){
+                     	s = MODULE_STATUS.DamagedBeyondRepair;
+                     }
+                     else {
+                     	s = MODULE_STATUS.Unknown;
+                     }
+                     String orientation = String.valueOf(orient);
+                     if(orientation.equals("0")){
+                     root.landingGrid.setModuleInfo(intx,inty ,intid, 0, s);
+                     }
+                     else if(orientation.equals("1")){
+                     	root.landingGrid.setModuleInfo(intx, inty, intid, 1, s);
+                     }
+                     else {
+                     	root.landingGrid.setModuleInfo(intx, inty, intid, 2, s);
+                     }
+                     refreshDisplayedModules(root.landingGrid.getModuleList());
+             }
+             }
+      else {
+             Window.alert("Couldn't retrieve JSON (" + response.getStatusText()
+                             + ")");
+     }
+		 }
+		 });
+		 } catch (RequestException e) {
+                Window.alert("RequestException: Couldn't retrieve JSON");
+                System.out.println(e.getMessage());
+		 }
+		 
+  }
 
 	private void emptyStorage() {
 		 moduleStore = Storage.getLocalStorageIfSupported();
@@ -150,8 +270,8 @@ public class ModulesTab extends GwtWindow {
                 String modtext = moduleStore.getItem(moduleListKey);
                 if (modtext != null){
                         root.landingGrid.pullStorage(modtext);
+                        //refreshLandingMap(root.landingGrid.getModuleList());
                         refreshDisplayedModules(root.landingGrid.getModuleList());
-        				refreshLandingMap(root.landingGrid.getModuleList());
                 }
         }
 		
@@ -174,7 +294,6 @@ public class ModulesTab extends GwtWindow {
 	 * Creates the landing zone for logging modules(Non-Configuration grid)
 	 */
 	private void createLanding() {
-		this.g = new Grid(50, 100);
 		canvas = Canvas.createIfSupported();
 		if (canvas != null) {
 			canvas.setWidth("" + 100);
@@ -190,7 +309,9 @@ public class ModulesTab extends GwtWindow {
 					}
 				}
 			}
-			g.setCellPadding(5);
+			g.setCellPadding(2);
+			g.setCellSpacing(2);
+			//g.setSize("900px", "200px");
 			this.p = new ScrollPanel();
 			this.p.setSize("900px", "600px");
 			this.p.add(this.g);
@@ -291,6 +412,8 @@ public class ModulesTab extends GwtWindow {
 						
 						/** Using -50 and -1 in order to change the natural layout of the grid */
 						g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
+						moduleCount--;
+						refreshLandingMap(root.landingGrid.getModuleList());
 				 	//refreshDisplayedModules(root.landingGrid.getModuleList());
 					}
 					moduleCount++;
@@ -298,7 +421,7 @@ public class ModulesTab extends GwtWindow {
 				}
 					if(root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms)){
 						deleteHandler = storetable.getRowCount();
-				refreshDisplayedModules(root.landingGrid.getModuleList());
+						refreshDisplayedModules(root.landingGrid.getModuleList());
 				//refreshLandingMap(root.landingGrid.getModuleList());
 					}
 				}
@@ -332,7 +455,6 @@ public class ModulesTab extends GwtWindow {
 		int moduleCount = 0;
 		while (i.hasNext()) {
 		final Module curr = i.next();
-		
 		ima = new Image();
 		ima = getImage(curr.getCode());
 		if(ima == null){
@@ -410,14 +532,14 @@ public class ModulesTab extends GwtWindow {
 		ListIterator<Module> i = modules.listIterator();
 		int modulecount = 0;
 		while (i.hasNext()) {
-								//Iterates through the list of items on the module list and adds additional items
+
 			final Module curr = i.next();
 			storetable.setText(modulecount, 0, "" + curr.getCode());
 			storetable.setText(modulecount, 1, "" + curr.getXPos());
 			storetable.setText(modulecount, 2, "" + curr.getYPos());
 			storetable.setText(modulecount, 3, "" + curr.getStatus());
-			storetable.setText(modulecount, 4,"" + curr.getRotationsTillUpright());
-			storetable.setText(modulecount, 5,"" + ModuleTypes.getType(curr.getCode()));
+			storetable.setText(modulecount, 4, "" + curr.getRotationsTillUpright());
+			storetable.setText(modulecount, 5, "" + ModuleTypes.getType(curr.getCode()));
 			Button removebutton = new Button("X");
 			storetable.setWidget(modulecount, 6, removebutton);
 			storetable.addClickHandler(new ClickHandler(){
