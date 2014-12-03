@@ -60,12 +60,19 @@ public class Configuration extends LandingGrid {
 	private boolean completedConfig;
 	private NearestSquare nearestSquares;
 	private MODULE_TYPE[/*x*/][/*y*/] futureModules;
+	private int skeletonAvgX;
+	private int skeletonAvgY;
+	
+	private int airlockXcs[/*x*/];
+	private int airlockYcs[/*y*/];
 	
 	/**
 	 * Constructs a configuration
 	 */
 	public Configuration(final NearestSquare nearestSquares) {
 		
+		airlockXcs = new int[4];
+		airlockYcs = new int[4];
 		futureModules = new MODULE_TYPE[getWidth()][getDepth()];
 		for ( int y=0; y<getDepth(); y++ )
 		{
@@ -79,6 +86,8 @@ public class Configuration extends LandingGrid {
 		clusterAvgX = 0;
 		clusterAvgY = 0;
 		completedConfig = false;
+		skeletonAvgX = getWidth()/2;
+		skeletonAvgY = getDepth()/2;
 	}
 	
 	/**
@@ -195,7 +204,7 @@ public class Configuration extends LandingGrid {
 	 * Attempts to place all the plain modules.
 	 * @return Whether the layout type index dictates where they should go.
 	 */
-	public boolean placePlains(final ModuleCount count) {
+	public boolean placePlains() {
 		
 		switch ( layoutIndex ) {
 		case 1:
@@ -333,11 +342,6 @@ public class Configuration extends LandingGrid {
 		}
 		else
 			return false;
-	}
-	
-	public boolean selectBuildZone() {
-		
-		return false;
 	}
 	
 	public int getMinimumClusterXc() {
@@ -542,6 +546,75 @@ public class Configuration extends LandingGrid {
 			return true;
 		}
 		return newType == null;
+	}
+	
+	/**
+	 * 
+	 */
+	/*
+	 * 
+	 */
+	
+	public boolean getSkeletonAverageCoordinates() {
+		
+		int totalXcs = 0;
+		int totalYcs = 0;
+		int numPlains = 0;
+		for ( int y=0; y<getDepth(); y++ )
+		{
+			for ( int x=0; x<getWidth(); x++ )
+			{
+				if ( futureModules[x][y] == MODULE_TYPE.Plain ) {
+					totalXcs += x;
+					totalYcs += y;
+					numPlains ++;
+				}
+			}
+		}
+		
+		if ( numPlains > 0 ) {
+			
+			skeletonAvgX = totalXcs / numPlains;
+			skeletonAvgY = totalYcs / numPlains;
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public boolean placeAirlocks(final ModuleCount count) {
+		
+		return false;
+	}
+	
+	public boolean placeSpecialModules(final ModuleCount count) {
+		
+		return false;
+	}
+	
+	public boolean placeCanteens(final ModuleCount count) {
+		
+		return false;
+	}
+	
+	public boolean placeFoodAndWater(final ModuleCount count) {
+		
+		return false;
+	}
+	
+	public boolean pairSanitationToGyms(final ModuleCount count) {
+		
+		return false;
+	}
+	
+	public boolean pairDormsToSanitations(final ModuleCount count) {
+		
+		return false;
+	}
+	
+	public boolean placeDormSanitationPairs(final ModuleCount count) {
+		
+		return false;
 	}
 
 }

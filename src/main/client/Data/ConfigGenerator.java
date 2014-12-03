@@ -16,6 +16,7 @@ public class ConfigGenerator {
 	
 	private NearestSquare nearestSquares;
 	private LinkedList<Configuration> minimumConfigs;
+	private LinkedList<Configuration> maximumConfigs;
 	
 	/*	General Assumptions:
 		
@@ -79,7 +80,6 @@ public class ConfigGenerator {
 			return false;
 		
 		LinkedList<Module> usableModules = landingGrid.getUsableModuleList();
-		ModuleCount count = landingGrid.getModuleCount(MODULE_STATUS.Usable);
 		
 		ArrayList<Configuration> minConfigs = new ArrayList<Configuration>(6);
 		for ( int i=0; i<6; i++ ) {
@@ -94,19 +94,18 @@ public class ConfigGenerator {
 			}
 		}
 		
-		if ( minConfigs.size() <= 0 ) // No configurations will be possible
+		if ( minConfigs.size() < 1 ) // No configurations will be possible
 			return false;
 		
 		int numCornerWrapsUsed = 0;
 		int numStraightWrapsUsed = 0;
-		for ( int i=0; i<minConfigs.size(); i++ ) {
+		for ( int i=minConfigs.size()-1; i>=0; i-- ) {
 		
 			Configuration config = minConfigs.get(i);
 			boolean goodConfig = false;
 			int numTypeWrapsUsed = config.isCornerLayout() ? numCornerWrapsUsed:numStraightWrapsUsed;
 			
-			if ( config.isValidMinimumLayout() &&
-				 config.placePlains(count) )
+			if ( config.isValidMinimumLayout() )
 			{
 				if ( placeWrap(numTypeWrapsUsed, config) ) {
 					
@@ -277,11 +276,51 @@ public class ConfigGenerator {
 		if ( landingGrid == null || !landingGrid.hasMinimumConfiguration() )
 			return false;
 		
-		//LinkedList<Module> usableModules = landingGrid.getUsableModuleList();
-		//ModuleCount count = landingGrid.getModuleCount(MODULE_STATUS.Usable);
-			
-		// Generate Skeleton
+		ArrayList<Configuration> maxConfigs = new ArrayList<Configuration>(2);
+		for ( int i=0; i<2; i++ ) {
+			Configuration config = new Configuration(nearestSquares);
+			maxConfigs.add(config);
+		}
 		
-		return false; // Method unfinished
+		if ( !generateUniqueSkeletons(maxConfigs, landingGrid) )
+			return false;
+			 
+		for ( int i=maxConfigs.size()-1; i>=0; i-- ) {
+			
+			Configuration config = maxConfigs.get(i);
+			ModuleCount count = landingGrid.getUsableModuleCount();
+			
+			if ( !( config.getSkeletonAverageCoordinates() &&
+					config.placeAirlocks(count) &&
+					config.placeSpecialModules(count) &&
+					config.placeCanteens(count) &&
+					config.placeFoodAndWater(count) &&
+					config.pairSanitationToGyms(count) &&
+					config.pairDormsToSanitations(count) &&
+					config.placeDormSanitationPairs(count)
+				  ) 
+			   )
+			{
+				maxConfigs.remove(i);
+			}
+		}
+	
+		maximumConfigs.clear();
+		if ( maxConfigs.size() == 1 ) {
+			maximumConfigs.add(maxConfigs.get(0));
+			return true; // ish...
+		}
+		else if ( maxConfigs.size() >= 2 ) {
+			maximumConfigs.add(maxConfigs.get(0));
+			maximumConfigs.add(maxConfigs.get(1));
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	private boolean generateUniqueSkeletons(final ArrayList<Configuration> configs, final LandingGrid landingGrid) {
+		
+		return false;
 	}
 }
