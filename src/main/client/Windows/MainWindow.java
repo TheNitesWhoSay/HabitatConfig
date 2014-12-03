@@ -54,7 +54,10 @@ public class MainWindow extends GwtWindow {
 		communicationsTab = new CommunicationsTab(root);
 		settingsTab = new SettingsTab(root);
 	}
-	
+	/**
+	 * Method that connects with API and gathers data
+	 * @param url
+	 */
 	private void getResponse(String url) {
 		final JsonpRequestBuilder jsonp = new JsonpRequestBuilder();
 		jsonp.setCallbackParam("callback");

@@ -133,6 +133,10 @@ public class Module {
 		
 		this.status = status;
 	}
+	/**
+	 * Returns module data into string format
+	 * @return the module data in string format
+	 */
 	public String storageString() {
 		return "{"+moduleCode+":"+xc+":"+yc+":"+status+":"+rotationsTillUpright+"}";
 	}

@@ -268,13 +268,20 @@ public class LandingGrid {
 		}
 		return moduleList;
 	}
-
+	/**
+	 * Deletes module from moduleList
+	 * @param xPos
+	 * @param yPos
+	 */
 	public void removeModule(final int xPos, final int yPos) {
 		
 		modules[xPos][yPos] = null;
 		getModuleList().remove(modules[xPos][yPos]);
 	}
-
+	/**
+	 * Converts all modules in the moduleList into string format
+	 * @return module information in string format
+	 */
 	public String generateStorage() {
 		 String modlist = "{";
          for(int i = 0; i < getModuleList().size(); i++){
@@ -283,7 +290,11 @@ public class LandingGrid {
          modlist += "}";
          return modlist;
 	}
-
+	/**
+	 * Grabs module information from local storage
+	 * and converts the string into usable data
+	 * @param inModText
+	 */
 	public void pullStorage(final String inModText) {
 		String modtext = inModText.substring(1, inModText.length()-1);
         while(modtext.length() > 0){

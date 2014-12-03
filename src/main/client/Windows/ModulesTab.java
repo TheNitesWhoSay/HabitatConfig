@@ -174,12 +174,20 @@ public class ModulesTab extends GwtWindow {
 		add(comppanel);
 		return true;
 	}
+	/**
+	 * Sets up URL for test feeds
+	 * @param search
+	 */
 	private void loadTests(int search){
 		String proxy = "http://d.umn.edu/~phil0837/Proxy.php?url=";
         String url =proxy+"http://www.d.umn.edu/~abrooks/SomeTests.php?q="+search;
         url = URL.encode(url);
         getResponse(url);
 	}
+	/**
+	 * Connects with server and gathers data
+	 * @param url2
+	 */
 	private void getResponse(String url2) {
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url2);
 		try {
@@ -256,14 +264,18 @@ public class ModulesTab extends GwtWindow {
 		 }
 		 
   }
-
+	/**
+	 * Clears any module elements stored in local storage
+	 */
 	private void emptyStorage() {
 		 moduleStore = Storage.getLocalStorageIfSupported();
          if (moduleStore != null){
                  moduleStore.removeItem(moduleListKey);
          }
 	}
-
+	/**
+	 * Loads module data from local storage and updates stocktable and map
+	 */
 	private void loadList() {
 		moduleStore = Storage.getLocalStorageIfSupported();
         if (moduleStore != null) {
@@ -276,7 +288,9 @@ public class ModulesTab extends GwtWindow {
         }
 		
 	}
-
+	/**
+	 * Saves modules into local storage
+	 */
 	private void storeList() {
 		moduleStore = Storage.getLocalStorageIfSupported();
         if (moduleStore != null) {
@@ -486,7 +500,7 @@ public class ModulesTab extends GwtWindow {
 		}
 		}
 	}
-
+	
 	private Image getImage(int code2) {
 	  Image im = null;
 		if(code2 > 0 && code2 < 41){
@@ -576,9 +590,15 @@ public class ModulesTab extends GwtWindow {
 			}
 		}
 	}
-	
+	/**
+	 * Locates where a particular module is located on the map.
+	 * @param i
+	 * @param j
+	 * @param k
+	 * @param module_STATUS
+	 * @param l
+	 */
 	protected void getOnMap(int i, int j, int k, MODULE_STATUS module_STATUS, int l) {
-		System.out.println(""+p.getOffsetHeight()+""+p.getOffsetWidth());
 		
 	}
 	/**
