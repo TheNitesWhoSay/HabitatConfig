@@ -64,7 +64,8 @@ public class ModulesTab extends GwtWindow {
 	private HorizontalPanel logpanel = new HorizontalPanel();
 	private Button save = new Button("Save to Local Storage");
 	private Button load = new Button("Load Modules");
-	private Button clear = new Button("Clear Modules");
+	private Button clear = new Button("Clear Storage");
+	private Button clean = new Button("Clear Modules");
 	private Module emptyMod = new Module();
 	private ListBox tests = new ListBox();
 	private FlexTable storetable;
@@ -127,6 +128,12 @@ public class ModulesTab extends GwtWindow {
 		tests.addItem("Test 3");
 		tests.addItem("Test 4");
 		tests.addItem("Test 5");
+		tests.addItem("Test 6");
+		tests.addItem("Test 7");
+		tests.addItem("Test 8");
+		tests.addItem("Test 9");
+		tests.addItem("Test 10");
+		tests.setSelectedIndex(9);
 		tests.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event) {
 				int selection = tests.getSelectedIndex()+1;
@@ -137,6 +144,7 @@ public class ModulesTab extends GwtWindow {
 		leftpanel.add(save);
 		leftpanel.add(load);
 		leftpanel.add(clear);
+		leftpanel.add(clean);
 		leftpanel.add(tests);
 		/**Potential save handler for landing grid moduleList. (Maybe) Thinking eventBus for loading modules */
 		save.addClickHandler(new ClickHandler() {
@@ -154,6 +162,13 @@ public class ModulesTab extends GwtWindow {
 		clear.addClickHandler(new ClickHandler(){
 			public void onClick(final ClickEvent e){
 				emptyStorage();
+			}
+		});
+		clean.addClickHandler(new ClickHandler(){
+			public void onClick(final ClickEvent e){
+				storetable.clear(true);
+				g.clear();
+				root.landingGrid.getModuleList().clear();
 			}
 		});
 		modLabel.add(modID);

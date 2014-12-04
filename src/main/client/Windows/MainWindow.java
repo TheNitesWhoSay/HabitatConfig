@@ -3,6 +3,7 @@ package main.client.Windows;
 import main.client.HabitatConfig;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -18,6 +19,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -31,7 +33,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class MainWindow extends GwtWindow {
 
 	private HabitatConfig root;
-	
+	private HorizontalPanel ad;
 	private HomeTab homeTab;
 	private ModulesTab modulesTab;
 	private ConfigTab configTab;
@@ -39,6 +41,7 @@ public class MainWindow extends GwtWindow {
 	private SettingsTab settingsTab;
 	private VerticalPanel weatherPanel = new VerticalPanel();
 	private HorizontalPanel hpLogout;
+	private Grid weatherGrid = new Grid(3,2);
 	private TabPanel tabs;
 	/**
 	 * Sets default variable values
@@ -73,14 +76,43 @@ public class MainWindow extends GwtWindow {
 		 String result = obj.toString();
 		 JSONObject jA = (JSONObject)JSONParser.parseLenient(result);
          JSONValue jEnter = jA.get("current_observation");
+         JSONValue jEnter2 = jA.get("display_location");
          JSONObject jB = (JSONObject)JSONParser.parseLenient(jEnter.toString());
          JSONValue temp = jB.get("temp_f");
+         JSONValue tempc = jB.get("temp_c");
+         JSONValue mph = jB.get("wind_mph");
+         JSONValue kph = jB.get("wind_kph");
+         JSONValue update = jB.get("observation_time");
          JSONValue visibility = jB.get("visibility_mi");
+         JSONValue visibilityk = jB.get("visibility_k");
          JSONValue wind = jB.get("wind_string");
-         Label weatherHeader = new Label("Mars Weather Report");
-         Label temperature = new Label(""+temp);
-         weatherPanel.add(weatherHeader);
-         weatherPanel.add(temperature);
+         JSONValue iconoutlook = jB.get("icon_url");
+         Label weatherHeader = new Label("Mars Weather Report:");
+         weatherHeader.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+         Label temperature = new Label("Temperature: "+temp+"f / "+""+tempc+" c");
+         temperature.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+         Label windflow = new Label("Wind: "+mph+" mph/"+kph+" kph");
+         windflow.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+         Label visible = new Label("Visibility: "+visibility+"mi");
+         visible.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+         Image outlook = new Image("images/cloudy.jpg");
+         Label updatetime = new Label(""+update);
+         updatetime.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+         weatherGrid.setWidget(0, 0, weatherHeader);
+         weatherGrid.setWidget(1,0,temperature);
+         weatherGrid.setWidget(2,0,windflow); 
+         weatherGrid.setWidget(0,1,updatetime);
+         weatherGrid.setWidget(1, 1, outlook);
+         weatherGrid.setWidget(2, 1, visible);
+         weatherGrid.setStyleName("WeatherStyle");
+         
+        ad = new HorizontalPanel();
+        Image adimage = new Image("images/wunderground.jpg");
+ 		ad.add(adimage);
+ 		ad.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+ 		ad.setWidth("100%");
+ 		add(ad);
+ 		
 		 }
 		});
 	}
@@ -147,7 +179,7 @@ public class MainWindow extends GwtWindow {
 		communicationsTab.show(tabs, "Communications");
 		settingsTab.show(tabs, "Settings");
 		selectTab(0);
-		add(weatherPanel);
+		add(weatherGrid);
 		add(tabs);
 		
 		// 10 day alert

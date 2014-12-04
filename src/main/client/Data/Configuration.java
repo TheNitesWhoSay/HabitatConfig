@@ -3,7 +3,10 @@ package main.client.Data;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import com.google.gwt.user.client.ui.Image;
+
 import main.client.Data.ModuleTypes.MODULE_TYPE;
+import main.client.Windows.ConfigTab;
 
 /**
  * A stored habitat configuration
@@ -97,25 +100,70 @@ public class Configuration extends LandingGrid {
 	public String getModulesString() {
 		
 		String modulesString = "";
+		
 		for ( int y=0; y<getDepth(); y++ )
 		{
 			for ( int x=0; x<getWidth(); x++ )
 			{
-				if ( futureModules[x][y] == null )
+				if ( futureModules[x][y] == null ){
 					modulesString += ' ';
+				}
 				else
 				{
+					Image imag = new Image();
 					switch ( futureModules[x][y] )
 					{
-						case Plain:			   modulesString += "P"; break;
-						case Dormitory:		   modulesString += "D"; break;
-						case Sanitation:	   modulesString += "S"; break;
-						case FoodAndWater:	   modulesString += "F"; break;
-						case GymAndRelaxation: modulesString += "G"; break;
-						case Canteen:		   modulesString += "C"; break;
-						case Power:			   modulesString += "P"; break;
-						case Control:		   modulesString += "L"; break;
-						case Medical:		   modulesString += "M"; break;
+					
+						case Airlock:
+							imag = new Image("images/Airlock.jpg");
+						    imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "P"; break;
+						case Plain:			   
+						    imag = new Image("images/Plain.jpg");
+						    imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "P"; break;
+						case Dormitory:		   
+							imag = new Image("images/Dormitory.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "D"; break;
+						case Sanitation:	   
+							imag = new Image("images/Sanitation.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "S"; break;
+						case FoodAndWater:	   
+							imag = new Image("images/Food.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "F"; break;
+						case GymAndRelaxation: 
+							imag = new Image("images/Gym.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "G"; break;
+						case Canteen:		   
+							imag = new Image("images/Canteen.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "C"; break;
+						case Power:			   
+							imag = new Image("images/Power.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "P"; break;
+						case Control:		   
+							imag = new Image("images/Control.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "L"; break;
+						case Medical:		   
+							imag = new Image("images/Medical.jpg");
+							imag.setSize("10px", "10px");
+							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "M"; break;
 						default:			   modulesString += " "; break;
 					}
 				}

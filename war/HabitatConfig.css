@@ -12,6 +12,9 @@ h1 {
 .landingStyle{
 	background-image: url("images/LandingArea.jpg");
 }
+.WeatherStyle{
+	background-image: url("images/marsSky.jpg");
+}
 .Unbuildable{
 	background-image: url("images/black.jpg");
 }
