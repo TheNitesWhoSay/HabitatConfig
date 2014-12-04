@@ -50,3 +50,4 @@ gwt-unitCache
 *.class
 *.js
 *.class
+war/habitatconfig/habitatconfig.nocache.js
