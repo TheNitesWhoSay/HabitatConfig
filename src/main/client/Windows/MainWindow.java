@@ -11,6 +11,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -148,6 +149,19 @@ public class MainWindow extends GwtWindow {
 		selectTab(0);
 		add(weatherPanel);
 		add(tabs);
+		
+		// 10 day alert
+		
+		Timer calibrationTime = new Timer() {
+			@Override
+			public void run() {
+				Window.alert("Ten days have elapsed since the milometer device on "
+								+ "the lift rover was calibrated.");
+			}
+		};
+		//15 seconds
+		calibrationTime.schedule(15000);
+		
 		return true;
 	}
 }

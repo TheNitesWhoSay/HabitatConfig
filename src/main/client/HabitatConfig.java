@@ -1,7 +1,6 @@
 package main.client;
 
 import java.util.LinkedList;
-
 import main.client.Data.ConfigGenerator;
 import main.client.Data.LandingGrid;
 import main.client.Windows.ConfigTab;
@@ -59,13 +58,6 @@ public class HabitatConfig implements EntryPoint {
 		else
 			mainWindow.show(RootPanel.get());
 		
-		// Put code here to start 10 day alert
-		/*
-		Timer timer = new Timer();
-		timer.newEvent... { 
-			Window.alert("10 days...")
-		}
-		*/
 		
 		// From here on out the program is message driven
 	}
