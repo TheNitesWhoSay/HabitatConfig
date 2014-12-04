@@ -189,6 +189,7 @@ public class ModulesTab extends GwtWindow {
 	 * @param url2
 	 */
 	private void getResponse(String url2) {
+		System.out.println(url2);
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url2);
 		try {
 		 Request request = builder.sendRequest(null, new RequestCallback() {
@@ -200,57 +201,9 @@ public class ModulesTab extends GwtWindow {
 		 public void onResponseReceived(Request request, Response response) {
 
 		 if (200 == response.getStatusCode()) {
-             String rt = response.getText();
-             String sAll = rt;
-             JSONArray jA = 
-             (JSONArray)JSONParser.parseLenient(sAll);
-             JSONNumber jN1,jN2,jN3,jN4;
-             JSONString jS1;
-             double id;
-             double x;
-             double y;
-             String cond;
-             double orient;
-             for (int i = 0; i < jA.size(); i++) {
-                     JSONObject jO = (JSONObject)jA.get(i);
-                     jN1 = (JSONNumber) jO.get("code");
-                     id = jN1.doubleValue();
-                     jS1 = (JSONString) jO.get("status");
-                     cond = jS1.stringValue();
-                     jN4 = (JSONNumber) jO.get("turns");
-                     orient = jN4.doubleValue();
-                     jN2 = (JSONNumber) jO.get("X");
-                     x = jN2.doubleValue();
-                     jN3 = (JSONNumber) jO.get("Y");
-                     y = jN3.doubleValue();
-                     int intx = (int) x;
-                     int inty = (int) y;
-                     int intid = (int) id;
-                     MODULE_STATUS s;
-                     if(cond.equals("undamaged")){
-                     	s = MODULE_STATUS.Usable;
-                     }
-                     else if(cond.equals("usable after repair")){
-                     	s = MODULE_STATUS.UsableAfterRepair;
-                     }
-                     else if(cond.equals("damaged beyond repair")){
-                     	s = MODULE_STATUS.DamagedBeyondRepair;
-                     }
-                     else {
-                     	s = MODULE_STATUS.Unknown;
-                     }
-                     String orientation = String.valueOf(orient);
-                     if(orientation.equals("0")){
-                     root.landingGrid.setModuleInfo(intx,inty ,intid, 0, s);
-                     }
-                     else if(orientation.equals("1")){
-                     	root.landingGrid.setModuleInfo(intx, inty, intid, 1, s);
-                     }
-                     else {
-                     	root.landingGrid.setModuleInfo(intx, inty, intid, 2, s);
-                     }
-                     refreshDisplayedModules(root.landingGrid.getModuleList());
-             }
+			 String rt = response.getText();
+			 runTest(rt);
+             
              }
       else {
              Window.alert("Couldn't retrieve JSON (" + response.getStatusText()
@@ -264,6 +217,60 @@ public class ModulesTab extends GwtWindow {
 		 }
 		 
   }
+	protected void runTest(String rtest) {
+        String sAll = rtest;
+        JSONArray jA = 
+        (JSONArray)JSONParser.parseLenient(sAll);
+        JSONNumber jN1,jN2,jN3,jN4;
+        JSONString jS1;
+        double id;
+        double x;
+        double y;
+        String cond;
+        double orient;
+        for (int i = 0; i < jA.size(); i++) {
+                JSONObject jO = (JSONObject)jA.get(i);
+                jN1 = (JSONNumber) jO.get("code");
+                id = jN1.doubleValue();
+                jS1 = (JSONString) jO.get("status");
+                cond = jS1.stringValue();
+                jN4 = (JSONNumber) jO.get("turns");
+                orient = jN4.doubleValue();
+                jN2 = (JSONNumber) jO.get("X");
+                x = jN2.doubleValue();
+                jN3 = (JSONNumber) jO.get("Y");
+                y = jN3.doubleValue();
+                int intx = (int) x;
+                int inty = (int) y;
+                int intid = (int) id;
+                MODULE_STATUS s;
+                if(cond.equals("undamaged")){
+                	s = MODULE_STATUS.Usable;
+                }
+                else if(cond.equals("usable after repair")){
+                	s = MODULE_STATUS.UsableAfterRepair;
+                }
+                else if(cond.equals("damaged beyond repair")){
+                	s = MODULE_STATUS.DamagedBeyondRepair;
+                }
+                else {
+                	s = MODULE_STATUS.Unknown;
+                }
+                String orientation = String.valueOf(orient);
+                if(orientation.equals("0")){
+                root.landingGrid.setModuleInfo(intx,inty ,intid, 0, s);
+                }
+                else if(orientation.equals("1")){
+                	root.landingGrid.setModuleInfo(intx, inty, intid, 1, s);
+                }
+                else {
+                	root.landingGrid.setModuleInfo(intx, inty, intid, 2, s);
+                }
+        }
+        refreshDisplayedModules(root.landingGrid.getModuleList());
+		
+	}
+
 	/**
 	 * Clears any module elements stored in local storage
 	 */

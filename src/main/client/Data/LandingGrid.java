@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
+import main.client.Windows.ModulesTab;
 
 /**
  * Holds information about terrain and modules within the landing zone
@@ -156,10 +157,9 @@ public class LandingGrid {
 			LinkedList<Module> mods = getModuleList();
 			ListIterator<Module> i = mods.listIterator();
 			while ( i.hasNext() ) {
-				
 				Module curr = i.next();
 				if(curr.getCode()==code){
-					
+					ModulesTab.g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 					removeModule(curr.getXPos(), curr.getYPos());
 				}
 			}
@@ -274,7 +274,6 @@ public class LandingGrid {
 	 * @param yPos
 	 */
 	public void removeModule(final int xPos, final int yPos) {
-		
 		modules[xPos][yPos] = null;
 		getModuleList().remove(modules[xPos][yPos]);
 	}
