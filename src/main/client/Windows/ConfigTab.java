@@ -7,8 +7,10 @@ import javax.swing.ButtonGroup;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
@@ -17,6 +19,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import main.client.HabitatConfig;
 import main.client.Data.ConfigGenerator;
@@ -30,8 +33,12 @@ public class ConfigTab extends GwtWindow {
 	private ScrollPanel configPanel; //Panel of configurations available
 	private VerticalPanel controls;
 	RadioButton mincon1;
+	Button configSave;
 	public static RadioButton mincon2;
 	private ListBox availBox; //Listbox of possible options
+	protected Storage configStore;
+	protected LandingGrid cList;
+	protected String configListKey;
 	public static Grid configGrid;
 	/**
 	 * Default constructor
@@ -48,6 +55,7 @@ public class ConfigTab extends GwtWindow {
 	protected boolean create() {
 		controls = new VerticalPanel();
 		configPanel = new ScrollPanel();
+		configSave = new Button("Save Configurations");
 		//configPanel.setSize("275px", "500px");
 		configPanel.setTitle("Configurations");
 		availBox = new ListBox();
@@ -99,11 +107,12 @@ public class ConfigTab extends GwtWindow {
 					Window.alert("Config Generation Failed");
 			}
 		});
-		mincon1 = new RadioButton("Min","Minimun Configuration 1");
-		mincon2 = new RadioButton("Min","Minimun configuration 2");
+		mincon1 = new RadioButton("Min","Minimum Configuration 1");
+		mincon2 = new RadioButton("Min","Minimum Configuration 2");
 		controls.add(mincon1);
 		controls.add(mincon2);
 		controls.add(generate);
+		controls.add(configSave);
 		add(controls);
 		//configPanel.add(availBox);
 		//add(configPanel);
