@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
+import main.client.Windows.ModulesTab;
 
 /**
  * Holds information about terrain and modules within the landing zone
@@ -157,10 +158,9 @@ public class LandingGrid {
 			LinkedList<Module> mods = getModuleList();
 			ListIterator<Module> i = mods.listIterator();
 			while ( i.hasNext() ) {
-				
 				Module curr = i.next();
 				if(curr.getCode()==code){
-					
+					ModulesTab.g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 					removeModule(curr.getXPos(), curr.getYPos());
 				}
 			}
@@ -269,13 +269,19 @@ public class LandingGrid {
 		}
 		return moduleList;
 	}
-
+	/**
+	 * Deletes module from moduleList
+	 * @param xPos
+	 * @param yPos
+	 */
 	public void removeModule(final int xPos, final int yPos) {
-		
 		modules[xPos][yPos] = null;
 		getModuleList().remove(modules[xPos][yPos]);
 	}
-
+	/**
+	 * Converts all modules in the moduleList into string format
+	 * @return module information in string format
+	 */
 	public String generateStorage() {
 		 String modlist = "{";
          for(int i = 0; i < getModuleList().size(); i++){
@@ -284,7 +290,11 @@ public class LandingGrid {
          modlist += "}";
          return modlist;
 	}
-
+	/**
+	 * Grabs module information from local storage
+	 * and converts the string into usable data
+	 * @param inModText
+	 */
 	public void pullStorage(final String inModText) {
 		String modtext = inModText.substring(1, inModText.length()-1);
         while(modtext.length() > 0){

@@ -2,13 +2,27 @@ package main.client.Windows;
 
 import main.client.HabitatConfig;
 
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.jsonp.client.JsonpRequestBuilder;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * This class contains the tabbed interface,
@@ -23,16 +37,17 @@ public class MainWindow extends GwtWindow {
 	private ConfigTab configTab;
 	private CommunicationsTab communicationsTab;
 	private SettingsTab settingsTab;
-	
+	private VerticalPanel weatherPanel = new VerticalPanel();
 	private HorizontalPanel hpLogout;
 	private TabPanel tabs;
-	
 	/**
 	 * Sets default variable values
 	 * @param root a reference to the root class
 	 */
 	public MainWindow(final HabitatConfig root) {
-		
+		String url = "http://api.wunderground.com/api/32e8543fe9f5ddaf/geolookup/conditions/forecast/q/autoip.json";//pulls information based on user IP address
+	    url = URL.encode(url);
+		getResponse(url);
 		this.root = root;
 		homeTab = new HomeTab(root);
 		modulesTab = new ModulesTab(root);
@@ -40,7 +55,36 @@ public class MainWindow extends GwtWindow {
 		communicationsTab = new CommunicationsTab(root);
 		settingsTab = new SettingsTab(root);
 	}
-	
+	/**
+	 * Method that connects with API and gathers data
+	 * @param url
+	 */
+	private void getResponse(String url) {
+		final JsonpRequestBuilder jsonp = new JsonpRequestBuilder();
+		jsonp.setCallbackParam("callback");
+		jsonp.requestObject(url, new AsyncCallback<JavaScriptObject>() {
+		 @Override
+		 public void onFailure(final Throwable caught) {
+		 Window.alert("JSONP onFailure");
+		 }
+		 @Override
+		 public void onSuccess(JavaScriptObject s) {
+		 JSONObject obj = new JSONObject(s);
+		 String result = obj.toString();
+		 JSONObject jA = (JSONObject)JSONParser.parseLenient(result);
+         JSONValue jEnter = jA.get("current_observation");
+         JSONObject jB = (JSONObject)JSONParser.parseLenient(jEnter.toString());
+         JSONValue temp = jB.get("temp_f");
+         JSONValue visibility = jB.get("visibility_mi");
+         JSONValue wind = jB.get("wind_string");
+         Label weatherHeader = new Label("Mars Weather Report");
+         Label temperature = new Label(""+temp);
+         weatherPanel.add(weatherHeader);
+         weatherPanel.add(temperature);
+		 }
+		});
+	}
+
 	/**
 	 * Selects the given tab number
 	 * @param tabNum the given tab number
@@ -93,6 +137,9 @@ public class MainWindow extends GwtWindow {
 			showLogout();
 			
 		tabs = new TabPanel();
+		weatherPanel.setBorderWidth(2);
+		weatherPanel.setWidth("50%");
+		weatherPanel.getElement().getStyle().setWidth(150, Unit.PX);
 		tabs.setWidth("100%");
 		homeTab.show(tabs, "Home");
 		modulesTab.show(tabs, "Modules");
@@ -100,7 +147,20 @@ public class MainWindow extends GwtWindow {
 		communicationsTab.show(tabs, "Communications");
 		settingsTab.show(tabs, "Settings");
 		selectTab(0);
+		add(weatherPanel);
 		add(tabs);
+		
+		// 10 day alert
+		
+		Timer calibrationTime = new Timer() {
+			@Override
+			public void run() {
+				Window.alert("Ten days have elapsed since the milometer device on "
+								+ "the lift rover was calibrated.");
+			}
+		};
+		//15 seconds
+		calibrationTime.schedule(15000);
 		
 		return true;
 	}
