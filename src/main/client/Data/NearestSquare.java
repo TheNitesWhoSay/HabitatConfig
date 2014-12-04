@@ -23,7 +23,7 @@ public class NearestSquare {
 	 */
 	public NearestSquare(final int width, final int depth) {
 		
-		numSquares = (width-1)*depth;
+		numSquares = (width-2)*(depth-1);
 		xValues = new int[numSquares];
 		yValues = new int[numSquares];
 		LoadValues();

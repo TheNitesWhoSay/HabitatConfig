@@ -67,8 +67,9 @@ public class LandingGrid {
 		{
 			for ( int x=0; x<width; x++ )
 			{
-				if ( other.modules[x][y].getStatus() == MODULE_STATUS.DamagedBeyondRepair ||
-					 other.modules[x][y].getStatus() == MODULE_STATUS.UsableAfterRepair )
+				if ( other.modules[x][y] != null &&
+					 ( other.modules[x][y].getStatus() == MODULE_STATUS.DamagedBeyondRepair ||
+					   other.modules[x][y].getStatus() == MODULE_STATUS.UsableAfterRepair ) )
 				{
 					modules[x][y] = other.modules[x][y];
 				}

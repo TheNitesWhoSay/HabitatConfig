@@ -3,7 +3,8 @@ package main.client.Data;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import main.client.Data.ModuleStatuses.MODULE_STATUS;
+import com.google.gwt.user.client.Window;
+
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 /**
@@ -30,6 +31,13 @@ public class ConfigGenerator {
 	public ConfigGenerator(final int width, final int height) {
 		
 		nearestSquares = new NearestSquare(width, height);
+		minimumConfigs = new LinkedList<Configuration>();
+		maximumConfigs = new LinkedList<Configuration>();
+	}
+	
+	public LinkedList<Configuration> getMinimumConfigs() {
+		
+		return minimumConfigs;
 	}
 	
 	
@@ -107,8 +115,9 @@ public class ConfigGenerator {
 			
 			if ( config.isValidMinimumLayout() )
 			{
-				if ( placeWrap(numTypeWrapsUsed, config) ) {
-					
+				if ( config.placePlains() &&
+					 placeWrap(numTypeWrapsUsed, config) ) 
+				{	
 					goodConfig = true;
 					if ( config.isCornerLayout() )
 						numCornerWrapsUsed ++;
@@ -117,7 +126,7 @@ public class ConfigGenerator {
 				}
 			}
 			
-			if ( !goodConfig )
+			if ( !goodConfig ) 
 				minConfigs.remove(i);
 		}
 		
@@ -281,16 +290,14 @@ public class ConfigGenerator {
 			Configuration config = new Configuration(nearestSquares);
 			maxConfigs.add(config);
 		}
-		
-		if ( !generateUniqueSkeletons(maxConfigs, landingGrid) )
-			return false;
 			 
 		for ( int i=maxConfigs.size()-1; i>=0; i-- ) {
 			
 			Configuration config = maxConfigs.get(i);
 			ModuleCount count = landingGrid.getUsableModuleCount();
 			
-			if ( !( config.getSkeletonAverageCoordinates() &&
+			if ( !( config.generateSkeleton(count, i) &&
+					config.getSkeletonAverageCoordinates() &&
 					config.placeAirlocks(count) &&
 					config.placeSpecialModules(count) &&
 					config.placeCanteens(count) &&
@@ -298,7 +305,7 @@ public class ConfigGenerator {
 					config.pairSanitationToGyms(count) &&
 					config.pairDormsToSanitations(count) &&
 					config.placeDormSanitationPairs(count)
-				  ) 
+				  )
 			   )
 			{
 				maxConfigs.remove(i);
@@ -319,8 +326,4 @@ public class ConfigGenerator {
 			return false;
 	}
 	
-	private boolean generateUniqueSkeletons(final ArrayList<Configuration> configs, final LandingGrid landingGrid) {
-		
-		return false;
-	}
 }

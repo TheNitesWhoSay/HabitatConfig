@@ -1,7 +1,5 @@
 package main.client;
 
-import java.util.LinkedList;
-
 import main.client.Data.ConfigGenerator;
 import main.client.Data.LandingGrid;
 import main.client.Windows.ConfigTab;
@@ -27,7 +25,6 @@ public class HabitatConfig implements EntryPoint {
 	public LoginWindow loginWindow;
 	public ConfigTab configTab;
 	public LandingGrid landingGrid;
-	public LinkedList<LandingGrid> configurations;
 	
 	/**
 	 * Constructs the HabitatConfig program
@@ -43,7 +40,7 @@ public class HabitatConfig implements EntryPoint {
 	 * Starts the Habitat Configuration Software
 	 */
 	public void onModuleLoad() {
-				
+		
 		// Call all constructors
 		mainWindow = new MainWindow(this);
 		loginWindow = new LoginWindow(this);

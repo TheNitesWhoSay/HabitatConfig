@@ -60,11 +60,15 @@ public class Configuration extends LandingGrid {
 	private boolean completedConfig;
 	private NearestSquare nearestSquares;
 	private MODULE_TYPE[/*x*/][/*y*/] futureModules;
+	@SuppressWarnings("unused")
 	private int skeletonAvgX;
+	@SuppressWarnings("unused")
 	private int skeletonAvgY;
 	
-	private int airlockXcs[/*x*/];
-	private int airlockYcs[/*y*/];
+	@SuppressWarnings("unused")
+	private int[/*x*/] airlockXcs;
+	@SuppressWarnings("unused")
+	private int[/*y*/] airlockYcs;
 	
 	/**
 	 * Constructs a configuration
@@ -88,6 +92,65 @@ public class Configuration extends LandingGrid {
 		completedConfig = false;
 		skeletonAvgX = getWidth()/2;
 		skeletonAvgY = getDepth()/2;
+	}
+	
+	public String getModulesString() {
+		
+		String modulesString = "";
+		for ( int y=0; y<getDepth(); y++ )
+		{
+			for ( int x=0; x<getWidth(); x++ )
+			{
+				if ( futureModules[x][y] == null )
+					modulesString += ' ';
+				else
+				{
+					switch ( futureModules[x][y] )
+					{
+						case Plain:			   modulesString += "P"; break;
+						case Dormitory:		   modulesString += "D"; break;
+						case Sanitation:	   modulesString += "S"; break;
+						case FoodAndWater:	   modulesString += "F"; break;
+						case GymAndRelaxation: modulesString += "G"; break;
+						case Canteen:		   modulesString += "C"; break;
+						case Power:			   modulesString += "P"; break;
+						case Control:		   modulesString += "L"; break;
+						case Medical:		   modulesString += "M"; break;
+						default:			   modulesString += " "; break;
+					}
+				}
+			}
+			modulesString += "\r\n";
+		}
+		return modulesString;
+	}
+	
+	public MODULE_TYPE getFutureModule(int x, int y) {
+		
+		if ( futureModules[x][y] != MODULE_TYPE.Reserved &&
+			 futureModules[x][y] != MODULE_TYPE.Unknown )
+		{
+			return futureModules[x][y];
+		}
+		else
+			return null;
+	}
+	
+	public LinkedList<MODULE_TYPE> getFutureModules() {
+		
+		LinkedList<MODULE_TYPE> futureModuleTypes = new LinkedList<MODULE_TYPE>();
+		for ( int y=0; y<getDepth(); y++ )
+		{
+			for ( int x=0; x<getWidth(); x++ )
+			{
+				if ( futureModules[x][y] != MODULE_TYPE.Reserved &&
+					 futureModules[x][y] != MODULE_TYPE.Unknown )
+				{
+					futureModuleTypes.add(futureModules[x][y]);
+				}
+			}
+		}
+		return futureModuleTypes;
 	}
 	
 	/**
@@ -211,36 +274,35 @@ public class Configuration extends LandingGrid {
 			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
-			break;
+			return true;
 		case 2:
 			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
 			futureModules[layoutX+2][layoutY+2] = MODULE_TYPE.Plain;
-			break;
+			return true;
 		case 3:
 			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+2][layoutY+2] = MODULE_TYPE.Plain;
-			break;
+			return true;
 		case 4:
 			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
 			futureModules[layoutX+2][layoutY+2] = MODULE_TYPE.Plain;
-			break;
+			return true;
 		case 5:
 			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+2][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+3][layoutY+1] = MODULE_TYPE.Plain;
-			break;
+			return true;
 		case 6:
 			futureModules[layoutX+1][layoutY+1] = MODULE_TYPE.Plain;
 			futureModules[layoutX+1][layoutY+2] = MODULE_TYPE.Plain;
 			futureModules[layoutX+1][layoutY+3] = MODULE_TYPE.Plain;
-			break;
+			return true;
 		default:
 			return false;
 		}
-		return true;
 	}
 	
 	/**
@@ -317,12 +379,14 @@ public class Configuration extends LandingGrid {
 		boolean skippedSlot = false;
 		for ( int slot=0; slot<8; slot++ ) {
 			
-			if ( setSlot(slot, currType) )
-				currType = it.next();
-			else if ( !skippedSlot )
-				skippedSlot = true;
-			else
-				return false;
+			currType = moduleTypes.get(slot);
+			if ( !setSlot(slot, currType) )
+			{
+				if ( !skippedSlot )
+					skippedSlot = true;
+				else
+					return false;
+			}
 		}
 		
 		completedConfig = true;
@@ -554,6 +618,26 @@ public class Configuration extends LandingGrid {
 	/*
 	 * 
 	 */
+	
+	public boolean generateSkeleton(final ModuleCount count, final int skeletonType) {
+		
+		if ( skeletonType == 0 )
+			return generateSkeletonZero(count);
+		else if ( skeletonType == 1 )
+			return generateSkeletonOne(count);
+		else
+			return false;
+	}
+	
+	private boolean generateSkeletonZero(final ModuleCount count) {
+		
+		return false;
+	}
+	
+	private boolean generateSkeletonOne(final ModuleCount count) {
+		
+		return false;
+	}
 	
 	public boolean getSkeletonAverageCoordinates() {
 		
