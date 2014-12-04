@@ -100,7 +100,7 @@ public class Configuration extends LandingGrid {
 	public String getModulesString() {
 		
 		String modulesString = "";
-		
+		ConfigTab.configGrid.clear();
 		for ( int y=0; y<getDepth(); y++ )
 		{
 			for ( int x=0; x<getWidth(); x++ )

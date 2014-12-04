@@ -90,6 +90,9 @@ public class ConfigTab extends GwtWindow {
 							config = i.next();
 							config.getModulesString();
 						}
+						else{
+							configGrid.clear();
+						}
 					}
 				}
 				else
