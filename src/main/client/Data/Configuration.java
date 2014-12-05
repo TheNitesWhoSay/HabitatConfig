@@ -3,10 +3,9 @@ package main.client.Data;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.Window;
 
 import main.client.Data.ModuleTypes.MODULE_TYPE;
-import main.client.Windows.ConfigTab;
 
 /**
  * A stored habitat configuration
@@ -100,71 +99,38 @@ public class Configuration extends LandingGrid {
 	public String getModulesString() {
 		
 		String modulesString = "";
-		ConfigTab.configGrid.clear();
 		for ( int y=0; y<getDepth(); y++ )
 		{
 			for ( int x=0; x<getWidth(); x++ )
 			{
-				if ( futureModules[x][y] == null ){
-					modulesString += ' ';
+				if ( futureModules[x][y] == null ) {
+					modulesString += " ";
 				}
-				else
-				{
-					Image imag = new Image();
+				else {
 					switch ( futureModules[x][y] )
 					{
-					
 						case Airlock:
-							imag = new Image("images/Airlock.jpg");
-						    imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+							modulesString += "A"; break;
+						case Plain:
 							modulesString += "P"; break;
-						case Plain:			   
-						    imag = new Image("images/Plain.jpg");
-						    imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
-							modulesString += "P"; break;
-						case Dormitory:		   
-							imag = new Image("images/Dormitory.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+						case Dormitory:
 							modulesString += "D"; break;
-						case Sanitation:	   
-							imag = new Image("images/Sanitation.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+						case Sanitation:
 							modulesString += "S"; break;
-						case FoodAndWater:	   
-							imag = new Image("images/Food.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+						case FoodAndWater:
 							modulesString += "F"; break;
-						case GymAndRelaxation: 
-							imag = new Image("images/Gym.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+						case GymAndRelaxation:
 							modulesString += "G"; break;
-						case Canteen:		   
-							imag = new Image("images/Canteen.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+						case Canteen:
 							modulesString += "C"; break;
-						case Power:			   
-							imag = new Image("images/Power.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
-							modulesString += "P"; break;
-						case Control:		   
-							imag = new Image("images/Control.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+						case Power:
+							modulesString += "W"; break;
+						case Control:
 							modulesString += "L"; break;
-						case Medical:		   
-							imag = new Image("images/Medical.jpg");
-							imag.setSize("10px", "10px");
-							ConfigTab.configGrid.setWidget(x,y,imag);
+						case Medical:
 							modulesString += "M"; break;
-						default:			   modulesString += " "; break;
+						default:
+							modulesString += " "; break;
 					}
 				}
 			}
@@ -175,7 +141,9 @@ public class Configuration extends LandingGrid {
 	
 	public MODULE_TYPE getFutureModule(int x, int y) {
 		
-		if ( futureModules[x][y] != MODULE_TYPE.Reserved &&
+		if ( x >= 0 && x <= getWidth() && y >= 0 && y <= getDepth() &&
+			 futureModules[x][y] != null &&
+			 futureModules[x][y] != MODULE_TYPE.Reserved &&
 			 futureModules[x][y] != MODULE_TYPE.Unknown )
 		{
 			return futureModules[x][y];
@@ -242,8 +210,25 @@ public class Configuration extends LandingGrid {
 			return false;
 		else
 		{
-			clusterAvgX = getWidth()/2;
-			clusterAvgY = getDepth()/2;
+			int totalXcs = 0;
+			int totalYcs = 0;
+			int numModules = usableModules.size();
+			if ( numModules > 0 ) {
+				
+				for ( int i=0; i<numModules; i++ ) {
+					
+					totalXcs += usableModules.get(i).getXPos();
+					totalYcs += usableModules.get(i).getYPos();
+				}
+				
+				clusterAvgX = totalXcs/numModules;
+				clusterAvgY = totalYcs/numModules;
+			}
+			else {
+				
+				clusterAvgX = getWidth()/2;
+				clusterAvgY = getDepth()/2;
+			}
 			return true;
 		}
 	}
@@ -279,8 +264,8 @@ public class Configuration extends LandingGrid {
 		int maxSquareIndex = nearestSquares.getNumSquares();
 		for ( int i=0; i<maxSquareIndex; i++ ) {
 			
-			int x = nearestSquares.getX(i);
-			int y = nearestSquares.getY(i);
+			int x = clusterAvgX + nearestSquares.getX(i);
+			int y = clusterAvgY + nearestSquares.getY(i);;
 			
 			if ( layoutFits(x, y) )
 			{
@@ -308,6 +293,7 @@ public class Configuration extends LandingGrid {
 			}
 		}
 		
+		Window.alert("Couldn't find usable anchor");
 		return false;
 	}
 	

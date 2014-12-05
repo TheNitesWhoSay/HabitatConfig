@@ -1,34 +1,25 @@
 package main.client.Windows;
 
 import java.util.LinkedList;
-import java.util.ListIterator;
-
-import javax.swing.ButtonGroup;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 import main.client.HabitatConfig;
 import main.client.Data.ConfigGenerator;
 import main.client.Data.Configuration;
 import main.client.Data.LandingGrid;
+import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 public class ConfigTab extends GwtWindow {
 
-	@SuppressWarnings("unused")
 	private HabitatConfig root;
 	private ScrollPanel configPanel; //Panel of configurations available
 	private VerticalPanel controls;
@@ -47,6 +38,53 @@ public class ConfigTab extends GwtWindow {
 		
 		super();
 		this.root = root;
+	}
+	
+	public void drawModule(MODULE_TYPE type, int x, int y) {
+		
+		Image image = getImage(type);
+		if ( image != null ) {
+			
+			image.setSize("10px", "10px");
+		    configGrid.setWidget(50-y, x-1, image);
+		}
+	}
+	
+	public Image getImage(MODULE_TYPE type) {
+		
+		Image imag = null;
+		if ( type != null )
+		{	
+			switch ( type )
+			{
+				case Airlock: imag = new Image("images/Airlock.jpg"); break;
+				case Plain: imag = new Image("images/Plain.jpg"); break;
+				case Dormitory:	imag = new Image("images/Dormitory.jpg"); break;
+				case Sanitation: imag = new Image("images/Sanitation.jpg"); break;
+				case FoodAndWater: imag = new Image("images/Food.jpg"); break;
+				case GymAndRelaxation: imag = new Image("images/Gym.jpg"); break;
+				case Canteen: imag = new Image("images/Canteen.jpg"); break;
+				case Power: imag = new Image("images/Power.jpg"); break;
+				case Control: imag = new Image("images/Control.jpg"); break;
+				case Medical: imag = new Image("images/Medical.jpg"); break;
+				default: imag = null; break;
+			}
+		}
+		
+		return imag;
+	}
+	
+	public void renderConfig(Configuration config) {
+		
+		configGrid.clear();
+		for ( int y=0; y<config.getDepth(); y++ ) {
+			
+			for ( int x=0; x<config.getWidth(); x++ ) {
+				
+				MODULE_TYPE type = config.getFutureModule(x, y);
+				drawModule(type, x, y);
+			}
+		}
 	}
 	
 	/**
@@ -84,24 +122,13 @@ public class ConfigTab extends GwtWindow {
 				if ( generator.GenerateTwoMinimumConfigs(landingGrid) ) {
 					
 					LinkedList<Configuration> configs = generator.getMinimumConfigs();
-					ListIterator<Configuration> i = configs.listIterator();
-					while ( i.hasNext() ) {
-						
-						Configuration config = i.next();
-						//Window.alert(config.getModulesString());
-						if(mincon1.isChecked()){
-							config.getModulesString();
-							return;
-						}
-						else if(mincon2.isChecked()){
-							configGrid.clear();
-							config = i.next();
-							config.getModulesString();
-						}
-						else{
-							configGrid.clear();
-						}
-					}
+					
+					if( mincon1.getValue() && configs.size() > 0 )
+						renderConfig(configs.get(0));
+					else if ( mincon2.getValue() && configs.size() > 1 )
+						renderConfig(configs.get(1));
+					else
+						configGrid.clear();
 				}
 				else
 					Window.alert("Config Generation Failed");
@@ -114,8 +141,6 @@ public class ConfigTab extends GwtWindow {
 		controls.add(generate);
 		controls.add(configSave);
 		add(controls);
-		//configPanel.add(availBox);
-		//add(configPanel);
 		add(configGrid);
 		return true;
 	}

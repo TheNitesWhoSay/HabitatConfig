@@ -3,8 +3,6 @@ package main.client.Data;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import com.google.gwt.user.client.Window;
-
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 /**

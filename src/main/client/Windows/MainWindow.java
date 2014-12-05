@@ -36,7 +36,7 @@ public class MainWindow extends GwtWindow {
 	private HorizontalPanel ad;
 	private HomeTab homeTab;
 	private ModulesTab modulesTab;
-	private ConfigTab configTab;
+	public ConfigTab configTab;
 	private CommunicationsTab communicationsTab;
 	private SettingsTab settingsTab;
 	private VerticalPanel weatherPanel = new VerticalPanel();

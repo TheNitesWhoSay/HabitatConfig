@@ -2,7 +2,6 @@ package main.client;
 
 import main.client.Data.ConfigGenerator;
 import main.client.Data.LandingGrid;
-import main.client.Windows.ConfigTab;
 import main.client.Windows.LoginWindow;
 import main.client.Windows.MainWindow;
 
@@ -23,7 +22,6 @@ public class HabitatConfig implements EntryPoint {
 	public ConfigOptions configOptions;
 	public MainWindow mainWindow;
 	public LoginWindow loginWindow;
-	public ConfigTab configTab;
 	public LandingGrid landingGrid;
 	
 	/**
