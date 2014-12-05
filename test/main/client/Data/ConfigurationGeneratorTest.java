@@ -19,16 +19,16 @@ public class ConfigurationGeneratorTest {
 		
 		LandingGrid landingGrid = new LandingGrid();
 		
-		landingGrid.setModuleInfo(5, 6, 10, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(6, 6, 11, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(7, 6, 12, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(8, 6, 171, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(9, 6, 161, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(10, 6, 151, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(11, 6, 111, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(12, 6, 61, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(13, 6, 141, 1, MODULE_STATUS.Usable);
-		landingGrid.setModuleInfo(14, 6, 91, 1, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(41, 39, 1, 0, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(42, 39, 2, 1, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(43, 39, 3, 2, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(44, 39, 61, 0, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(45, 39, 91, 1, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(46, 39, 111, 2, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(47, 39, 141, 0, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(48, 39, 151, 1, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(49, 39, 161, 2, MODULE_STATUS.Usable);
+		landingGrid.setModuleInfo(50, 39, 171, 0, MODULE_STATUS.Usable);
 		
 		assertTrue(landingGrid.hasMinimumConfiguration());
 		assertTrue(generator.GenerateTwoMinimumConfigs(landingGrid));

@@ -98,7 +98,8 @@ public class LandingGrid {
 	
 	public boolean isBuildable(final int x, final int y) {
 		
-		return terrain[x][y].isBuildable() &&
+		return x > 0 && x <= getWidth() && y > 0 && y <= getDepth() &&
+			   terrain[x][y].isBuildable() &&
 			   ( modules[x][y] == null ||
 			     modules[x][y].getStatus() == MODULE_STATUS.Usable );
 	}

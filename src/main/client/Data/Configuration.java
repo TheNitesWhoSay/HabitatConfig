@@ -239,8 +239,14 @@ public class Configuration extends LandingGrid {
 	 */
 	public boolean findUsableAnchor() {
 		
-		/* Directions...
+		if ( layoutFits(clusterAvgX, clusterAvgY) )
+		{
+			layoutX = clusterAvgX;
+			layoutY = clusterAvgY;
+			return true;
+		}
 		
+		/*
 			Mirroring scheme
 			
 		      1 1 1
