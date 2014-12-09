@@ -59,6 +59,10 @@ public class Configuration extends LandingGrid {
 	private int layoutY; // The layout y anchor point
 	private int clusterAvgX;
 	private int clusterAvgY;
+	
+	private int nearestUsableX;
+	private int nearestUsableY;
+	
 	private boolean completedConfig;
 	private NearestSquare nearestSquares;
 	private MODULE_TYPE[/*x*/][/*y*/] futureModules;
@@ -652,13 +656,16 @@ public class Configuration extends LandingGrid {
 		return newType == null;
 	}
 	
-	/**
-	 * 
-	 */
 	/*
-	 * 
+	 * ################################################################
 	 */
 	
+	/**
+	 * Generates a layout for the plain modules.
+	 * @param count The amount of modules available.
+	 * @param skeletonType The index of the type of skeleton to generate (ensures uniqueness for different numbers).
+	 * @return Whether the skeleton could be generated.
+	 */
 	public boolean generateSkeleton(final ModuleCount count, final int skeletonType) {
 		
 		if ( skeletonType == 0 )
@@ -669,16 +676,30 @@ public class Configuration extends LandingGrid {
 			return false;
 	}
 	
+	/**
+	 * Generates a layout of plain modules in a antennae layout.
+	 * @param count The amount of modules available.
+	 * @return Whether generation was successful.
+	 */
 	private boolean generateSkeletonZero(final ModuleCount count) {
 		
 		return false;
 	}
 	
+	/**
+	 * Generates a layout of plain modules in a swastika layout.
+	 * @param count The amount of modules available.
+	 * @return Whether generation was successful.
+	 */
 	private boolean generateSkeletonOne(final ModuleCount count) {
 		
 		return false;
 	}
 	
+	/**
+	 * Gets the average coordinates of a given skeleton.
+	 * @return Whether the averaeg coordinates were successfully generated.
+	 */
 	public boolean getSkeletonAverageCoordinates() {
 		
 		int totalXcs = 0;
@@ -706,39 +727,478 @@ public class Configuration extends LandingGrid {
 			return false;
 	}
 	
+	/**
+	 * Places airlocks onto the skeleton.
+	 * @param count The amount of modules available.
+	 * @return Whether airlocks were placed successfully.
+	 */
 	public boolean placeAirlocks(final ModuleCount count) {
+		/* Step 3: Add airlocks... If the habitat has more width than depth, choose a location as far as possible from the
+ 			average xc, left if equal (and then as close as possible to the average yc), then add one on the opposite end
+ 			(again as close as possible to the average yc), then choose a location as far as possible from the average yc,
+ 			top if equal, (and then as close as possible to the average xc), then add one on the opposite end (again as
+ 			close as possible to the average xc) if more depth than width is present, perform the 3rd/4th placement 1st/2nd,
+ 			and vise versa. Damaged airlocks may have to be left off, leave off the last(s) in the order.
+		 */
+		
+		int topYc = getTopmostRow();
+		int bottomYc = getBottomostRow();
+		int leftXc = getLeftmostColumn();
+		int rightXc = getRightmostColumn();
+		
+		int configWidth = rightXc-leftXc;
+		int configHeight = bottomYc-topYc;
+		
+		boolean placeWideOverTall = configWidth > configHeight;
+		boolean placeTopOrLeft = true;
+		if ( placeWideOverTall )
+			placeTopOrLeft = Math.abs(topYc-skeletonAvgY) > Math.abs(bottomYc-skeletonAvgY);
+		else
+			placeTopOrLeft = Math.abs(leftXc-skeletonAvgX) > Math.abs(rightXc-skeletonAvgX);
+		
+		int numPlaced = 0;
+		for ( int i=0; i<4; i++ ) {
+			
+			if ( placeWideOverTall ) {
+				if ( placeTopOrLeft ) {
+					// Leftmost
+					int xc = leftXc;
+					int yc = closestPlainYc(skeletonAvgY, xc);
+					if ( findNearestUsableSpace(xc, yc) ) {
+						
+						if ( count.useAirlock() )
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Airlock;
+						
+						airlockXcs[numPlaced] = nearestUsableX;
+						airlockYcs[numPlaced] = nearestUsableY;
+						numPlaced ++;
+					}
+				}
+				else {
+					// Rightmost
+					int xc = rightXc;
+					int yc = closestPlainYc(skeletonAvgY, xc);
+					if ( findNearestUsableSpace(xc, yc) ) {
+						
+						if ( count.useAirlock() )
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Airlock;
+						
+						airlockXcs[numPlaced] = nearestUsableX;
+						airlockYcs[numPlaced] = nearestUsableY;
+						numPlaced ++;
+					}
+				}
+				
+				if ( numPlaced%2 == 0 ) // Multiple of two has been placed
+					placeWideOverTall = false;
+			}
+			else {
+				if ( placeTopOrLeft ) {
+					// Topmost
+					int yc = topYc;
+					int xc = closestPlainXc(skeletonAvgX, yc);
+					if ( findNearestUsableSpace(xc, yc) ) {
+						
+						if ( count.useAirlock() )
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Airlock;
+						
+						airlockXcs[numPlaced] = nearestUsableX;
+						airlockYcs[numPlaced] = nearestUsableY;
+						numPlaced ++;
+					}
+				}
+				else {
+					// Bottommost
+					int yc = bottomYc;
+					int xc = closestPlainXc(skeletonAvgY, yc);
+					if ( findNearestUsableSpace(xc, yc) ) {
+						
+						if ( count.useAirlock() )
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Airlock;
+						
+						airlockXcs[numPlaced] = nearestUsableX;
+						airlockYcs[numPlaced] = nearestUsableY;
+						numPlaced ++;
+					}
+				}
+				
+				if ( numPlaced%2 == 0 ) // Multiple of two has been placed
+					placeWideOverTall = false;
+			}
+		}
 		
 		return false;
 	}
 	
+	/**
+	 * Places most special modules (Medical, Control, Power, Gym & Relaxation).
+	 * @param count The amount of modules available.
+	 * @return Whether the special modules were placed successfully.
+	 */
 	public boolean placeSpecialModules(final ModuleCount count) {
+		/*
+		Step 4: Place one medical module diagonally next to the airlocks, prioritize the order the airlocks were placed in
+	 			if all airlocks dissallow this placement move a plain module from the first airlock somewhere such that
+	 			rule 4 is still satisfiable
+	 	Step 5: Place one power and one control module as close to the medical module as possible
+	 	Step 6: Place one gym&relaxation as close to the medical module as possible, while having a horizontal space next to it
+	 	Step 7: Place one sanitation module in the horizontal space closest to the medical module, that is horizontally next to the
+	 			gym&relaxation module
+	 	Step 8: Place the next medical module as "opposite" as possible to the first, repeat 5-7, but attempt a clockwise
+	 			orientation of the power, control, and gym&relaxation modules from the manner they were next to the first medical
+	 	Step 9: Place the next medical module (if available) at the maximum distance from the first two, repeat 5-7 with the clockwise attempt
+	 	Step 10: Repeat step 9 */
+		
+		if ( count.getNumMedical() > 0 ) {
+			
+			for ( int i=0; i<4; i++ ) { // Check all airlocks
+				
+				int maxXc = getWidth()-1;
+				int maxYc = getDepth()-1;
+				int x = airlockXcs[i];
+				int y = airlockYcs[i];
+				if ( x > 0 && x < maxXc && y > 0 && y < maxYc ) {
+					
+					if ( x > 1 && y > 1 ) { // Can use top left
+						if ( futureModules[x-1][y-1] == null ) {
+							
+						}
+					}
+					else if ( x > 1 ) { // Can use bottom left
+						if ( futureModules[x-1][y+1] == null ) {
+							
+						}
+					}
+					else if ( y > 1 ) { // Can use top right
+						if ( futureModules[x+1][y-1] == null ) {
+							
+						}
+					}
+					
+					// Can use bottom right by outer check
+					if ( futureModules[x+1][y+1] == null ) {
+						
+					}
+				}
+			}
+		}
 		
 		return false;
 	}
 	
+	/**
+	 * Places all the canteen modules.
+	 * @param count The amount of modules available.
+	 * @return Whether canteens were placed successfully.
+	 */
 	public boolean placeCanteens(final ModuleCount count) {
 		
 		return false;
 	}
 	
+	/**
+	 * Places all food and water modules
+	 * @param count The amount of modules available.
+	 * @return Whether food and water modules were placed successfully.
+	 */
 	public boolean placeFoodAndWater(final ModuleCount count) {
 		
 		return false;
 	}
 	
+	/**
+	 * Places a sanitation with each existing gym if possible.
+	 * @param count The amount of modules available.
+	 * @return Whether the santiations could be placed.
+	 */
 	public boolean pairSanitationToGyms(final ModuleCount count) {
 		
 		return false;
 	}
 	
+	/**
+	 * Places dorms with the already placed sanitations.
+	 * @param count The amount of modules available.
+	 * @return Whether the dorms could be placed.
+	 */
 	public boolean pairDormsToSanitations(final ModuleCount count) {
 		
 		return false;
 	}
 	
+	/**
+	 * Places the rest of the dorms and sanitation pairs.
+	 * @param count The amount of modules available.
+	 * @return Whether the dorms and sanitation pairs could be placed.
+	 */
 	public boolean placeDormSanitationPairs(final ModuleCount count) {
 		
 		return false;
 	}
-
+	
+	private int getConfigurationWidth() {
+		
+		int min = 0;
+		for ( int x=0; x<getWidth(); x++ ) {
+			
+			for ( int y=0; y<getDepth(); x++ ) {
+				
+				if ( futureModules[x][y] != null ) {
+					min = x;
+					break;
+				}
+			}
+		}
+		
+		for ( int x=min+1; x<getWidth(); x++ ) {
+			
+			for ( int y=0; y<getDepth(); y++ ) {
+				
+				if ( futureModules[x][y] != null )
+					return x-min;
+			}
+		}
+		
+		return 0;
+	}
+	
+	private int getConfigurationHeight() {
+		
+		int min = 0;
+		
+		for ( int y=0; y<getDepth(); y++ ) {
+			
+			for ( int x=0; x<getWidth(); x++ ) {
+				
+				if ( futureModules[x][y] != null )
+					min = y;
+			}
+		}
+		
+		for ( int y=min+1; y<getDepth(); y++ ) {
+			
+			for ( int x=0; x<getWidth(); x++ ) {
+				
+				if ( futureModules[x][y] != null )
+					return y-min;
+			}
+		}
+		
+		return 0;
+	}
+	
+	private int getTopmostRow() {
+		
+		for ( int y=0; y<getDepth(); y++ ) {
+			
+			for ( int x=0; x<getWidth(); x++ ) {
+				
+				if ( futureModules[x][y] != null )
+					return y;
+			}
+		}
+		return 0;
+	}
+	
+	private int getBottomostRow() {
+		
+		for ( int y=getDepth()-1; y>=0; y-- ) {
+			
+			for ( int x=0; x<getWidth(); x++ ) {
+				
+				if ( futureModules[x][y] != null )
+					return y;
+			}
+		}
+		return 0;
+	}
+	
+	private int getLeftmostColumn() {
+		
+		for ( int x=0; x<getWidth(); x++ ) {
+			
+			for ( int y=0; y<getDepth(); y++ ) {
+				
+				if ( futureModules[x][y] != null )
+					return x;
+			}
+		}
+		return 0;
+	}
+	
+	private int getRightmostColumn() {
+		
+		for ( int x=getWidth()-1; x>=0; x-- ) {
+			
+			for ( int y=0; y<getDepth(); y++ ) {
+				
+				if ( futureModules[x][y] != null )
+					return x;
+			}
+		}
+		return 0;
+	}
+	
+	private int closestPlainXc(int nearXc, int withinRow) {
+		
+		int closestX = getWidth();
+		for ( int x=(nearXc-1); x>=0; x-- ) {
+			
+			if ( futureModules[x][withinRow] != null &&
+				 futureModules[x][withinRow] == MODULE_TYPE.Plain &&
+				 (nearXc-x) < closestX )
+			{
+				closestX = x;
+				break;
+			}
+		}
+		
+		for ( int x=nearXc+1; x<getWidth(); x++ ) {
+			
+			if ( futureModules[x][withinRow] != null &&
+				 futureModules[x][withinRow] == MODULE_TYPE.Plain &&
+				 (x-nearXc) < closestX )
+			{
+				return x;
+			}
+		}
+		
+		if ( closestX != getWidth() )
+			return closestX;
+		else
+			return 0;
+	}
+	
+	private int closestPlainYc(int nearYc, int withinColumn) {
+		
+		int closestY = getDepth();
+		
+		for ( int y=(nearYc-1); y>=0; y-- ) {
+			
+			if ( futureModules[withinColumn][y] != null &&
+				 futureModules[withinColumn][y] == MODULE_TYPE.Plain &&
+				 (nearYc-y) < closestY )
+			{
+				closestY = y;
+				break;
+			}
+		}
+		
+		for ( int y=nearYc+1; y<getWidth(); y++ ) {
+			
+			if ( futureModules[withinColumn][y] != null &&
+				 futureModules[withinColumn][y] == MODULE_TYPE.Plain &&
+				 (y-nearYc) < closestY )
+			{
+				return y;
+			}
+			else if ( (y-nearYc) > (closestY-nearYc) )
+				return closestY;
+		}
+		
+		if ( closestY != getDepth() )
+			return closestY;
+		else
+			return 0;
+	}
+	
+	/**
+	 * Crawls to the nearest usable space (for non-plain modules).
+	 * @param x The current xc, must be attatched to a plain.
+	 * @param y The current yc, must be attatched to a plain.
+	 * @return Whether a usable space could be found.
+	 */
+	private boolean findNearestUsableSpace(int xc, int yc) {
+		
+		/*
+		 * Consider optimizing this by following plain modules
+		 * rather than checking every nearest square in a brute
+		 * force manner.
+		 */
+		int numSquares = nearestSquares.getNumSquares();
+		int width = getWidth();
+		int depth = getDepth();
+		for ( int i=0; i<numSquares; i++ ) {
+			
+			int xCheck = xc+nearestSquares.getX(i);
+			int yCheck = yc+nearestSquares.getY(i);
+			
+			if ( xCheck > 0 && xCheck < width && yCheck > 0 && yCheck < depth ) {
+				
+				if ( futureModules[xCheck][yCheck] == null &&
+					 canPlaceNonPlain(xCheck, yCheck) )
+				{
+					nearestUsableX = xCheck;
+					nearestUsableY = yCheck;
+					return true;
+				}
+				/*else if ( futureModules[xCheck][yCheck] == MODULE_TYPE.Plain ) {
+					// Branch from this new plain ?
+					
+				}*/
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if a space is usable for a non-plain module
+	 * @param xc
+	 * @param yc
+	 * @return
+	 */
+	private boolean canPlaceNonPlain(int xc, int yc) {
+		
+		int maxX = getWidth()-1;
+		int maxY = getDepth()-1;
+		if ( xc > 0 && yc > 0 ) {
+			
+			if ( xc < maxX && yc < maxY ) {
+				
+				return isBuildable(xc, yc) &&
+					   ( futureModules[xc][yc-1] != null &&
+					     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+					   ( futureModules[xc-1][yc] != null &&
+					     futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
+					   ( futureModules[xc+1][yc] != null &&
+					     futureModules[xc+1][yc] == MODULE_TYPE.Plain ) ||
+					   ( futureModules[xc][yc+1] != null &&
+					     futureModules[xc][yc+1] == MODULE_TYPE.Plain );
+			}
+			else if ( xc <= maxX && yc <= maxY ) { // On the right or bottom edge
+				
+				if ( xc == maxX && yc < maxY ) { // On the right edge, not bottom
+					
+					return isBuildable(xc, yc) &&
+						   ( futureModules[xc][yc-1] != null &&
+						     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+						   ( futureModules[xc-1][yc] != null &&
+						     futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
+						   ( futureModules[xc][yc+1] != null &&
+						     futureModules[xc][yc+1] == MODULE_TYPE.Plain );
+				}
+				else if ( xc < maxX && yc == maxY ) { // On the bottom edge, not right
+					
+					return isBuildable(xc, yc) &&
+						   ( futureModules[xc][yc-1] != null &&
+						     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+						   ( futureModules[xc-1][yc] != null &&
+						     futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
+						   ( futureModules[xc+1][yc] != null &&
+						     futureModules[xc+1][yc] == MODULE_TYPE.Plain );
+				}
+				else { // In bottom right corner
+					
+					return isBuildable(xc, yc) &&
+						   ( futureModules[xc][yc-1] != null &&
+						     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+						   ( futureModules[xc-1][yc] != null &&
+						     futureModules[xc-1][yc] == MODULE_TYPE.Plain );
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 }
