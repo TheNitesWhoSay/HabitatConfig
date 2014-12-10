@@ -1,8 +1,5 @@
 package main.client.Windows;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import main.client.HabitatConfig;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -26,7 +23,6 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -39,15 +35,18 @@ public class MainWindow extends GwtWindow {
 
 	private HabitatConfig root;
 	private HorizontalPanel ad;
+	@SuppressWarnings("unused")
 	private HomeTab homeTab;
 	private ModulesTab modulesTab;
 	public ConfigTab configTab;
+	@SuppressWarnings("unused")
 	private CommunicationsTab communicationsTab;
 	private SettingsTab settingsTab;
 	private VerticalPanel weatherPanel = new VerticalPanel();
 	private HorizontalPanel hpLogout;
 	private String url;
 	Button adbutton = new Button();
+	@SuppressWarnings("unused")
 	private Image adimage = new Image();
 	private Grid weatherGrid = new Grid(3,2);
 	private TabPanel tabs;
@@ -114,7 +113,8 @@ public class MainWindow extends GwtWindow {
          int mil = 0;
          try { mil = Integer.parseInt(hour); } catch ( NumberFormatException nfe ) { }
         	mil = mil-12;
-         JSONValue wind = jB.get("wind_string");
+         @SuppressWarnings("unused")
+		JSONValue wind = jB.get("wind_string");
          Label weatherHeader = new Label("Mars Weather Report:");
          weatherHeader.getElement().getStyle().setFontWeight(FontWeight.BOLD);
          Label temperature = new Label("Temperature: "+temp+"f / "+""+tempc+" c");
@@ -203,23 +203,32 @@ public class MainWindow extends GwtWindow {
 			showLogout();
 			
 		tabs = new TabPanel();
-		tabs.addSelectionHandler(new SelectionHandler<Integer>() {
-
-			public void onSelection(SelectionEvent<Integer> event) {
-				
-				if ( event.getSelectedItem() == 2 )
-					configTab.clearScreen();
-			}
-		});
+		
 		weatherPanel.setBorderWidth(2);
 		weatherPanel.setWidth("50%");
 		weatherPanel.getElement().getStyle().setWidth(150, Unit.PX);
 		tabs.setWidth("100%");
-		homeTab.show(tabs, "Home");
+		
+		// Uncomment to restore this tab
+		//homeTab.show(tabs, "Home");
+		
 		modulesTab.show(tabs, "Modules");
 		configTab.show(tabs, "Configurations");
-		communicationsTab.show(tabs, "Communications");
+		
+		// Uncomment to restore this tab
+		//communicationsTab.show(tabs, "Communications");
+		
 		settingsTab.show(tabs, "Settings");
+		
+		tabs.addSelectionHandler(new SelectionHandler<Integer>() {
+
+			public void onSelection(SelectionEvent<Integer> event) {
+				
+				if ( event.getSelectedItem() == tabs.getWidgetIndex(configTab) )
+					configTab.clearScreen();
+			}
+		});
+		
 		selectTab(0);
 		add(weatherGrid);
 		add(tabs);
