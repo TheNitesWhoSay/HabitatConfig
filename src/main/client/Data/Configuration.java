@@ -62,19 +62,25 @@ public class Configuration extends LandingGrid {
 	
 	private int nearestUsableX;
 	private int nearestUsableY;
+	private int edibleX;
+	private int edibleY;
 	
 	private boolean completedConfig;
 	private NearestSquare nearestSquares;
 	private MODULE_TYPE[/*x*/][/*y*/] futureModules;
-	@SuppressWarnings("unused")
 	private int skeletonAvgX;
-	@SuppressWarnings("unused")
 	private int skeletonAvgY;
 	
-	@SuppressWarnings("unused")
 	private int[/*x*/] airlockXcs;
-	@SuppressWarnings("unused")
 	private int[/*y*/] airlockYcs;
+	
+	private int numMedicals;
+	private int[/*x*/] medicalXcs;
+	private int[/*y*/] medicalYcs;
+	
+	private int numSanitations;
+	private int[/*x*/] sanitationXcs;
+	private int[/*y*/] sanitationYcs;
 	
 	/**
 	 * Constructs a configuration
@@ -83,6 +89,10 @@ public class Configuration extends LandingGrid {
 		
 		airlockXcs = new int[4];
 		airlockYcs = new int[4];
+		medicalXcs = new int[4];
+		medicalYcs = new int[4];
+		sanitationXcs = new int[4];
+		sanitationYcs = new int[4];
 		futureModules = new MODULE_TYPE[getWidth()][getDepth()];
 		for ( int y=0; y<getDepth(); y++ )
 		{
@@ -98,6 +108,8 @@ public class Configuration extends LandingGrid {
 		completedConfig = false;
 		skeletonAvgX = getWidth()/2;
 		skeletonAvgY = getDepth()/2;
+		numMedicals = 0;
+		numSanitations = 0;
 	}
 	
 	public String getModulesString() {
@@ -116,7 +128,7 @@ public class Configuration extends LandingGrid {
 						case Airlock:
 							modulesString += "A"; break;
 						case Plain:
-							modulesString += "P"; break;
+							modulesString += "+"; break;
 						case Dormitory:
 							modulesString += "D"; break;
 						case Sanitation:
@@ -126,11 +138,11 @@ public class Configuration extends LandingGrid {
 						case GymAndRelaxation:
 							modulesString += "G"; break;
 						case Canteen:
-							modulesString += "C"; break;
+							modulesString += "E"; break;
 						case Power:
-							modulesString += "W"; break;
+							modulesString += "P"; break;
 						case Control:
-							modulesString += "L"; break;
+							modulesString += "C"; break;
 						case Medical:
 							modulesString += "M"; break;
 						default:
@@ -683,7 +695,94 @@ public class Configuration extends LandingGrid {
 	 */
 	private boolean generateSkeletonZero(final ModuleCount count) {
 		
-		return false;
+		int numLeft = 1;
+		int numAbove = 1;
+		int numRight = 1;
+		int numBelow = 1;
+		boolean canLeft = true;
+		boolean canAbove = true;
+		boolean canRight = true;
+		boolean canBelow = true;
+		
+		if ( isBuildable(clusterAvgX, clusterAvgY) && count.usePlain() )
+			futureModules[clusterAvgX][clusterAvgY] = MODULE_TYPE.Plain;
+		
+		while ( count.hasPlain() && (canLeft || canAbove || canRight || canBelow) ) {
+			for ( int dir=0; dir<4; dir++ ) {
+				
+				switch ( dir ) {
+				case 0: // Left
+				{
+					if ( canLeft ) {
+						int xc = clusterAvgX - numLeft;
+						int yc = clusterAvgY;
+						if ( isBuildable(xc, yc) && isBuildable(xc-1, yc) && isBuildable(xc+1, yc) &&
+							 isBuildable(xc, yc-1) && isBuildable(xc, yc+1) && count.usePlain() )
+						{
+							futureModules[xc][yc] = MODULE_TYPE.Plain;
+							numLeft ++;
+						}
+						else {
+							canLeft = false;
+						}
+					}
+				}
+				break;
+				case 1: // Top;
+				{
+					if ( canAbove ) {
+						int xc = clusterAvgX;
+						int yc = clusterAvgY - numAbove;
+						if ( isBuildable(xc, yc) && isBuildable(xc-1, yc) && isBuildable(xc+1, yc) &&
+							 isBuildable(xc, yc-1) && isBuildable(xc, yc+1) && count.usePlain() )
+						{
+							futureModules[xc][yc] = MODULE_TYPE.Plain;
+							numAbove ++;
+						}
+						else {
+							canAbove = false;
+						}
+					}
+				}
+				break;
+				case 2: // Right
+				{
+					if ( canRight ) {
+						int xc = clusterAvgX + numRight;
+						int yc = clusterAvgY;
+						if ( isBuildable(xc, yc) && isBuildable(xc-1, yc) && isBuildable(xc+1, yc) &&
+							 isBuildable(xc, yc-1) && isBuildable(xc, yc+1) && count.usePlain() )
+						{
+							futureModules[xc][yc] = MODULE_TYPE.Plain;
+							numRight ++;
+						}
+						else {
+							canRight = false;
+						}
+					}
+				}
+				break;
+				case 3: // Bottom
+				{
+					if ( canBelow ) {
+						int xc = clusterAvgX;
+						int yc = clusterAvgY + numBelow;
+						if ( isBuildable(xc, yc) && isBuildable(xc-1, yc) && isBuildable(xc+1, yc) &&
+							 isBuildable(xc, yc-1) && isBuildable(xc, yc+1) && count.usePlain() )
+						{
+							futureModules[xc][yc] = MODULE_TYPE.Plain;
+							numBelow ++;
+						}
+						else {
+							canBelow = false;
+						}
+					}
+				}
+				break;
+				}
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -693,7 +792,232 @@ public class Configuration extends LandingGrid {
 	 */
 	private boolean generateSkeletonOne(final ModuleCount count) {
 		
+		if ( count.hasPlain() ) {
+			
+			if ( placeFirstPlain(clusterAvgX, clusterAvgY) &&
+				 count.usePlain() )
+			{
+				while ( count.hasPlain() ) {
+					
+					if ( placeSpaciousPlain(clusterAvgX, clusterAvgY) ) {
+						count.usePlain();
+					}
+					else
+						break;
+				}
+				
+				return true;
+			}
+		}
+		
 		return false;
+	}
+	
+	private boolean placeFirstPlain(int nearXc, int nearYc) {
+		
+		if ( nearXc > 0 && nearXc < getWidth() && nearYc > 0 && nearYc < getDepth() &&
+			 futureModules[nearXc][nearYc] == null &&
+			 isBuildable(nearXc, nearYc) )
+		{
+			futureModules[nearXc][nearYc] = MODULE_TYPE.Plain;
+			return true;
+		}
+		else
+		{
+			int numSquares = nearestSquares.getNumOrientedSquares();
+			
+			for ( int i=0; i<numSquares; i++ ) {
+				
+				int x = nearXc + nearestSquares.getOrientedX(i);
+				int y = nearYc + nearestSquares.getOrientedY(i);
+				
+				if ( x>0 && x<getWidth() && y>0 && y<getDepth() &&
+					 futureModules[x][y] == null &&
+					 isBuildable(x, y) )
+				{
+					futureModules[x][y] = MODULE_TYPE.Plain;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean placeSpaciousPlain(int nearXc, int nearYc) {
+		
+		int numSquares = nearestSquares.getNumOrientedSquares();
+		
+		for ( int i=0; i<numSquares; i++ ) {
+			
+			int x = nearXc + nearestSquares.getOrientedX(i);
+			int y = nearYc + nearestSquares.getOrientedY(i);
+			if ( x>0 && x<getWidth() && y>0 && y<getDepth() &&
+				 futureModules[x][y] == null &&
+				 isBuildable(x, y) )
+			{
+				if ( threeSpacesFromPeers(x, y) ) {
+					
+					futureModules[x][y] = MODULE_TYPE.Plain;
+					return true;
+				}
+			}
+		}
+		
+		/*for ( int i=0; i<numSquares; i++ ) {
+			
+			int x = nearXc + nearestSquares.getOrientedX(i);
+			int y = nearYc + nearestSquares.getOrientedY(i);
+			if ( x>0 && x<getWidth() && y>0 && y<getDepth() &&
+				 futureModules[x][y] == null &&
+				 isBuildable(x, y) )
+			{
+				if ( twoSpacesFromPeers(x, y) )
+					return true;
+			}
+		}
+		
+		for ( int i=0; i<numSquares; i++ ) {
+			
+			int x = nearXc + nearestSquares.getOrientedX(i);
+			int y = nearYc + nearestSquares.getOrientedY(i);
+			if ( x>0 && x<getWidth() && y>0 && y<getDepth() &&
+				 futureModules[x][y] == null &&
+				 isBuildable(x, y) )
+			{
+				if ( oneSpaceFromPeers(x, y) )
+					return true;
+			}
+		}*/
+		
+		return false;
+	}
+	
+	/**
+	 * Ensures that there are three spaces free in three
+	 * cardinal directions as well as two spaces free
+	 *  
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private boolean threeSpacesFromPeers(int x, int y) {
+		
+		int dir = getConnectedDirection(x, y);
+		if ( dir > 0 ) {
+			
+			boolean hasLessThreeX = x > 2;
+			boolean hasLessTwoX = x > 1;
+			boolean hasAddThreeX = x < getWidth()-3;
+			boolean hasAddTwoX = x < getWidth()-2;
+			boolean hasAddOneX = x < getWidth()-1;
+			int depth = getDepth();
+			
+			/*     #
+			 *    ###
+			 *   #####
+			 *  ###$###
+			 *   #####
+			 *    ###
+			 *     #    */
+			
+			switch ( dir ) {
+			case 1: // Top
+				if ( ((hasLessThreeX && futureModules[x-3][y] != null) || (hasLessTwoX && futureModules[x-2][y] != null) ||
+					 (futureModules[x-1][y] != null) || (hasAddOneX && futureModules[x+1][y] != null ) ||
+					 (hasAddTwoX && futureModules[x+2][y] != null) || (hasAddThreeX && futureModules[x+3][y] != null)) )
+					return false;
+				if ( y < depth-1 && ((hasLessTwoX && futureModules[x-2][y+1] != null) || (futureModules[x-1][y+1] != null) ||
+					 (futureModules[x][y+1] != null) || (hasAddOneX && futureModules[x+1][y+1] != null) ||
+					 (hasAddTwoX && futureModules[x+2][y+1] != null)) )
+					return false;
+				if ( y < depth-2 && ((futureModules[x-1][y+2] != null) || (futureModules[x][y+2] != null) ||
+					 (hasAddOneX && futureModules[x+1][y+2] != null)) )
+					return false;
+				if ( y < depth-3 && futureModules[x][y+3] != null )
+					return false;
+				return true;
+			case 2: // Left
+				if ( y > 2 && futureModules[x][y-3] != null )
+					return false;
+				if ( y > 1 && (futureModules[x][y-2] != null ||
+					 (hasAddOneX && futureModules[x+1][y-2] != null)) )
+					return false;
+				if ( (
+					 futureModules[x][y-1] != null || (hasAddOneX && futureModules[x+1][y-1] != null) ||
+					 (hasAddTwoX && futureModules[x+2][y-1] != null)) )
+					return false;
+				if ( ((hasAddOneX && futureModules[x+1][y] != null ) ||
+					 (hasAddTwoX && futureModules[x+2][y] != null) || (hasAddThreeX && futureModules[x+3][y] != null)) )
+					return false;
+				if ( y < depth-1 && (
+					 (futureModules[x][y+1] != null) || (hasAddOneX && futureModules[x+1][y+1] != null) ||
+					 (hasAddTwoX && futureModules[x+2][y+1] != null)) )
+					return false;
+				if ( y < depth-2 && ( (futureModules[x][y+2] != null) ||
+					 (hasAddOneX && futureModules[x+1][y+2] != null)) )
+					return false;
+				if ( y < depth-3 && futureModules[x][y+3] != null )
+					return false;
+				return true;
+			case 3: // Right
+				if ( y > 2 && futureModules[x][y-3] != null )
+					return false;
+				if ( y > 1 && ((futureModules[x-1][y-2] != null) || futureModules[x][y-2] != null) )
+					return false;
+				if ( (hasLessTwoX && (futureModules[x-2][y-1] != null) || futureModules[x-1][y-1] != null ||
+					 futureModules[x][y-1] != null ) )
+					return false;
+				if ( ((hasLessThreeX && futureModules[x-3][y] != null) || (hasLessTwoX && futureModules[x-2][y] != null) ||
+					 (futureModules[x-1][y] != null)) )
+					return false;
+				if ( y < depth-1 && ((hasLessTwoX && futureModules[x-2][y+1] != null) || (futureModules[x-1][y+1] != null) ||
+					 (futureModules[x][y+1] != null)) )
+					return false;
+				if ( y < depth-2 && ((futureModules[x-1][y+2] != null) || (futureModules[x][y+2] != null)
+					 ) )
+					return false;
+				if ( y < depth-3 && futureModules[x][y+3] != null )
+					return false;
+				return true;
+			case 4: // Bottom
+				if ( y > 2 && futureModules[x][y-3] != null )
+					return false;
+				if ( y > 1 && ((futureModules[x-1][y-2] != null) || futureModules[x][y-2] != null ||
+					 (hasAddOneX && futureModules[x+1][y-2] != null)) )
+					return false;
+				if ( (hasLessTwoX && (futureModules[x-2][y-1] != null) || futureModules[x-1][y-1] != null ||
+					 futureModules[x][y-1] != null || (hasAddOneX && futureModules[x+1][y-1] != null) ||
+					 (hasAddTwoX && futureModules[x+2][y-1] != null)) )
+					return false;
+				if ( ((hasLessThreeX && futureModules[x-3][y] != null) || (hasLessTwoX && futureModules[x-2][y] != null) ||
+					 (futureModules[x-1][y] != null) || (hasAddOneX && futureModules[x+1][y] != null ) ||
+					 (hasAddTwoX && futureModules[x+2][y] != null) || (hasAddThreeX && futureModules[x+3][y] != null)) )
+					return false;
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Finds which direction, if any, the module connects from
+	 * @param x the x coordinate of the space to be checked
+	 * @param y the y coordinate of the space to be checked
+	 * @return 1 top, 2 left, 3 right, 4 bottom
+	 */
+	private int getConnectedDirection(int x, int y) {
+		
+		if ( futureModules[x][y-1] != null )
+			return 1;
+		else if ( futureModules[x-1][y] != null )
+			return 2;
+		else if ( x < getWidth()-1 && futureModules[x+1][y] != null )
+			return 3;
+		else if ( y < getDepth()-1 && futureModules[x][y+1] != null )
+			return 4;
+		else {
+			return 0;
+		}
 	}
 	
 	/**
@@ -789,6 +1113,8 @@ public class Configuration extends LandingGrid {
 					}
 				}
 				
+				placeTopOrLeft = !placeTopOrLeft;
+				
 				if ( numPlaced%2 == 0 ) // Multiple of two has been placed
 					placeWideOverTall = false;
 			}
@@ -822,12 +1148,14 @@ public class Configuration extends LandingGrid {
 					}
 				}
 				
+				placeTopOrLeft = !placeTopOrLeft;
+				
 				if ( numPlaced%2 == 0 ) // Multiple of two has been placed
-					placeWideOverTall = false;
+					placeWideOverTall = true;
 			}
 		}
 		
-		return false;
+		return true;
 	}
 	
 	/**
@@ -849,71 +1177,174 @@ public class Configuration extends LandingGrid {
 	 	Step 9: Place the next medical module (if available) at the maximum distance from the first two, repeat 5-7 with the clockwise attempt
 	 	Step 10: Repeat step 9 */
 		
-		if ( count.getNumMedical() > 0 ) {
+		if ( count.hasSanitation() &&
+			 findNearestUsableSpace(airlockXcs[0], airlockYcs[0]) &&
+			 count.useSanitation() )
+		{
+			futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Sanitation;
+		}
+		int medicalNearAirlockNum = placeMedicalNextToAirlock(count);
+		// Possibly rearange plains or airlocks so this rule is satisfiable if this fails
+		
+		for ( int i=0; i<4; i++ ) {
 			
-			for ( int i=0; i<4; i++ ) { // Check all airlocks
+			int nearX = airlockXcs[i];
+			int nearY = airlockYcs[i];
+			
+			// Place medical
+			if ( count.hasMedical() &&
+				 i != medicalNearAirlockNum && // Avoid doubling up with preplaced medical module
+				 findNearestUsableSpace(nearX, nearY) &&
+				 count.useMedical() )
+			{	
+				futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Medical;
+			}
+			
+			// Place control
+			if ( count.hasControl() &&
+				 findNearestUsableSpace(nearX, nearY) &&
+				 count.useControl() )
+			{
+				futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Control;
+			}
+			
+			// Place power
+			if ( count.hasPower() &&
+				 findNearestUsableSpace(nearX, nearY) &&
+				 count.usePower() )
+			{
+				futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Power;
+			}
+			
+			
+			// Place gym & relaxation
+			if ( count.hasGymAndRelaxation() &&
+				 findNearestUsableSpace(nearX, nearY) &&
+				 count.useGymAndRelaxation() )
+			{
+				futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.GymAndRelaxation;
 				
-				int maxXc = getWidth()-1;
-				int maxYc = getDepth()-1;
-				int x = airlockXcs[i];
-				int y = airlockYcs[i];
-				if ( x > 0 && x < maxXc && y > 0 && y < maxYc ) {
-					
-					if ( x > 1 && y > 1 ) { // Can use top left
-						if ( futureModules[x-1][y-1] == null ) {
-							
-						}
-					}
-					else if ( x > 1 ) { // Can use bottom left
-						if ( futureModules[x-1][y+1] == null ) {
-							
-						}
-					}
-					else if ( y > 1 ) { // Can use top right
-						if ( futureModules[x+1][y-1] == null ) {
-							
-						}
-					}
-					
-					// Can use bottom right by outer check
-					if ( futureModules[x+1][y+1] == null ) {
-						
-					}
+				// Pair a sanitation to the gym & relaxation
+				if ( count.hasSanitation() &&
+					 findNearestUsableSpace(nearestUsableX, nearestUsableY) &&
+					 count.useSanitation() )
+				{
+					futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Sanitation;
+					sanitationXcs[numSanitations] = nearestUsableX;
+					sanitationYcs[numSanitations] = nearestUsableY;
+					numSanitations ++;
 				}
 			}
 		}
 		
-		return false;
+		return true;
+	}
+	
+	private int placeMedicalNextToAirlock(final ModuleCount count) {
+		
+		for ( int i=0; i<4; i++ ) { // Check all airlocks
+			
+			int maxXc = getWidth()-1;
+			int maxYc = getDepth()-1;
+			int x = airlockXcs[i];
+			int y = airlockYcs[i];
+			if ( x > 0 && x < maxXc && y > 0 && y < maxYc ) {
+				
+				if ( x > 1 && y > 1 && // Can potentially use top left
+					 futureModules[x-1][y-1] == null &&
+					 ( isPlain(x-1, y) ||
+					   isPlain(x, y-1) ) &&
+					   count.useMedical() )
+				{
+					futureModules[x-1][y-1] = MODULE_TYPE.Medical;
+					medicalXcs[numMedicals] = x-1;
+					medicalYcs[numMedicals] = y-1;
+					numMedicals ++;
+					return i;
+				}
+				else if ( x > 1 && // Can potentially use bottom left
+						  futureModules[x-1][y+1] == null &&
+						  ( isPlain(x-1, y) ||
+						    isPlain(x, y+1) ) &&
+						    count.useMedical() )
+				{
+					futureModules[x-1][y+1] = MODULE_TYPE.Medical;
+					medicalXcs[numMedicals] = x-1;
+					medicalYcs[numMedicals] = y+1;
+					numMedicals ++;
+					return i;
+				}
+				else if ( y > 1 && // Can potentially use top right
+						  futureModules[x+1][y-1] == null &&
+						  ( isPlain(x, y-1) ||
+							isPlain(x+1, y) ) &&
+						  count.useMedical() )
+				{
+					futureModules[x+1][y-1] = MODULE_TYPE.Medical;
+					medicalXcs[numMedicals] = x+1;
+					medicalYcs[numMedicals] = y-1;
+					numMedicals ++;
+					return i;
+				}
+				// Can potentially use bottom right by outer check
+				else if ( futureModules[x+1][y+1] == null &&
+						  ( isPlain(x+1, y) ||
+							isPlain(x, y+1) ) &&
+							count.useMedical() )
+				{
+					futureModules[x+1][y+1] = MODULE_TYPE.Medical;
+					medicalXcs[numMedicals] = x+1;
+					medicalYcs[numMedicals] = y+1;
+					numMedicals ++;
+					return i;
+				}
+			}
+		}
+		
+		return -1;
 	}
 	
 	/**
-	 * Places all the canteen modules.
+	 * Places all the canteen and foodAndWater modules.
 	 * @param count The amount of modules available.
-	 * @return Whether canteens were placed successfully.
+	 * @return Whether all the modules were successfully placed.
 	 */
-	public boolean placeCanteens(final ModuleCount count) {
+	public boolean placeEateries(final ModuleCount count) {
 		
-		return false;
-	}
-	
-	/**
-	 * Places all food and water modules
-	 * @param count The amount of modules available.
-	 * @return Whether food and water modules were placed successfully.
-	 */
-	public boolean placeFoodAndWater(final ModuleCount count) {
+		for ( int i=0; i<10; i++ ) {
+			
+			if ( ( count.hasFoodAndWater() ||
+				   count.hasCanteen() ) &&
+				   findEdibleLocation() )
+			{	
+				if ( count.hasFoodAndWater() ) {
+					
+					int x = edibleX;
+					int y = edibleY;
+					if ( count.useFoodAndWater() ) {
+						
+						futureModules[x][y] = MODULE_TYPE.FoodAndWater;
+						// Attempt to pair as many canteens as possible
+						while ( count.hasCanteen() ) {
+							
+							if ( findNearEnoughEdibleLocation(x, y) &&
+								 count.useCanteen() )
+							{	
+								futureModules[edibleX][edibleY] = MODULE_TYPE.Canteen;
+							}
+							else
+								break;
+						}
+					}
+				}
+				else if ( count.useCanteen() )
+					futureModules[edibleX][edibleY] = MODULE_TYPE.Canteen;
+			}
+			else
+				break;
+		}
 		
-		return false;
-	}
-	
-	/**
-	 * Places a sanitation with each existing gym if possible.
-	 * @param count The amount of modules available.
-	 * @return Whether the santiations could be placed.
-	 */
-	public boolean pairSanitationToGyms(final ModuleCount count) {
-		
-		return false;
+		return true;
 	}
 	
 	/**
@@ -923,7 +1354,26 @@ public class Configuration extends LandingGrid {
 	 */
 	public boolean pairDormsToSanitations(final ModuleCount count) {
 		
-		return false;
+		for ( int i=0; i<numSanitations; i++ ) {
+			
+			int nearX = sanitationXcs[i];
+			int nearY = sanitationYcs[i];
+			
+			for ( int j=0; j<2; j++ ) {
+				
+				if ( count.hasDormitory() &&
+					 findNearestUsableDormSpace(nearX, nearY) &&
+					 count.useDormitory() )
+				{
+					futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Dormitory;
+				}
+				else
+					break;
+				/*else
+					return false;*/
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -933,9 +1383,88 @@ public class Configuration extends LandingGrid {
 	 */
 	public boolean placeDormSanitationPairs(final ModuleCount count) {
 		
-		return false;
+		boolean canPlaceDorms = true;
+		boolean canPlaceSanitations = true;
+		while ( (count.hasDormitory() && canPlaceDorms) || (count.hasSanitation() && canPlaceSanitations) ) {
+			
+			for ( int i=0; i<4; i++ ) {
+				
+				int nearX = airlockXcs[i];
+				int nearY = airlockYcs[i];
+				
+				if ( count.getNumDormitory() >= 2 && count.getNumSanitation() >= 1 ) {
+					// Pair two dorms and a sanitation
+					if ( findNearestUsableDormSpace(nearX, nearY) ) {
+						
+						nearX = nearestUsableX;
+						nearY = nearestUsableY;
+						
+						if ( count.useDormitory() )
+							futureModules[nearX][nearY] = MODULE_TYPE.Dormitory;
+						
+						if ( findNearestUsableDormSpace(nearX, nearY) &&
+							 count.useDormitory() )
+						{
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Dormitory;
+						}
+						else
+							canPlaceDorms = false;
+						
+						if ( findNearestUsableSanitationSpace(nearX, nearY) &&
+							 count.useSanitation() )
+						{
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Sanitation;
+						}
+						else
+							canPlaceSanitations = false;
+					}
+					else
+						canPlaceDorms = false;
+						
+				}
+				else if ( count.getNumDormitory() == 1 && count.getNumSanitation() >= 1 ) {
+					// Pair a dorm and sanitation
+					if ( findNearestUsableDormSpace(nearX, nearY) ) {
+						
+						nearX = nearestUsableX;
+						nearY = nearestUsableY;
+						if ( count.useDormitory() )
+							futureModules[nearX][nearY] = MODULE_TYPE.Dormitory;
+						
+						if ( findNearestUsableSanitationSpace(nearX, nearY) )
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Sanitation;
+						else
+							canPlaceSanitations = false;
+					}
+					else
+						canPlaceDorms = false;
+				}
+				else if ( count.getNumDormitory() >= 1 ) {
+					// Burn off a dorm
+					if ( findNearestUsableDormSpace(nearX, nearY) ) {
+						
+						if ( count.useDormitory() )
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Dormitory;
+					}
+					else
+						canPlaceDorms = false;
+				}
+				else if ( count.getNumSanitation() >= 1 ) {
+					// Burn off a sanitation
+					if ( findNearestUsableSanitationSpace(nearX, nearY) ) {
+						
+						if ( count.useSanitation() )
+							futureModules[nearestUsableX][nearestUsableY] = MODULE_TYPE.Sanitation;
+					}
+					else
+						canPlaceSanitations = false;
+				}
+			}
+		}
+		return true;
 	}
 	
+	@SuppressWarnings("unused")
 	private int getConfigurationWidth() {
 		
 		int min = 0;
@@ -962,6 +1491,7 @@ public class Configuration extends LandingGrid {
 		return 0;
 	}
 	
+	@SuppressWarnings("unused")
 	private int getConfigurationHeight() {
 		
 		int min = 0;
@@ -1042,7 +1572,7 @@ public class Configuration extends LandingGrid {
 	private int closestPlainXc(int nearXc, int withinRow) {
 		
 		int closestX = getWidth();
-		for ( int x=(nearXc-1); x>=0; x-- ) {
+		for ( int x=nearXc; x>=0; x-- ) {
 			
 			if ( futureModules[x][withinRow] != null &&
 				 futureModules[x][withinRow] == MODULE_TYPE.Plain &&
@@ -1073,7 +1603,7 @@ public class Configuration extends LandingGrid {
 		
 		int closestY = getDepth();
 		
-		for ( int y=(nearYc-1); y>=0; y-- ) {
+		for ( int y=nearYc; y>=0; y-- ) {
 			
 			if ( futureModules[withinColumn][y] != null &&
 				 futureModules[withinColumn][y] == MODULE_TYPE.Plain &&
@@ -1103,6 +1633,343 @@ public class Configuration extends LandingGrid {
 	}
 	
 	/**
+	 * Finds the space futhest away from sanitations that a
+	 * canteen or foodAndWater can be placed at.
+	 * @return Whether a space could be found.
+	 */
+	private boolean findEdibleLocation() {
+		
+		// For now just take a average of airlocks and use nearest square
+		
+		int totalXcs = 0;
+		int totalYcs = 0;
+		
+		for ( int i=0; i<4; i++ ) {
+			
+			totalXcs += airlockXcs[i];
+			totalYcs += airlockYcs[i];
+		}
+		
+		int averageXc = totalXcs/4;
+		int averageYc = totalYcs/4;
+		
+		if ( canPlaceEatery(averageXc, averageYc) ) {
+			
+			edibleX = averageXc;
+			edibleY = averageYc;
+			return true;
+		}
+		else {
+			
+			int numSquares = nearestSquares.getNumOrientedSquares();
+			
+			for ( int i=0; i<numSquares; i++ ) {
+				
+				int xMod = nearestSquares.getOrientedX(i);
+				int yMod = nearestSquares.getOrientedY(i);
+				
+				if ( canPlaceEatery(averageXc+xMod, averageYc+yMod) ) {
+					
+					edibleX = averageXc+xMod;
+					edibleY = averageYc+yMod;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean findNearEnoughEdibleLocation(int x, int y) {
+		
+		int numSquares = nearestSquares.getNumOrientedSquares();
+		
+		for ( int i=0; i<numSquares; i++ ) {
+			
+			int xMod = nearestSquares.getOrientedX(i);
+			int yMod = nearestSquares.getOrientedY(i);
+			
+			int xc = x+xMod;
+			int yc = y+yMod;
+			
+			if ( xMod > 4 || yMod > 4 ) // Already out of range
+				return false;
+			
+			if ( canPlaceEatery(xc, yc) && hasConnectingThreePath(x, y, xc, yc) ) {
+				
+				edibleX = xc;
+				edibleY = yc;
+			}
+		}
+		
+		return false;
+	}
+	
+	// Is connected by three plain modules
+	private boolean hasConnectingThreePath(int x1, int y1, int x2, int y2) {
+		
+		// Should implement... serious risk 10 violation
+		return true;
+	}
+	
+	private boolean canPlaceSanitation(int x, int y) {
+		
+		if ( x > 0 && x < getWidth() && y > 0 && y < getDepth() ) {
+			
+			if ( x < getWidth()-1 && y < getDepth()-1 ) {
+				
+				return canPlaceNonPlain(x, y) &&
+					   ( futureModules[x-1][y-1] == null ||
+					     ( futureModules[x-1][y-1] != MODULE_TYPE.FoodAndWater &&
+					       futureModules[x-1][y-1] != MODULE_TYPE.Canteen ) ) &&
+					   ( futureModules[x-1][ y ] == null ||
+					     ( futureModules[x-1][ y ] != MODULE_TYPE.FoodAndWater &&
+					       futureModules[x-1][ y ] != MODULE_TYPE.Canteen ) ) &&
+					   ( futureModules[x-1][y+1] == null ||
+						 ( futureModules[x-1][y+1] != MODULE_TYPE.FoodAndWater &&
+						   futureModules[x-1][y+1] != MODULE_TYPE.Canteen ) ) &&
+					   ( futureModules[ x ][y-1] == null ||
+					   	 ( futureModules[ x ][y-1] != MODULE_TYPE.FoodAndWater &&
+					       futureModules[ x ][y-1] != MODULE_TYPE.Canteen ) ) &&
+					   ( futureModules[ x ][y+1] == null ||
+						 ( futureModules[ x ][y+1] != MODULE_TYPE.FoodAndWater &&
+						   futureModules[ x ][y+1] != MODULE_TYPE.Canteen ) ) &&
+					   ( futureModules[x+1][y-1] == null ||
+						 ( futureModules[x+1][y-1] != MODULE_TYPE.FoodAndWater &&
+						   futureModules[x+1][y-1] != MODULE_TYPE.Canteen ) ) &&
+					   ( futureModules[x+1][ y ] == null ||
+						 ( futureModules[x+1][ y ] != MODULE_TYPE.FoodAndWater &&
+						   futureModules[x+1][ y ] != MODULE_TYPE.Canteen ) ) &&
+					   ( futureModules[x+1][y+1] == null ||
+						 ( futureModules[x+1][y+1] != MODULE_TYPE.FoodAndWater &&
+						   futureModules[x+1][y+1] != MODULE_TYPE.Canteen ) );    
+			}
+			else if ( x == getWidth()-1 ) { // No right edge
+				
+				return canPlaceNonPlain(x, y) &&
+						   ( futureModules[x-1][y-1] == null ||
+							 ( futureModules[x-1][y-1] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[x-1][y-1] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[x-1][ y ] == null ||
+							 ( futureModules[x-1][ y ] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[x-1][ y ] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[x-1][y+1] == null ||
+							 ( futureModules[x-1][y+1] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[x-1][y+1] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[ x ][y-1] == null ||
+							 ( futureModules[ x ][y-1] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[ x ][y-1] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[ x ][y+1] == null ||
+							 ( futureModules[ x ][y+1] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[ x ][y+1] != MODULE_TYPE.Canteen ) );
+			}
+			else if ( y == getDepth()-1 ) { // No bottom edge
+				
+				return canPlaceNonPlain(x, y) &&
+						   ( futureModules[x-1][y-1] == null ||
+							 ( futureModules[x-1][y-1] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[x-1][y-1] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[x-1][ y ] == null ||
+							 ( futureModules[x-1][ y ] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[x-1][ y ] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[ x ][y-1] == null ||
+							 ( futureModules[ x ][y-1] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[ x ][y-1] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[x+1][y-1] == null ||
+							 ( futureModules[x+1][y-1] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[x+1][y-1] != MODULE_TYPE.Canteen ) ) &&
+						   ( futureModules[x+1][ y ] == null ||
+							 ( futureModules[x+1][ y ] != MODULE_TYPE.FoodAndWater &&
+							   futureModules[x+1][ y ] != MODULE_TYPE.Canteen ) ); 
+			}
+		}
+		return false;
+	}
+	
+	private boolean canPlaceDorm(int x, int y) {
+		
+		if ( x > 0 && x < getWidth() && y > 0 && y < getDepth() ) {
+			
+			if ( x < getWidth()-1 && y < getDepth()-1 ) {
+				
+				return canPlaceNonPlain(x, y) &&
+						   ( futureModules[x-1][y-1] == null ||
+						     futureModules[x-1][y-1] != MODULE_TYPE.Airlock ) &&
+						   ( futureModules[x-1][ y ] == null ||
+						     futureModules[x-1][ y ] != MODULE_TYPE.Airlock ) &&
+						   ( futureModules[x-1][y+1] == null ||
+						     futureModules[x-1][y+1] != MODULE_TYPE.Airlock ) &&
+						   ( futureModules[ x ][y-1] == null ||
+							 futureModules[ x ][y-1] != MODULE_TYPE.Airlock ) &&
+						   ( futureModules[ x ][y+1] == null ||
+							 futureModules[ x ][y+1] != MODULE_TYPE.Airlock ) &&
+						   ( futureModules[x+1][y-1] == null ||
+							 futureModules[x+1][y-1] != MODULE_TYPE.Airlock ) &&
+						   ( futureModules[x+1][ y ] == null ||
+							 futureModules[x+1][ y ] != MODULE_TYPE.Airlock ) &&
+						   ( futureModules[x+1][y+1] == null ||
+							 futureModules[x+1][y+1] != MODULE_TYPE.Airlock );    
+			}
+			else if ( x == getWidth()-1 ) { // No right edge
+					
+					return canPlaceNonPlain(x, y) &&
+							   ( futureModules[x-1][y-1] == null ||
+							     futureModules[x-1][y-1] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[x-1][ y ] == null ||
+							     futureModules[x-1][ y ] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[x-1][y+1] == null ||
+							     futureModules[x-1][y+1] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[ x ][y-1] == null ||
+								 futureModules[ x ][y-1] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[ x ][y+1] == null ||
+								 futureModules[ x ][y+1] != MODULE_TYPE.Airlock );
+			}
+			else if ( y == getDepth()-1 ) { // No bottom edge
+					
+					return canPlaceNonPlain(x, y) &&
+							   ( futureModules[x-1][y-1] == null ||
+							     futureModules[x-1][y-1] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[x-1][ y ] == null ||
+							     futureModules[x-1][ y ] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[ x ][y-1] == null ||
+								 futureModules[ x ][y-1] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[x+1][y-1] == null ||
+								 futureModules[x+1][y-1] != MODULE_TYPE.Airlock ) &&
+							   ( futureModules[x+1][ y ] == null ||
+								 futureModules[x+1][ y ] != MODULE_TYPE.Airlock ); 
+			}
+		}
+		return false;
+	}
+	
+	private boolean canPlaceEatery(int x, int y) {
+		
+		if ( x > 0 && x < getWidth() && y > 0 && y < getDepth() ) {
+			
+			if ( x < getWidth()-1 && y < getDepth()-1 ) {
+				
+				return canPlaceNonPlain(x, y) &&
+					   ( futureModules[x-1][y-1] == null ||
+					     futureModules[x-1][y-1] != MODULE_TYPE.Sanitation ) &&
+					   ( futureModules[x-1][ y ] == null ||
+					     futureModules[x-1][ y ] != MODULE_TYPE.Sanitation ) &&
+					   ( futureModules[x-1][y+1] == null ||
+					     futureModules[x-1][y+1] != MODULE_TYPE.Sanitation ) &&
+					   ( futureModules[ x ][y-1] == null ||
+						 futureModules[ x ][y-1] != MODULE_TYPE.Sanitation ) &&
+					   ( futureModules[ x ][y+1] == null ||
+						 futureModules[ x ][y+1] != MODULE_TYPE.Sanitation ) &&
+					   ( futureModules[x+1][y-1] == null ||
+						 futureModules[x+1][y-1] != MODULE_TYPE.Sanitation ) &&
+					   ( futureModules[x+1][ y ] == null ||
+						 futureModules[x+1][ y ] != MODULE_TYPE.Sanitation ) &&
+					   ( futureModules[x+1][y+1] == null ||
+						 futureModules[x+1][y+1] != MODULE_TYPE.Sanitation );    
+			}
+			else if ( x == getWidth()-1 ) { // No right edge
+				
+				return canPlaceNonPlain(x, y) &&
+						   ( futureModules[x-1][y-1] == null ||
+						     futureModules[x-1][y-1] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[x-1][ y ] == null ||
+						     futureModules[x-1][ y ] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[x-1][y+1] == null ||
+						     futureModules[x-1][y+1] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[ x ][y-1] == null ||
+							 futureModules[ x ][y-1] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[ x ][y+1] == null ||
+							 futureModules[ x ][y+1] != MODULE_TYPE.Sanitation );
+			}
+			else if ( y == getDepth()-1 ) { // No bottom edge
+				
+				return canPlaceNonPlain(x, y) &&
+						   ( futureModules[x-1][y-1] == null ||
+						     futureModules[x-1][y-1] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[x-1][ y ] == null ||
+						     futureModules[x-1][ y ] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[ x ][y-1] == null ||
+							 futureModules[ x ][y-1] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[x+1][y-1] == null ||
+							 futureModules[x+1][y-1] != MODULE_TYPE.Sanitation ) &&
+						   ( futureModules[x+1][ y ] == null ||
+							 futureModules[x+1][ y ] != MODULE_TYPE.Sanitation ); 
+			}
+		}
+		return false;
+	}
+	
+	private boolean findNearestUsableSanitationSpace(int xc, int yc) {
+		
+		/*
+		 * Consider optimizing this by following plain modules
+		 * rather than checking every nearest square in a brute
+		 * force manner.
+		 */
+		int numSquares = nearestSquares.getNumOrientedSquares();
+		int width = getWidth();
+		int depth = getDepth();
+		for ( int i=0; i<numSquares; i++ ) {
+			
+			int xCheck = xc+nearestSquares.getOrientedX(i);
+			int yCheck = yc+nearestSquares.getOrientedY(i);
+			
+			if ( xCheck > 0 && xCheck < width && yCheck > 0 && yCheck < depth ) {
+				
+				if ( futureModules[xCheck][yCheck] == null &&
+					 canPlaceSanitation(xCheck, yCheck) )
+				{
+					nearestUsableX = xCheck;
+					nearestUsableY = yCheck;
+					return true;
+				}
+				/*else if ( futureModules[xCheck][yCheck] == MODULE_TYPE.Plain ) {
+					// Branch from this new plain ?
+					
+				}*/
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Crawls to the nearest space usable for dormitorys.
+	 * @param x The current xc, must be attatched to a plain.
+	 * @param y The current yc, must be attatched to a plain.
+	 * @return Whether a usable space could be found.
+	 */
+	private boolean findNearestUsableDormSpace(int xc, int yc) {
+		
+		/*
+		 * Consider optimizing this by following plain modules
+		 * rather than checking every nearest square in a brute
+		 * force manner.
+		 */
+		int numSquares = nearestSquares.getNumOrientedSquares();
+		int width = getWidth();
+		int depth = getDepth();
+		for ( int i=0; i<numSquares; i++ ) {
+			
+			int xCheck = xc+nearestSquares.getOrientedX(i);
+			int yCheck = yc+nearestSquares.getOrientedY(i);
+			
+			if ( xCheck > 0 && xCheck < width && yCheck > 0 && yCheck < depth ) {
+				
+				if ( futureModules[xCheck][yCheck] == null &&
+					 canPlaceDorm(xCheck, yCheck) )
+				{
+					nearestUsableX = xCheck;
+					nearestUsableY = yCheck;
+					return true;
+				}
+				/*else if ( futureModules[xCheck][yCheck] == MODULE_TYPE.Plain ) {
+					// Branch from this new plain ?
+					
+				}*/
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Crawls to the nearest usable space (for non-plain modules).
 	 * @param x The current xc, must be attatched to a plain.
 	 * @param y The current yc, must be attatched to a plain.
@@ -1115,13 +1982,13 @@ public class Configuration extends LandingGrid {
 		 * rather than checking every nearest square in a brute
 		 * force manner.
 		 */
-		int numSquares = nearestSquares.getNumSquares();
+		int numSquares = nearestSquares.getNumOrientedSquares();
 		int width = getWidth();
 		int depth = getDepth();
 		for ( int i=0; i<numSquares; i++ ) {
 			
-			int xCheck = xc+nearestSquares.getX(i);
-			int yCheck = yc+nearestSquares.getY(i);
+			int xCheck = xc+nearestSquares.getOrientedX(i);
+			int yCheck = yc+nearestSquares.getOrientedY(i);
 			
 			if ( xCheck > 0 && xCheck < width && yCheck > 0 && yCheck < depth ) {
 				
@@ -1155,50 +2022,60 @@ public class Configuration extends LandingGrid {
 			
 			if ( xc < maxX && yc < maxY ) {
 				
-				return isBuildable(xc, yc) &&
-					   ( futureModules[xc][yc-1] != null &&
-					     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
-					   ( futureModules[xc-1][yc] != null &&
-					     futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
-					   ( futureModules[xc+1][yc] != null &&
-					     futureModules[xc+1][yc] == MODULE_TYPE.Plain ) ||
-					   ( futureModules[xc][yc+1] != null &&
-					     futureModules[xc][yc+1] == MODULE_TYPE.Plain );
+				return futureModules[xc][yc] == null &&
+					   isBuildable(xc, yc) &&
+					   ( ( futureModules[xc][yc-1] != null &&
+					       futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+					     ( futureModules[xc-1][yc] != null &&
+					       futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
+					     ( futureModules[xc+1][yc] != null &&
+					       futureModules[xc+1][yc] == MODULE_TYPE.Plain ) ||
+					     ( futureModules[xc][yc+1] != null &&
+					       futureModules[xc][yc+1] == MODULE_TYPE.Plain ) );
 			}
 			else if ( xc <= maxX && yc <= maxY ) { // On the right or bottom edge
 				
 				if ( xc == maxX && yc < maxY ) { // On the right edge, not bottom
 					
-					return isBuildable(xc, yc) &&
-						   ( futureModules[xc][yc-1] != null &&
-						     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
-						   ( futureModules[xc-1][yc] != null &&
-						     futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
-						   ( futureModules[xc][yc+1] != null &&
-						     futureModules[xc][yc+1] == MODULE_TYPE.Plain );
+					return futureModules[xc][yc] == null &&
+						   isBuildable(xc, yc) &&
+						   ( ( futureModules[xc][yc-1] != null &&
+						       futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+						     ( futureModules[xc-1][yc] != null &&
+						       futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
+						     ( futureModules[xc][yc+1] != null &&
+						       futureModules[xc][yc+1] == MODULE_TYPE.Plain ) );
 				}
 				else if ( xc < maxX && yc == maxY ) { // On the bottom edge, not right
 					
-					return isBuildable(xc, yc) &&
-						   ( futureModules[xc][yc-1] != null &&
-						     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
-						   ( futureModules[xc-1][yc] != null &&
-						     futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
-						   ( futureModules[xc+1][yc] != null &&
-						     futureModules[xc+1][yc] == MODULE_TYPE.Plain );
+					return futureModules[xc][yc] == null &&
+						   isBuildable(xc, yc) &&
+						   ( ( futureModules[xc][yc-1] != null &&
+						       futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+						     ( futureModules[xc-1][yc] != null &&
+						       futureModules[xc-1][yc] == MODULE_TYPE.Plain ) ||
+						     ( futureModules[xc+1][yc] != null &&
+						       futureModules[xc+1][yc] == MODULE_TYPE.Plain ) );
 				}
 				else { // In bottom right corner
 					
-					return isBuildable(xc, yc) &&
-						   ( futureModules[xc][yc-1] != null &&
-						     futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
-						   ( futureModules[xc-1][yc] != null &&
-						     futureModules[xc-1][yc] == MODULE_TYPE.Plain );
+					return futureModules[xc][yc] == null &&
+						   isBuildable(xc, yc) &&
+						   ( ( futureModules[xc][yc-1] != null &&
+						       futureModules[xc][yc-1] == MODULE_TYPE.Plain ) ||
+						     ( futureModules[xc-1][yc] != null &&
+						       futureModules[xc-1][yc] == MODULE_TYPE.Plain ) );
 				}
 			}
 		}
 		
 		return false;
+	}
+	
+	private boolean isPlain(int xc, int yc) {
+		
+		return futureModules[xc][yc] != null &&
+			   futureModules[xc][yc] == MODULE_TYPE.Plain;
 	}
 	
 }

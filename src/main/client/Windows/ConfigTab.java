@@ -24,6 +24,8 @@ public class ConfigTab extends GwtWindow {
 	private ScrollPanel configPanel; //Panel of configurations available
 	private VerticalPanel controls;
 	RadioButton mincon1;
+	RadioButton maxcon1;
+	RadioButton maxcon2;
 	Button configSave;
 	public static RadioButton mincon2;
 	private ListBox availBox; //Listbox of possible options
@@ -123,12 +125,23 @@ public class ConfigTab extends GwtWindow {
 					
 					LinkedList<Configuration> configs = generator.getMinimumConfigs();
 					
-					if( mincon1.getValue() && configs.size() > 0 )
+					if ( mincon1.getValue() && configs.size() > 0 )
 						renderConfig(configs.get(0));
 					else if ( mincon2.getValue() && configs.size() > 1 )
 						renderConfig(configs.get(1));
 					else
 						configGrid.clear();
+					
+					if ( generator.GenerateTwoMaximumConfigs(landingGrid) ) {
+						
+						LinkedList<Configuration> maxConfigs = generator.getMaximumConfigs();
+						if ( maxcon1.getValue() && maxConfigs.size() > 0 )
+							renderConfig(maxConfigs.get(0));
+						else if ( maxcon2.getValue() && maxConfigs.size() > 1)
+							renderConfig(configs.get(1));
+						else
+							configGrid.clear();
+					}
 				}
 				else
 					Window.alert("Config Generation Failed");
@@ -136,8 +149,12 @@ public class ConfigTab extends GwtWindow {
 		});
 		mincon1 = new RadioButton("Min","Minimum Configuration 1");
 		mincon2 = new RadioButton("Min","Minimum Configuration 2");
+		maxcon1 = new RadioButton("Max","Maximum Configuration 1");
+		maxcon2 = new RadioButton("Max","Maximum Configuration 2");
 		controls.add(mincon1);
 		controls.add(mincon2);
+		controls.add(maxcon1);
+		controls.add(maxcon2);
 		controls.add(generate);
 		controls.add(configSave);
 		add(controls);

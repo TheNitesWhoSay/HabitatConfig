@@ -39,6 +39,11 @@ public class NearestSquare {
 		return numSquares;
 	}
 	
+	public int getNumOrientedSquares() {
+		
+		return numSquares*4;
+	}
+	
 	/**
 	 * Gets the x coordinate of the nth nearest square in the x+1+ and y- area.
 	 * @param n The index of the square you're retriving coordinates for.
@@ -57,6 +62,38 @@ public class NearestSquare {
 	public int getY(final int n) {
 		
 		return yValues[n];
+	}
+	
+	public int getOrientedX(final int n) {
+		
+		int dir = n%4;
+		switch ( dir ) {
+		case 0:
+			return xValues[n/4];
+		case 1:
+			return yValues[n/4];
+		case 2:
+			return -xValues[n/4];
+		case 3:
+			return -yValues[n/4];
+		}
+		return 0;
+	}
+	
+	public int getOrientedY(final int n) {
+		
+		int dir = n%4;
+		switch ( dir ) {
+		case 0:
+			return yValues[n/4];
+		case 1:
+			return -xValues[n/4];
+		case 2:
+			return -yValues[n/4];
+		case 3:
+			return xValues[n/4];
+		}
+		return 0;
 	}
 	
 	/**

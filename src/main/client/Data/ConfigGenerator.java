@@ -38,6 +38,11 @@ public class ConfigGenerator {
 		return minimumConfigs;
 	}
 	
+	public LinkedList<Configuration> getMaximumConfigs() {
+		
+		return maximumConfigs;
+	}
+	
 	
 	/*	Generating Minimum Configurations:
 	
@@ -288,19 +293,46 @@ public class ConfigGenerator {
 			Configuration config = new Configuration(nearestSquares);
 			maxConfigs.add(config);
 		}
-			 
+		
+		/**
+		 * Test Code Start
+		 */
+		
+		/*System.out.println("Test start");
+		Configuration configr = new Configuration(nearestSquares);
+		ModuleCount countr = landingGrid.getUsableModuleCount();
+		if ( !configr.generateSkeleton(countr, 0) )
+			System.out.println("Bad skeleton generation");
+		if ( !configr.getSkeletonAverageCoordinates() )
+			System.out.println("Bad skeleton average coordinates");
+		if ( !configr.placeAirlocks(countr) )
+			System.out.println("Bad airlocks");
+		if ( !configr.placeSpecialModules(countr) )
+			System.out.println("Bad special modules");
+		if ( !configr.placeEateries(countr) )
+			System.out.println("Bad eateries");
+		if ( !configr.pairDormsToSanitations(countr) )
+			System.out.println("bad sanitations");
+		if ( !configr.placeDormSanitationPairs(countr) )
+			System.out.println("Bad pairing");
+		
+		System.out.println(configr.getModulesString());*/
+		
+		/**
+		 * Test Code End
+		 */
+		
 		for ( int i=maxConfigs.size()-1; i>=0; i-- ) {
 			
 			Configuration config = maxConfigs.get(i);
 			ModuleCount count = landingGrid.getUsableModuleCount();
 			
-			if ( !( config.generateSkeleton(count, i) &&
+			if ( !( config.findMinimumClusterAverage(landingGrid.getUsableModuleList()) &&
+					config.generateSkeleton(count, i) &&
 					config.getSkeletonAverageCoordinates() &&
 					config.placeAirlocks(count) &&
 					config.placeSpecialModules(count) &&
-					config.placeCanteens(count) &&
-					config.placeFoodAndWater(count) &&
-					config.pairSanitationToGyms(count) &&
+					config.placeEateries(count) &&
 					config.pairDormsToSanitations(count) &&
 					config.placeDormSanitationPairs(count)
 				  )

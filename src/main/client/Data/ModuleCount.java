@@ -126,6 +126,86 @@ public class ModuleCount {
 	public int getNumMedical() {
 		return numMedical;
 	}
+
+	/**
+	 * Returns whether there are any plain modules.
+	 * @return Whether there are any plain modules.
+	 */
+	public boolean hasPlain() {
+		return numPlain > 0;
+	}
+
+	/**
+	 * Returns whether there are any dormitory modules.
+	 * @return Whether there are any dormitory modules.
+	 */
+	public boolean hasDormitory() {
+		return numDormitory > 0;
+	}
+
+	/**
+	 * Returns whether there are any sanitation modules.
+	 * @return Whether there are any sanitation modules.
+	 */
+	public boolean hasSanitation() {
+		return numSanitation > 0;
+	}
+
+	/**
+	 * Returns whether there are any foodAndWater modules.
+	 * @return Whether there are any foodAndWater modules.
+	 */
+	public boolean hasFoodAndWater() {
+		return numFoodAndWater > 0;
+	}
+
+	/**
+	 * Returns whether there are any gymAndRelaxation modules.
+	 * @return Whether there are any gymAndRelaxation modules.
+	 */
+	public boolean hasGymAndRelaxation() {
+		return numGymAndRelaxation > 0;
+	}
+
+	/**
+	 * Returns whether there are any canteen modules.
+	 * @return Whether there are any canteen modules.
+	 */
+	public boolean hasCanteen() {
+		return numCanteen > 0;
+	}
+
+	/**
+	 * Returns whether there are any power modules.
+	 * @return Whether there are any power modules.
+	 */
+	public boolean hasPower() {
+		return numPower > 0;
+	}
+
+	/**
+	 * Returns whether there are any control modules.
+	 * @return Whether there are any control modules.
+	 */
+	public boolean hasControl() {
+		return numControl > 0;
+	}
+
+	/**
+	 * Returns whether there are any airlock modules.
+	 * @return Whether there are any airlock modules.
+	 */
+	public boolean hasAirlock() {
+		return numAirlock > 0;
+	}
+
+	/**
+	 * Returns whether there are any medical modules.
+	 * @return Whether there are any medical modules.
+	 */
+	public boolean hasMedical() {
+		return numMedical > 0;
+	}
 	
 	/**
 	 * Decrements the number of plain modules if it's greater than 0
