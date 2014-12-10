@@ -621,7 +621,7 @@ public class ModulesTab extends GwtWindow {
 
 			boolean b = Window.confirm("Check out configuration available?");
 			if (b) {
-				root.mainWindow.selectTab(2);
+				root.mainWindow.selectTab(1);
 			}
 		}
 	}

@@ -20,6 +20,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -137,13 +138,7 @@ public class MainWindow extends GwtWindow {
          weatherGrid.setWidget(2, 1, visible);
          weatherGrid.setStyleName("WeatherStyle");
          
-        ad = new HorizontalPanel();
-        //adimage = new Image("images/wunderground.jpg");
-        adbutton.setSize("370px", "70px");
- 		ad.add(adbutton);
- 		ad.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
- 		ad.setWidth("100%");
- 		add(ad);
+        
  		
 		 }
 		});
@@ -198,7 +193,7 @@ public class MainWindow extends GwtWindow {
 		hpLogout.setWidth("100%");
 		hpLogout.add(logout);
 		hpLogout.setVisible(false);
-		add(hpLogout);
+		
 		if ( root.configOptions.loginRequired() )
 			showLogout();
 			
@@ -209,16 +204,31 @@ public class MainWindow extends GwtWindow {
 		weatherPanel.getElement().getStyle().setWidth(150, Unit.PX);
 		tabs.setWidth("100%");
 		
-		// Uncomment to restore this tab
-		//homeTab.show(tabs, "Home");
+		ad = new HorizontalPanel();
+        //adimage = new Image("images/wunderground.jpg");
+        adbutton.setSize("370px", "70px");
+ 		ad.add(adbutton);
+ 		ad.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+ 		ad.setWidth("100%");
 		
+		//homeTab.show(tabs, "Home"); // Uncomment to restore this tab
 		modulesTab.show(tabs, "Modules");
 		configTab.show(tabs, "Configurations");
-		
-		// Uncomment to restore this tab
-		//communicationsTab.show(tabs, "Communications");
+		//communicationsTab.show(tabs, "Communications"); // Uncomment to restore this tab
 		
 		settingsTab.show(tabs, "Settings");
+		
+		selectTab(0);
+		
+		HorizontalPanel headerPanel = new HorizontalPanel();
+		headerPanel.setWidth("100%");
+		headerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		headerPanel.add(weatherGrid);
+		headerPanel.add(ad);
+		headerPanel.add(hpLogout);
+		
+		add(headerPanel);
+		add(tabs);
 		
 		tabs.addSelectionHandler(new SelectionHandler<Integer>() {
 
@@ -228,10 +238,6 @@ public class MainWindow extends GwtWindow {
 					configTab.clearScreen();
 			}
 		});
-		
-		selectTab(0);
-		add(weatherGrid);
-		add(tabs);
 		
 		// 10 day alert
 		
