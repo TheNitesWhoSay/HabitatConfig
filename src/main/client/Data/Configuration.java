@@ -817,7 +817,8 @@ public class Configuration extends LandingGrid {
 		
 		if ( nearXc > 0 && nearXc < getWidth() && nearYc > 0 && nearYc < getDepth() &&
 			 futureModules[nearXc][nearYc] == null &&
-			 isBuildable(nearXc, nearYc) )
+			 isBuildable(nearXc, nearYc) && isBuildable(nearXc-1, nearYc) && isBuildable(nearXc+1, nearYc) &&
+			 isBuildable(nearXc, nearYc-1) && isBuildable(nearXc, nearYc+1) )
 		{
 			futureModules[nearXc][nearYc] = MODULE_TYPE.Plain;
 			return true;
@@ -833,7 +834,8 @@ public class Configuration extends LandingGrid {
 				
 				if ( x>0 && x<getWidth() && y>0 && y<getDepth() &&
 					 futureModules[x][y] == null &&
-					 isBuildable(x, y) )
+					 isBuildable(x, y) && isBuildable(x-1, y) && isBuildable(x+1, y) &&
+					 isBuildable(x, y-1) && isBuildable(x, y+1) )
 				{
 					futureModules[x][y] = MODULE_TYPE.Plain;
 					return true;
@@ -853,7 +855,8 @@ public class Configuration extends LandingGrid {
 			int y = nearYc + nearestSquares.getOrientedY(i);
 			if ( x>0 && x<getWidth() && y>0 && y<getDepth() &&
 				 futureModules[x][y] == null &&
-				 isBuildable(x, y) )
+				 isBuildable(x, y) && isBuildable(x-1, y) && isBuildable(x+1, y) &&
+				 isBuildable(x, y-1) && isBuildable(x, y+1) )
 			{
 				if ( threeSpacesFromPeers(x, y) ) {
 					

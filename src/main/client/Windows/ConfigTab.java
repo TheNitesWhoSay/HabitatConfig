@@ -1,19 +1,18 @@
 package main.client.Windows;
 
 import java.util.LinkedList;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.storage.client.Storage;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 import main.client.HabitatConfig;
-import main.client.Data.ConfigGenerator;
 import main.client.Data.Configuration;
 import main.client.Data.LandingGrid;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
@@ -23,12 +22,12 @@ public class ConfigTab extends GwtWindow {
 	private HabitatConfig root;
 	private ScrollPanel configPanel; //Panel of configurations available
 	private VerticalPanel controls;
-	RadioButton mincon1;
-	RadioButton maxcon1;
-	RadioButton maxcon2;
-	Button configSave;
+	public static RadioButton mincon1;
 	public static RadioButton mincon2;
-	private ListBox availBox; //Listbox of possible options
+	public static RadioButton maxcon1;
+	public static RadioButton maxcon2;
+	Button configSave;
+	//private ListBox availBox; //Listbox of possible options
 	protected Storage configStore;
 	protected LandingGrid cList;
 	protected String configListKey;
@@ -98,9 +97,9 @@ public class ConfigTab extends GwtWindow {
 		configSave = new Button("Save Configurations");
 		//configPanel.setSize("275px", "500px");
 		configPanel.setTitle("Configurations");
-		availBox = new ListBox();
+		/*availBox = new ListBox();
 		availBox.addItem("Min Config");
-		availBox.addItem("Min Config2");
+		availBox.addItem("Min Config2");*/
 		configGrid = new Grid(50, 100);
 		for (int i = 0; i < 50; i++) {
 			for (int j = 0; j < 100; j++) {
@@ -114,52 +113,64 @@ public class ConfigTab extends GwtWindow {
 		configGrid.addStyleName("landingStyle");
 		// Proabably want to convert this to generation on load rather than on button click...
 		
-		final Button generate = new Button("Generate Configurations");
-		generate.addClickHandler(new ClickHandler() {
-			public void onClick(final ClickEvent event) {
+		mincon1 = new RadioButton("Min","Minimum Configuration 1");
+		mincon1.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				
-				ConfigGenerator generator = root.configGenerator;
-				LandingGrid landingGrid = root.landingGrid;
-				
-				if ( generator.GenerateTwoMinimumConfigs(landingGrid) ) {
-					
-					LinkedList<Configuration> configs = generator.getMinimumConfigs();
-					
-					if ( mincon1.getValue() && configs.size() > 0 )
-						renderConfig(configs.get(0));
-					else if ( mincon2.getValue() && configs.size() > 1 )
-						renderConfig(configs.get(1));
-					else
-						configGrid.clear();
-					
-					if ( generator.GenerateTwoMaximumConfigs(landingGrid) ) {
-						
-						LinkedList<Configuration> maxConfigs = generator.getMaximumConfigs();
-						if ( maxcon1.getValue() && maxConfigs.size() > 0 )
-							renderConfig(maxConfigs.get(0));
-						else if ( maxcon2.getValue() && maxConfigs.size() > 1)
-							renderConfig(configs.get(1));
-						else
-							configGrid.clear();
-					}
-				}
-				else
-					Window.alert("Config Generation Failed");
+				minConOneCheckedEvent();
 			}
 		});
-		mincon1 = new RadioButton("Min","Minimum Configuration 1");
 		mincon2 = new RadioButton("Min","Minimum Configuration 2");
-		maxcon1 = new RadioButton("Max","Maximum Configuration 1");
-		maxcon2 = new RadioButton("Max","Maximum Configuration 2");
+		mincon2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				
+				if ( root.configGenerator.GenerateTwoMinimumConfigs(root.landingGrid) ) {
+					LinkedList<Configuration> configs = root.configGenerator.getMinimumConfigs();
+					if ( mincon2.getValue() && configs.size() > 1 )
+						renderConfig(configs.get(1));
+				}
+			}
+		});
+		maxcon1 = new RadioButton("Min","Maximum Configuration 1");
+		maxcon1.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				
+				if ( root.configGenerator.GenerateTwoMaximumConfigs(root.landingGrid) ) {
+					LinkedList<Configuration> configs = root.configGenerator.getMaximumConfigs();
+					if ( maxcon1.getValue() && configs.size() > 0 )
+						renderConfig(configs.get(0));
+				}
+			}
+		});
+		maxcon2 = new RadioButton("Min","Maximum Configuration 2");
+		maxcon2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				
+				if ( root.configGenerator.GenerateTwoMaximumConfigs(root.landingGrid) ) {
+					LinkedList<Configuration> configs = root.configGenerator.getMaximumConfigs();
+					if ( maxcon2.getValue() && configs.size() > 1 )
+						renderConfig(configs.get(1));
+				}
+			}
+		});
+		
 		controls.add(mincon1);
 		controls.add(mincon2);
 		controls.add(maxcon1);
 		controls.add(maxcon2);
-		controls.add(generate);
 		controls.add(configSave);
 		add(controls);
 		add(configGrid);
 		return true;
+	}
+	
+	private void minConOneCheckedEvent() {
+		
+		if ( root.configGenerator.GenerateTwoMinimumConfigs(root.landingGrid) ) {
+			LinkedList<Configuration> configs = root.configGenerator.getMinimumConfigs();
+			if ( mincon1.getValue() && configs.size() > 0 )
+				renderConfig(configs.get(0));
+		}
 	}
 	
 }
