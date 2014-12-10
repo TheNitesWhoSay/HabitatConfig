@@ -10,6 +10,8 @@ import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -152,7 +154,9 @@ public class MainWindow extends GwtWindow {
 	 * @param tabNum the given tab number
 	 */
 	public void selectTab(final int tabNum) {
+		
 		tabs.selectTab(tabNum);
+		configTab.clearScreen();
 	}
 	
 	/**
@@ -199,6 +203,14 @@ public class MainWindow extends GwtWindow {
 			showLogout();
 			
 		tabs = new TabPanel();
+		tabs.addSelectionHandler(new SelectionHandler<Integer>() {
+
+			public void onSelection(SelectionEvent<Integer> event) {
+				
+				if ( event.getSelectedItem() == 2 )
+					configTab.clearScreen();
+			}
+		});
 		weatherPanel.setBorderWidth(2);
 		weatherPanel.setWidth("50%");
 		weatherPanel.getElement().getStyle().setWidth(150, Unit.PX);

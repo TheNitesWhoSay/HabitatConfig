@@ -32,6 +32,16 @@ public class ConfigTab extends GwtWindow {
 	protected LandingGrid cList;
 	protected String configListKey;
 	public static Grid configGrid;
+	
+	public void clearScreen() {
+		
+		mincon1.setValue(Boolean.FALSE);
+		mincon2.setValue(Boolean.FALSE);
+		maxcon1.setValue(Boolean.FALSE);
+		maxcon2.setValue(Boolean.FALSE);
+		configGrid.clear();
+	}
+	
 	/**
 	 * Default constructor
 	 */
