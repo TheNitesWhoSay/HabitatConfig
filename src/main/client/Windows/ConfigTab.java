@@ -1,6 +1,7 @@
 package main.client.Windows;
 
 import java.util.LinkedList;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.storage.client.Storage;
@@ -12,10 +13,12 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 import main.client.HabitatConfig;
 import main.client.Data.ConfigGenerator;
 import main.client.Data.Configuration;
 import main.client.Data.LandingGrid;
+import main.client.Data.Module;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 public class ConfigTab extends GwtWindow {
@@ -24,13 +27,17 @@ public class ConfigTab extends GwtWindow {
 	private ScrollPanel configPanel; //Panel of configurations available
 	private VerticalPanel controls;
 	RadioButton mincon1;
-	Button configSave;
+	Button configSave = new Button("Save Configuration");
+	Button configLoad = new Button("Load Configuration");
+	private ConfigGenerator configList;
 	public static RadioButton mincon2;
 	private ListBox availBox; //Listbox of possible options
 	protected Storage configStore;
 	protected LandingGrid cList;
 	protected String configListKey;
 	public static Grid configGrid;
+	LinkedList<MODULE_TYPE> onMap = new LinkedList<MODULE_TYPE>();
+	private String moduleListKey = "configList";
 	/**
 	 * Default constructor
 	 */
@@ -38,15 +45,16 @@ public class ConfigTab extends GwtWindow {
 		
 		super();
 		this.root = root;
+		
 	}
 	
 	public void drawModule(MODULE_TYPE type, int x, int y) {
-		
 		Image image = getImage(type);
 		if ( image != null ) {
 			
 			image.setSize("10px", "10px");
 		    configGrid.setWidget(50-y, x-1, image);
+		    onMap.add(type);
 		}
 	}
 	
@@ -70,12 +78,11 @@ public class ConfigTab extends GwtWindow {
 				default: imag = null; break;
 			}
 		}
-		
 		return imag;
 	}
 	
 	public void renderConfig(Configuration config) {
-		
+		onMap.clear();
 		configGrid.clear();
 		for ( int y=0; y<config.getDepth(); y++ ) {
 			
@@ -83,23 +90,73 @@ public class ConfigTab extends GwtWindow {
 				
 				MODULE_TYPE type = config.getFutureModule(x, y);
 				drawModule(type, x, y);
+				onMap.add(type);
 			}
 		}
 	}
 	
+	public void saveConfig(){
+		configStore = Storage.getLocalStorageIfSupported();
+		if(configStore!=null){
+			configStore.setItem(configListKey, configString());
+		}
+	}
+	private String configString() {
+		return "Store";
+		/**
+		String returnString = "{ ";
+		for(int i = 0; i < onMap.size(); i++){
+			
+			if(onMap.get(i).equals(MODULE_TYPE.Airlock)){
+				returnString += "Air, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.Canteen)){
+				returnString += "Can, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.Control)){
+				returnString += "Con, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.Dormitory)){
+				returnString +="Dorm, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.FoodAndWater)){
+				returnString +="Food, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.GymAndRelaxation)){
+				returnString +="Gym, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.Medical)){
+				returnString +="Med, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.Plain)){
+				returnString +="Plain, ";
+			}
+			else if(onMap.get(i).equals(MODULE_TYPE.Power)){
+				returnString +="Power, ";
+			}
+			
+		}
+		returnString += "}";
+		return returnString;
+		*/
+	}
+
 	/**
 	 * Creates the contents of the config tab
 	 */
 	protected boolean create() {
 		controls = new VerticalPanel();
 		configPanel = new ScrollPanel();
-		configSave = new Button("Save Configurations");
 		//configPanel.setSize("275px", "500px");
 		configPanel.setTitle("Configurations");
 		availBox = new ListBox();
 		availBox.addItem("Min Config");
 		availBox.addItem("Min Config2");
 		configGrid = new Grid(50, 100);
+		
+		configGrid.setCellPadding(0);
+		configGrid.setBorderWidth(0);
+		configGrid.setCellSpacing(0);
 		for (int i = 0; i < 50; i++) {
 			for (int j = 0; j < 100; j++) {
 				if(i>=40 && i<=50 && j>=40 && j<=50){
@@ -107,13 +164,15 @@ public class ConfigTab extends GwtWindow {
 				}
 			}
 		}
-		configGrid.setCellPadding(2);
-		configGrid.setCellSpacing(2);
-		configGrid.addStyleName("landingStyle");
-		// Proabably want to convert this to generation on load rather than on button click...
+
 		
+		configGrid.addStyleName("landingStyle");
+		//configGrid.setSize("700px", "1000px");
+		// Proabably want to convert this to generation on load rather than on button click...
+
 		final Button generate = new Button("Generate Configurations");
 		generate.addClickHandler(new ClickHandler() {
+			
 			public void onClick(final ClickEvent event) {
 				
 				ConfigGenerator generator = root.configGenerator;
@@ -134,6 +193,7 @@ public class ConfigTab extends GwtWindow {
 					Window.alert("Config Generation Failed");
 			}
 		});
+
 		mincon1 = new RadioButton("Min","Minimum Configuration 1");
 		mincon2 = new RadioButton("Min","Minimum Configuration 2");
 		controls.add(mincon1);
@@ -144,5 +204,6 @@ public class ConfigTab extends GwtWindow {
 		add(configGrid);
 		return true;
 	}
+
 	
 }
