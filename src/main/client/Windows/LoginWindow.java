@@ -49,6 +49,7 @@ public class LoginWindow extends GwtWindow {
 	protected boolean create() {
 		
 		// Create login window...
+		
 		final Label usernameLbl = new Label("Username: ");
 		final Label passwordLbl = new Label("Password: ");
 		usernameTextBox = new TextBox();

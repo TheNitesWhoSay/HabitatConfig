@@ -1,5 +1,8 @@
 package main.client.Windows;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import main.client.HabitatConfig;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -41,6 +44,9 @@ public class MainWindow extends GwtWindow {
 	private SettingsTab settingsTab;
 	private VerticalPanel weatherPanel = new VerticalPanel();
 	private HorizontalPanel hpLogout;
+	private String url;
+	Button adbutton = new Button();
+	private Image adimage = new Image();
 	private Grid weatherGrid = new Grid(3,2);
 	private TabPanel tabs;
 	/**
@@ -48,9 +54,16 @@ public class MainWindow extends GwtWindow {
 	 * @param root a reference to the root class
 	 */
 	public MainWindow(final HabitatConfig root) {
-		String url = "http://api.wunderground.com/api/32e8543fe9f5ddaf/geolookup/conditions/forecast/q/autoip.json";//pulls information based on user IP address
+		url = "http://api.wunderground.com/api/32e8543fe9f5ddaf/geolookup/conditions/astronomy/q/autoip.json";//pulls information based on user IP address
 	    url = URL.encode(url);
 		getResponse(url);
+		adbutton.setStyleName("Wunderground");
+		adbutton.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent e){
+				getResponse(url);
+			}
+		});
+
 		this.root = root;
 		homeTab = new HomeTab(root);
 		modulesTab = new ModulesTab(root);
@@ -66,7 +79,7 @@ public class MainWindow extends GwtWindow {
 		final JsonpRequestBuilder jsonp = new JsonpRequestBuilder();
 		jsonp.setCallbackParam("callback");
 		jsonp.requestObject(url, new AsyncCallback<JavaScriptObject>() {
-		 @Override
+		@Override
 		 public void onFailure(final Throwable caught) {
 		 Window.alert("JSONP onFailure");
 		 }
@@ -76,39 +89,56 @@ public class MainWindow extends GwtWindow {
 		 String result = obj.toString();
 		 JSONObject jA = (JSONObject)JSONParser.parseLenient(result);
          JSONValue jEnter = jA.get("current_observation");
-         JSONValue jEnter2 = jA.get("display_location");
+         JSONValue jEnter2 = jA.get("moon_phase");
          JSONObject jB = (JSONObject)JSONParser.parseLenient(jEnter.toString());
+         JSONObject jC = (JSONObject)JSONParser.parseLenient(jEnter2.toString());
          JSONValue temp = jB.get("temp_f");
          JSONValue tempc = jB.get("temp_c");
          JSONValue mph = jB.get("wind_mph");
+         JSONValue imageLink = jB.get("icon");
          JSONValue kph = jB.get("wind_kph");
          JSONValue update = jB.get("observation_time");
-         JSONValue visibility = jB.get("visibility_mi");
-         JSONValue visibilityk = jB.get("visibility_k");
+         JSONValue visibility = jC.get("sunset");
+         int beforeH = visibility.toString().indexOf(':');
+         int afterH = visibility.toString().indexOf('"', visibility.toString().indexOf(','));
+         beforeH = beforeH+2;
+         afterH = afterH-3;
+         String hour = visibility.toString().substring(beforeH, afterH);
+         int beforeM = visibility.toString().indexOf(':', afterH);
+         int afterM = visibility.toString().indexOf('"', beforeM);
+         beforeM = beforeM+2;
+         afterM = afterM+3;
+         String minute = visibility.toString().substring(beforeM, afterM);
+         int mil = 0;
+         try { mil = Integer.parseInt(hour); } catch ( NumberFormatException nfe ) { }
+        	mil = mil-12;
          JSONValue wind = jB.get("wind_string");
-         JSONValue iconoutlook = jB.get("icon_url");
          Label weatherHeader = new Label("Mars Weather Report:");
          weatherHeader.getElement().getStyle().setFontWeight(FontWeight.BOLD);
          Label temperature = new Label("Temperature: "+temp+"f / "+""+tempc+" c");
          temperature.getElement().getStyle().setFontWeight(FontWeight.BOLD);
          Label windflow = new Label("Wind: "+mph+" mph/"+kph+" kph");
          windflow.getElement().getStyle().setFontWeight(FontWeight.BOLD);
-         Label visible = new Label("Visibility: "+visibility+"mi");
+         Label visible = new Label("	Sunset Time: "+mil+":"+minute+" PM");
          visible.getElement().getStyle().setFontWeight(FontWeight.BOLD);
-         Image outlook = new Image("images/cloudy.jpg");
+         Image status = new Image();
+         String editUrl = imageLink.toString();
+         editUrl = editUrl.substring(1, editUrl.length()-1);
+        	 status.setUrl("http://icons.wxug.com/i/c/a/"+editUrl+".gif");
          Label updatetime = new Label(""+update);
          updatetime.getElement().getStyle().setFontWeight(FontWeight.BOLD);
          weatherGrid.setWidget(0, 0, weatherHeader);
          weatherGrid.setWidget(1,0,temperature);
          weatherGrid.setWidget(2,0,windflow); 
          weatherGrid.setWidget(0,1,updatetime);
-         weatherGrid.setWidget(1, 1, outlook);
+         weatherGrid.setWidget(1, 1, status);
          weatherGrid.setWidget(2, 1, visible);
          weatherGrid.setStyleName("WeatherStyle");
          
         ad = new HorizontalPanel();
-        Image adimage = new Image("images/wunderground.jpg");
- 		ad.add(adimage);
+        //adimage = new Image("images/wunderground.jpg");
+        adbutton.setSize("370px", "70px");
+ 		ad.add(adbutton);
  		ad.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
  		ad.setWidth("100%");
  		add(ad);

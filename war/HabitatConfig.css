@@ -10,19 +10,28 @@ h1 {
   text-align: center;
 }
 .landingStyle{
-	background-image: url("images/LandingArea.jpg");
+background-image: url("images/LandingArea.jpg");
+td img {
+    display: block
 }
+}
+
 .WeatherStyle{
 	background-image: url("images/marsSky.jpg");
+	font-size: larger;
+	color: rgb(35, 184, 228);
+}
+.Wunderground{
+	background-image: url("images/wunderground.jpg");
 }
 .Unbuildable{
-	background-image: url("images/black.jpg");
+background-image: url("images/black.jpg");
+border: 0px;
 }
 .sendButton {
   display: block;
   font-size: 16pt;
 }
-
 /** Most GWT widgets already have a style name defined */
 .gwt-DialogBox {
   width: 400px;

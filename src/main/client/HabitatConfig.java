@@ -61,7 +61,14 @@ public class HabitatConfig implements EntryPoint {
 			Window.alert("10 days...")
 		}
 		*/
-		
+		/*
+		 *  LanguageUtils.loadTranslation(new Runnable() {
+      public void run() {
+        RootPanel.get().add(new HTML("<h1>SimpleLanguage</h1><p>"));
+        RootPanel.get().add(createTranslationPanel());
+      }
+    });
+		 */
 		// From here on out the program is message driven
 	}
 	

@@ -17,6 +17,10 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DragEvent;
+import com.google.gwt.event.dom.client.DragHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -138,7 +142,7 @@ public class ModulesTab extends GwtWindow {
 			public void onChange(ChangeEvent event) {
 				int selection = tests.getSelectedIndex()+1;
 				loadTests(selection);
-				
+			 	
 			}
 		});
 		leftpanel.add(save);
@@ -345,8 +349,8 @@ public class ModulesTab extends GwtWindow {
 					}
 				}
 			}
-			g.setCellPadding(2);
-			g.setCellSpacing(2);
+			g.setCellPadding(0);
+			g.setCellSpacing(0);
 			//g.setSize("900px", "200px");
 			this.p = new ScrollPanel();
 			this.p.setSize("900px", "600px");
@@ -498,6 +502,15 @@ public class ModulesTab extends GwtWindow {
 		}
 		else{
 		ima.setSize("10px", "10px");
+		ima.addMouseMoveHandler(new MouseMoveHandler(){
+			public void onMouseMove(MouseMoveEvent event){
+				Window.alert(""+event.getClientX()+", "+event.getClientY()+" \n"+"Grid: "+g.getAbsoluteLeft()+" "+g.getAbsoluteTop()+" "+g.getOffsetHeight()+" "+g.getOffsetWidth());
+				int a = g.getOffsetHeight()-event.getClientX();
+				int b = g.getOffsetWidth();
+				g.setWidget(event.getClientY()-335, event.getClientX()-1, ima);
+				
+			}
+		});
 		ima.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent e){
 				id.setText(""+curr.getCode());
