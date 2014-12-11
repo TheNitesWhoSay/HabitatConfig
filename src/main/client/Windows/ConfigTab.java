@@ -1,21 +1,25 @@
 package main.client.Windows;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import main.client.HabitatConfig;
 import main.client.Data.Configuration;
 import main.client.Data.LandingGrid;
+import main.client.Data.Module;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 public class ConfigTab extends GwtWindow {
@@ -28,7 +32,9 @@ public class ConfigTab extends GwtWindow {
 	public static RadioButton mincon2;
 	public static RadioButton maxcon1;
 	public static RadioButton maxcon2;
+	static TabPanel change = new TabPanel();
 	Button configSave;
+	static Grid beforeG = new Grid(50,100);
 	//private ListBox availBox; //Listbox of possible options
 	protected Storage configStore;
 	protected LandingGrid cList;
@@ -130,6 +136,18 @@ public class ConfigTab extends GwtWindow {
 	 * Creates the contents of the config tab
 	 */
 	protected boolean create() {
+		for (int i = 0; i < 50; i++) {
+			for (int j = 0; j < 100; j++) {
+				if(i>=40 && i<=50 && j>=40 && j<=50){
+					beforeG.getCellFormatter().addStyleName(49-i, j-1, "Unbuildable");
+				}
+			}
+		}
+		beforeG.setStyleName("landingStyle");
+		beforeG.setCellPadding(2);
+		beforeG.setCellSpacing(2);
+		
+		change.add(beforeG, "Before");
 		controls = new VerticalPanel();
 		configPanel = new ScrollPanel();
 		configSave = new Button("Save Configurations");
@@ -181,7 +199,6 @@ public class ConfigTab extends GwtWindow {
 				rating.setText("Rating: " + maxConfigTwo.getQualityRating() + "%");
 			}
 		});
-		
 		controls.add(mincon1);
 		controls.add(mincon2);
 		controls.add(maxcon1);
@@ -189,7 +206,10 @@ public class ConfigTab extends GwtWindow {
 		controls.add(configSave);
 		controls.add(rating);
 		add(controls);
-		add(configGrid);
+		add(change);
+		change.add(configGrid, "After");
+		
+		//add(configGrid);
 		return true;
 	}
 	

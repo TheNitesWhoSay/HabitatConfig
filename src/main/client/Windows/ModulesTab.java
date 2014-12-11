@@ -84,6 +84,7 @@ public class ModulesTab extends GwtWindow {
 	private Module emptyMod = new Module();
 	private ListBox tests = new ListBox();
 	private FlexTable storetable;
+	static Image temp = new Image();
 	ScrollPanel sp;
 	TreeItem modTree = new TreeItem();
 	private boolean alerted;
@@ -95,7 +96,7 @@ public class ModulesTab extends GwtWindow {
     boolean dragReady = false;
 	final ListBox statbox = new ListBox();
 	final ListBox orienbox = new ListBox();
-	Image im = null;
+	static Image im = null;
 	int code = 0; 
 	int xc = -1;
 	int yc = -1;
@@ -468,6 +469,7 @@ public class ModulesTab extends GwtWindow {
 						
 						/** Using -50 and -1 in order to change the natural layout of the grid */
 						g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
+						ConfigTab.beforeG.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 						moduleCount--;
 						refreshLandingMap(root.landingGrid.getModuleList());
 				 	//refreshDisplayedModules(root.landingGrid.getModuleList());
@@ -520,6 +522,7 @@ public class ModulesTab extends GwtWindow {
 		}
 		else{
 		boolean setDown = false;
+	
 		ima.setSize("10px", "10px");
 				EventHandler h = new EventHandler(im, curr.getXPos(), curr.getYPos(), curr.getCode(), curr.getRotationsTillUpright(), curr.getStatus());
 				im.addMouseDownHandler(h);
@@ -549,42 +552,53 @@ public class ModulesTab extends GwtWindow {
 			
 		});
 		g.setWidget(50-curr.getYPos(), curr.getXPos()-1, im);
+		ConfigTab.beforeG.setWidget(50-curr.getYPos(), curr.getXPos()-1, temp);
 		}
 		}
 	}
 	
-	private Image getImage(int code2) {
+	public static Image getImage(int code2) {
 	  im = null;
+	  temp = null;
 		if(code2 > 0 && code2 < 41){
 		    im = new Image("images/Plain.jpg");
+		    temp = new Image("images/Plain.jpg");
 			}
 			else if(code2 >=61 && code2 <= 80){
 				im = new Image("images/Dormitory.jpg");
+				temp = new Image("images/Dormitory.jpg");
 			}
 			else if(code2 >=91 && code2 <= 100){
 				im = new Image("images/Sanitation.jpg");
+				temp = new Image("images/Sanitation.jpg");
 			}
 			else if(code2 >=61 && code2 <= 80){
 				im = new Image("images/Dormitory.jpg");
+				temp = new Image("images/Dormitory.jpg");
 			}
 			else if(code2 >=111 && code2 <= 120){
 				im = new Image("images/Food.jpg");
+				temp = new Image("images/Food.jpg");
 			}
 			else if(code2 >=141 && code2 <= 144){
 				im = new Image("images/Canteen.jpg");
+				temp = new Image("images/Canteen.jpg");
 			}
 			else if(code2 >=151 && code2 <= 154){
 				im = new Image("images/Power.jpg");
+				temp = new Image("images/Power.jpg");
 			}
 			else if(code2 >=161 && code2 <= 164){
 				im = new Image("images/Control.jpg");
+				temp = new Image("images/Control.jpg");
 			}
-			else if(code >=171 && code <= 174){
+			else if(code2 >=171 && code2 <= 174){
 				im = new Image("images/Airlock.jpg");
+				temp = new Image("images/Airlock.jpg");
 			}
 		if(im != null){
 		im.setSize("5", "5");
-		
+		temp.setSize("10px","10px");
 		}
 		return im;
 	}
@@ -628,6 +642,7 @@ public class ModulesTab extends GwtWindow {
 					sound.playModuleAudio(2);
 					root.landingGrid.removeModule(curr.getXPos(),curr.getYPos());
 					g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
+					ConfigTab.beforeG.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 					refreshLandingMap(root.landingGrid.getModuleList());
 					refreshDisplayedModules(root.landingGrid.getModuleList());
 					return;
@@ -641,6 +656,7 @@ public class ModulesTab extends GwtWindow {
 			boolean b = Window.confirm("Check out configuration available?");
 			if (b) {
 				root.mainWindow.selectTab(1);
+				ConfigTab.change.selectTab(0);
 			}
 		}
 	}
