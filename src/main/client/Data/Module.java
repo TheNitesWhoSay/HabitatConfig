@@ -140,5 +140,9 @@ public class Module {
 	public String storageString() {
 		return "{"+moduleCode+":"+xc+":"+yc+":"+status+":"+rotationsTillUpright+"}";
 	}
+
+	public static String configString(MODULE_TYPE type, int x, int y) {
+		return "{"+type+":"+x+":"+y+"}";
+	}
 	
 }
