@@ -2170,8 +2170,11 @@ public class Configuration extends LandingGrid {
 		if ( true ) // Rule 4
 			quality += 2;
 		
-		if ( layoutIndex >= 1 && layoutIndex <= 6 )
+		if ( layoutIndex >= 5 && layoutIndex <= 6 )
+			quality = 33;
+		else if ( layoutIndex >= 1 && layoutIndex <= 4 )
 			quality = 25;
+		
 		
 		if ( quality > 100 )
 			return 100;
