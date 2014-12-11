@@ -12,7 +12,9 @@ import main.client.Data.ModuleTypes;
 import main.client.Data.ModuleTypes.MODULE_TYPE;
 
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -20,8 +22,14 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DragEvent;
 import com.google.gwt.event.dom.client.DragHandler;
+import com.google.gwt.event.dom.client.DragOverEvent;
+import com.google.gwt.event.dom.client.DragOverHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -36,6 +44,7 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -44,6 +53,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -82,8 +92,10 @@ public class ModulesTab extends GwtWindow {
 	TextBox id = new TextBox();
 	TextBox xcord = new TextBox();
     TextBox ycord = new TextBox();
+    boolean dragReady = false;
 	final ListBox statbox = new ListBox();
 	final ListBox orienbox = new ListBox();
+	Image im = null;
 	int code = 0; 
 	int xc = -1;
 	int yc = -1;
@@ -104,6 +116,7 @@ public class ModulesTab extends GwtWindow {
 	private LandingGrid moduleList;
 	private String moduleListKey = "ModuleList";
 	private SoundOutput sound = new SoundOutput();
+	protected Context2d context;
    // Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_MPEG,
      //   "http(s)/url/to/your/sound/file.mp3");
 	/**
@@ -339,10 +352,10 @@ public class ModulesTab extends GwtWindow {
 	private void createLanding() {
 		canvas = Canvas.createIfSupported();
 		if (canvas != null) {
-			canvas.setWidth("" + 100);
-			canvas.setHeight("" + 50);
-			canvas.setCoordinateSpaceHeight(50);
-			canvas.setCoordinateSpaceWidth(100);
+			canvas.setWidth("500px");
+			canvas.setHeight("700px");
+			canvas.setCoordinateSpaceHeight(700);
+			canvas.setCoordinateSpaceWidth(500);
 			
 			/** Sets the unbuildable area design */
 			for (int i = 0; i < 50; i++) {
@@ -506,18 +519,16 @@ public class ModulesTab extends GwtWindow {
 			return;
 		}
 		else{
+		boolean setDown = false;
 		ima.setSize("10px", "10px");
-		ima.addMouseMoveHandler(new MouseMoveHandler(){
-			public void onMouseMove(MouseMoveEvent event){
-				Window.alert(""+event.getClientX()+", "+event.getClientY()+" \n"+"Grid: "+g.getAbsoluteLeft()+" "+g.getAbsoluteTop()+" "+g.getOffsetHeight()+" "+g.getOffsetWidth());
-				int a = g.getOffsetHeight()-event.getClientX();
-				int b = g.getOffsetWidth();
-				g.setWidget(event.getClientY()-335, event.getClientX()-1, ima);
-				
-			}
-		});
-		ima.addClickHandler(new ClickHandler(){
+				EventHandler h = new EventHandler(im, curr.getXPos(), curr.getYPos(), curr.getCode(), curr.getRotationsTillUpright(), curr.getStatus());
+				im.addMouseDownHandler(h);
+				im.addMouseMoveHandler(h);
+				im.addMouseUpHandler(h);
+		im.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent e){
+				g.getCellForEvent(e).getRowIndex();
+				g.getCellForEvent(e).getCellIndex();
 				id.setText(""+curr.getCode());
 				xcord.setText(""+curr.getXPos());
 				ycord.setText(""+curr.getYPos());
@@ -535,14 +546,15 @@ public class ModulesTab extends GwtWindow {
 				}
 				orienbox.setSelectedIndex(curr.getRotationsTillUpright());
 			}
+			
 		});
-		g.setWidget(50-curr.getYPos(), curr.getXPos()-1, ima);
+		g.setWidget(50-curr.getYPos(), curr.getXPos()-1, im);
 		}
 		}
 	}
 	
 	private Image getImage(int code2) {
-	  Image im = null;
+	  im = null;
 		if(code2 > 0 && code2 < 41){
 		    im = new Image("images/Plain.jpg");
 			}
@@ -572,6 +584,7 @@ public class ModulesTab extends GwtWindow {
 			}
 		if(im != null){
 		im.setSize("5", "5");
+		
 		}
 		return im;
 	}
@@ -639,6 +652,132 @@ public class ModulesTab extends GwtWindow {
 	 * @param module_STATUS
 	 * @param l
 	 */
+	private class EventHandler implements MouseDownHandler, MouseMoveHandler, MouseUpHandler
+	{
+		private boolean IsClicked;
+		private Widget MyDragObject;
+		private int xloc;
+		private int yloc;
+		boolean xlastd = false;
+		boolean ylastd = false;
+		boolean xlastp = false;
+		boolean ylastp = false;
+		int eventChangex;
+		int eventChangey;
+		int coded;
+		int ro;
+		int changeDeciderX;
+		int changeDeciderY; 
+		MODULE_STATUS stat;
+		private boolean xchangd;
+		private boolean xchangp;
+		private boolean ychangp;
+		private boolean ychangd;
+		
+		EventHandler(Widget w, int x, int y, int code, int rotat, MODULE_STATUS status)
+		{
+			MyDragObject = w;
+			xloc = x;
+			yloc = y;
+			coded = code;
+			ro = rotat;
+			stat = status;
+			changeDeciderX = 0;
+			changeDeciderY = 0;
+	
+		}
+		@Override
+		public void onMouseUp(MouseUpEvent event)
+		{
+
+			IsClicked = false;
+			if(xchangd){
+				xloc++;
+			}
+			if(xchangp){
+				xloc--;
+			}
+			if(ychangp){
+				yloc--;
+			}
+			if(ychangd){
+				yloc++;
+			}
+			root.landingGrid.setModuleInfo(xloc, yloc, coded, ro, stat);
+			refreshDisplayedModules(root.landingGrid.getModuleList());
+			refreshLandingMap(root.landingGrid.getModuleList());
+			//Window.alert(""+event+", "+event.getRelativeElement().getAbsoluteLeft());
+			Event.releaseCapture(MyDragObject.getElement());
+		}
+
+		@Override
+		public void onMouseMove(MouseMoveEvent event)
+		{
+			if (!IsClicked) return;
+		
+			
+			else{
+				//if(root.landingGrid.getModule(50-ylox, xloc-1))
+				//g.setWidget((50-yloc),(xloc-1),fMyDragObject);
+				//g.setWidget((event.getRelativeX(g.getElement())-75),(event.getRelativeY(g.getElement())-170), fMyDragObject);
+				
+			}
+			if((eventChangex-event.getClientX()>5.7)){
+				g.setWidget((50-yloc),((xloc--)-1),MyDragObject);
+				xchangd = true;
+				xchangp = false;
+				ychangp = false;
+				ychangd = false;
+			}
+			else if(event.getClientX()-eventChangex>5.7){
+				g.setWidget((50-yloc),((xloc++)-1),MyDragObject);
+				xchangp = true;
+				xchangd= false;
+				ychangp = false;
+				ychangd = false;
+			}
+			if(eventChangey-event.getClientY()>5.7){
+				g.setWidget((50-yloc++),(xloc-1),MyDragObject);
+				ychangp = true;
+				ychangd = false;
+				xchangd = false;
+				xchangp = false;
+			}
+			else if(event.getClientY()-eventChangey>5.7){
+				g.setWidget((50-yloc--),(xloc-1),MyDragObject);
+				ychangp = false;
+				ychangd = true;
+				xchangd = false;
+				xchangp = false;
+			}
+			if((event.getClientX()-eventChangex>5.7)||(eventChangex-event.getClientX()>5.7)){
+			eventChangex = event.getClientX();
+			}
+			if((event.getClientY()-eventChangey>5.7)||(eventChangey-event.getClientY()>5.7)){
+			eventChangey = event.getClientY();
+			}
+
+		}
+
+		@Override
+		public void onMouseDown(MouseDownEvent event)
+		{
+			ychangp = false;
+			ychangd = false;
+			xchangp = false;
+			xchangd = false;
+			changeDeciderX = 50;
+			changeDeciderY = 1;
+			eventChangex = event.getClientX();
+			eventChangey = event.getClientY();
+
+			IsClicked = true;
+
+			event.preventDefault();
+			Event.setCapture(MyDragObject.getElement());
+
+		}
+	}
 	protected void getOnMap(int i, int j, int k, MODULE_STATUS module_STATUS, int l) {
 		
 	}
