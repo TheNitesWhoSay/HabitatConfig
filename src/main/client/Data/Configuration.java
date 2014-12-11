@@ -2128,6 +2128,8 @@ public class Configuration extends LandingGrid {
 		
 		if ( hasMinimumRequirements() ) // hasMinimumRequirements
 			quality += 20;
+		else
+			quality -= 20;
 		
 		if ( usesAllModules() ) // usesAllModules
 			quality += 10;
@@ -2167,6 +2169,9 @@ public class Configuration extends LandingGrid {
 		
 		if ( true ) // Rule 4
 			quality += 2;
+		
+		if ( layoutIndex >= 1 && layoutIndex <= 6 )
+			quality = 25;
 		
 		if ( quality > 100 )
 			return 100;
