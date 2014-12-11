@@ -178,6 +178,7 @@ public class ConfigTab extends GwtWindow {
 		mincon1 = new RadioButton("Min","Minimum Configuration 1");
 		mincon1.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				change.selectTab(1);
 				renderConfig(minConfigOne);
 				rating.setText("Rating: " + minConfigOne.getQualityRating() + "%");
 			}
@@ -185,6 +186,7 @@ public class ConfigTab extends GwtWindow {
 		mincon2 = new RadioButton("Min","Minimum Configuration 2");
 		mincon2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				change.selectTab(1);
 				renderConfig(minConfigTwo);
 				rating.setText("Rating: " + minConfigTwo.getQualityRating() + "%");
 			}
@@ -192,6 +194,7 @@ public class ConfigTab extends GwtWindow {
 		maxcon1 = new RadioButton("Min","Maximum Configuration 1");
 		maxcon1.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				change.selectTab(1);
 				renderConfig(maxConfigOne);
 				rating.setText("Rating: " + maxConfigOne.getQualityRating() + "%");
 			}
@@ -199,6 +202,7 @@ public class ConfigTab extends GwtWindow {
 		maxcon2 = new RadioButton("Min","Maximum Configuration 2");
 		maxcon2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				change.selectTab(1);
 				renderConfig(maxConfigTwo);
 				rating.setText("Rating: " + maxConfigTwo.getQualityRating() + "%");
 			}
