@@ -2081,14 +2081,55 @@ public class Configuration extends LandingGrid {
 			   futureModules[xc][yc] == MODULE_TYPE.Plain;
 	}
 	
+	private boolean hasMinimumRequirements() {
+		
+		int numAirlocks = 0;
+		int numControls = 0;
+		int numPowers = 0;
+		int numFoodAndWaters = 0;
+		int numDormitorys = 0;
+		int numCanteens = 0;
+		int numSanitations = 0;
+		int numPlains = 0;
+		
+		for ( int y=0; y<getDepth(); y++ ) {
+			
+			for ( int x=0; x<getWidth(); x++ ) {
+				
+				if ( futureModules[x][y] != null ) {
+					
+					switch ( futureModules[x][y] ) {
+						case Airlock: numAirlocks ++; break;
+						case Control: numControls ++; break;
+						case Power: numPowers ++; break;
+						case FoodAndWater: numFoodAndWaters ++; break;
+						case Dormitory: numDormitorys ++; break;
+						case Canteen: numCanteens ++; break;
+						case Sanitation: numSanitations ++; break;
+						case Plain: numPlains ++; break;
+					}
+				}
+			}
+		}
+		
+		return numAirlocks > 0 && numControls > 0 && numPowers > 0 &&
+			   numFoodAndWaters > 0 && numDormitorys > 0 && numCanteens > 0 &&
+			   numSanitations > 0 && numPlains >= 3;
+	}
+	
+	private boolean usesAllModules() {
+		
+		return true;
+	}
+	
 	public int getQualityRating() {
 		
 		double quality = 0;
 		
-		if ( true ) // hasMinimumRequirements
+		if ( hasMinimumRequirements() ) // hasMinimumRequirements
 			quality += 20;
 		
-		if ( true ) // usesAllModules
+		if ( usesAllModules() ) // usesAllModules
 			quality += 10;
 		
 		if ( true ) // Rule 3
