@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import main.client.HabitatConfig;
+import main.client.SoundOutput;
 import main.client.Data.LandingGrid;
 import main.client.Data.Module;
 import main.client.Data.ModuleStatuses.MODULE_STATUS;
@@ -102,6 +103,7 @@ public class ModulesTab extends GwtWindow {
 	private Storage moduleStore;
 	private LandingGrid moduleList;
 	private String moduleListKey = "ModuleList";
+	private SoundOutput sound = new SoundOutput();
    // Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_MPEG,
      //   "http(s)/url/to/your/sound/file.mp3");
 	/**
@@ -324,7 +326,8 @@ public class ModulesTab extends GwtWindow {
                 }
                 else if(root.landingGrid.getModuleList().get(0)!=emptyMod){
                 	moduleStore.setItem(moduleListKey, root.landingGrid.generateStorage());
-                Window.alert("Module(s) Saved Successfully");
+                	//Window.alert("Module(s) Saved Successfully");
+                	sound.playModuleLogged();
                 }
         }
 		
@@ -460,6 +463,8 @@ public class ModulesTab extends GwtWindow {
 					}
 				}
 					if(root.landingGrid.setModuleInfo(xc, yc, code, rotations, ms)){
+						//Add module here - play sound for entered module
+						sound.playModuleAudio(1);
 						deleteHandler = storetable.getRowCount();
 						refreshDisplayedModules(root.landingGrid.getModuleList());
 				//refreshLandingMap(root.landingGrid.getModuleList());
@@ -607,6 +612,7 @@ public class ModulesTab extends GwtWindow {
 				public void onClick(ClickEvent e){
 					int modscount = modcount;
 						storetable.removeRow(modscount);
+					sound.playModuleAudio(2);
 					root.landingGrid.removeModule(curr.getXPos(),curr.getYPos());
 					g.setWidget(50-curr.getYPos(), curr.getXPos()-1, null);
 					refreshLandingMap(root.landingGrid.getModuleList());
@@ -618,7 +624,7 @@ public class ModulesTab extends GwtWindow {
 		}
 
 		if (hasMinConfig(root.landingGrid.getModuleList())) {
-
+			sound.playMinHabitat();
 			boolean b = Window.confirm("Check out configuration available?");
 			if (b) {
 				root.mainWindow.selectTab(1);

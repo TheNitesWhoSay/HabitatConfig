@@ -1,6 +1,7 @@
 package main.client.Windows;
 
 import main.client.HabitatConfig;
+import main.client.SoundOutput;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style.FontWeight;
@@ -51,6 +52,7 @@ public class MainWindow extends GwtWindow {
 	private Image adimage = new Image();
 	private Grid weatherGrid = new Grid(3,2);
 	private TabPanel tabs;
+	private SoundOutput sound = new SoundOutput();
 	/**
 	 * Sets default variable values
 	 * @param root a reference to the root class
@@ -187,6 +189,8 @@ public class MainWindow extends GwtWindow {
 					root.loginWindow.ClearCredentials(true);
 				
 				root.loginWindow.show(RootPanel.get());
+				sound.playLogoffSuccess();
+				
 			}
 		});
 		hpLogout.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);

@@ -12,6 +12,9 @@ public class SoundOutput {
 	final private Audio moduleLoggedMessage;
 	final private Audio mapMessage;
 	final private Audio firstHabitatMessage;
+	final private Audio minHabitatExists;
+	final private Audio moduleAdd;
+	final private Audio moduleDelete;
 	
 	/**
 	 * Default constructor for SoundOutput.
@@ -20,7 +23,9 @@ public class SoundOutput {
 		loginSuccess = Audio.createIfSupported();
 		loginSuccess.addSource("audio/Computer_Magic.mp3",
 				AudioElement.TYPE_MP3);
-		goodbyeMessage = null;
+		goodbyeMessage = Audio.createIfSupported();
+		goodbyeMessage.addSource("audio/goodbye.mp3",
+				AudioElement.TYPE_MP3);
 		moduleLoggedMessage = Audio.createIfSupported();
 		moduleLoggedMessage.addSource("audio/module_details_saved.mp3", 
 				AudioElement.TYPE_MP3);
@@ -29,6 +34,15 @@ public class SoundOutput {
 				AudioElement.TYPE_MP3);
 		firstHabitatMessage = Audio.createIfSupported();
 		firstHabitatMessage.addSource("audio/first_habitat_config.mp3", 
+				AudioElement.TYPE_MP3);
+		minHabitatExists = Audio.createIfSupported();
+		minHabitatExists.addSource("audio/min_habitat_exists.mp3", 
+				AudioElement.TYPE_MP3);
+		moduleAdd = Audio.createIfSupported();
+		moduleAdd.addSource("audio/add_success.mp3",
+				AudioElement.TYPE_MP3);
+		moduleDelete = Audio.createIfSupported();
+		moduleDelete.addSource("audio/delete_success.mp3", 
 				AudioElement.TYPE_MP3);
 	}
 	
@@ -43,8 +57,7 @@ public class SoundOutput {
 	
 	/**
 	 * Plays the selected audio for a successful logoff of an Astronaut.
-	 * @return The logoff success audio.  Currently, silence.
-	 * @deprecated Do not use
+	 * @return The audio, "Goodbye, friend"
 	 */
 	public void playLogoffSuccess () {
 		if (goodbyeMessage != null)
@@ -71,10 +84,29 @@ public class SoundOutput {
 	
 	/**
 	 * Plays the selected audio when a minimum configuration exists.
-	 * @return The audio, "The map shows the first suggested habitat configuration."
+	 * @return The audio, "A minimum habitat configuration exists."
 	 */
-	public void playFirstHabitat() {
-		if (firstHabitatMessage != null)
-			firstHabitatMessage.play();
+	public void playMinHabitat() {
+		if (minHabitatExists != null)
+			minHabitatExists.play();
 	}
+	
+	/**
+	 * Audio for when a module is added or deleted
+	 * @param choice 1 - module added, 2 - module deleted, 3 - module modified 
+	 * @return if choice 1, "Module successfully added". If choice 2, "Module successfully deleted".
+	 * 			Choice 3 not currently implemented.
+	 */
+	public void playModuleAudio(int choice) {
+		
+		switch (choice) {
+			case 1: moduleAdd.play(); break;
+			case 2: moduleDelete.play(); break;
+			case 3:
+			default: break;
+		}
+		
+			
+	}
+	
 }
