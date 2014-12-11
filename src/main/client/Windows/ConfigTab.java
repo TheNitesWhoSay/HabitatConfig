@@ -32,8 +32,29 @@ public class ConfigTab extends GwtWindow {
 	protected LandingGrid cList;
 	protected String configListKey;
 	public static Grid configGrid;
+	Configuration minConfigOne;
+	Configuration minConfigTwo;
+	Configuration maxConfigOne;
+	Configuration maxConfigTwo;
 	
-	public void clearScreen() {
+	public void refreshTab() {
+		
+		if ( root.configGenerator.GenerateTwoMinimumConfigs(root.landingGrid) ) {
+			
+			LinkedList<Configuration> configs = root.configGenerator.getMinimumConfigs();
+			if ( configs.size() > 0 )
+				minConfigOne = configs.get(0);
+			if ( configs.size() > 0 )
+				minConfigTwo = configs.get(1);
+		}
+		if ( root.configGenerator.GenerateTwoMaximumConfigs(root.landingGrid) ) {
+
+			LinkedList<Configuration> configs = root.configGenerator.getMaximumConfigs();
+			if ( configs.size() > 0 )
+				maxConfigOne = configs.get(0);
+			if ( configs.size() > 0 )
+				maxConfigTwo = configs.get(1);
+		}
 		
 		mincon1.setValue(Boolean.FALSE);
 		mincon2.setValue(Boolean.FALSE);
@@ -49,6 +70,10 @@ public class ConfigTab extends GwtWindow {
 		
 		super();
 		this.root = root;
+		minConfigOne = null;
+		minConfigTwo = null;
+		maxConfigOne = null;
+		maxConfigTwo = null;
 	}
 	
 	public void drawModule(MODULE_TYPE type, int x, int y) {
@@ -126,41 +151,25 @@ public class ConfigTab extends GwtWindow {
 		mincon1 = new RadioButton("Min","Minimum Configuration 1");
 		mincon1.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				
-				minConOneCheckedEvent();
+				renderConfig(minConfigOne);
 			}
 		});
 		mincon2 = new RadioButton("Min","Minimum Configuration 2");
 		mincon2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				
-				if ( root.configGenerator.GenerateTwoMinimumConfigs(root.landingGrid) ) {
-					LinkedList<Configuration> configs = root.configGenerator.getMinimumConfigs();
-					if ( mincon2.getValue() && configs.size() > 1 )
-						renderConfig(configs.get(1));
-				}
+				renderConfig(minConfigTwo);
 			}
 		});
 		maxcon1 = new RadioButton("Min","Maximum Configuration 1");
 		maxcon1.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				
-				if ( root.configGenerator.GenerateTwoMaximumConfigs(root.landingGrid) ) {
-					LinkedList<Configuration> configs = root.configGenerator.getMaximumConfigs();
-					if ( maxcon1.getValue() && configs.size() > 0 )
-						renderConfig(configs.get(0));
-				}
+				renderConfig(maxConfigOne);
 			}
 		});
 		maxcon2 = new RadioButton("Min","Maximum Configuration 2");
 		maxcon2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				
-				if ( root.configGenerator.GenerateTwoMaximumConfigs(root.landingGrid) ) {
-					LinkedList<Configuration> configs = root.configGenerator.getMaximumConfigs();
-					if ( maxcon2.getValue() && configs.size() > 1 )
-						renderConfig(configs.get(1));
-				}
+				renderConfig(maxConfigTwo);
 			}
 		});
 		
@@ -172,15 +181,6 @@ public class ConfigTab extends GwtWindow {
 		add(controls);
 		add(configGrid);
 		return true;
-	}
-	
-	private void minConOneCheckedEvent() {
-		
-		if ( root.configGenerator.GenerateTwoMinimumConfigs(root.landingGrid) ) {
-			LinkedList<Configuration> configs = root.configGenerator.getMinimumConfigs();
-			if ( mincon1.getValue() && configs.size() > 0 )
-				renderConfig(configs.get(0));
-		}
 	}
 	
 }

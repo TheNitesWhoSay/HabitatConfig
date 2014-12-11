@@ -151,7 +151,7 @@ public class MainWindow extends GwtWindow {
 	public void selectTab(final int tabNum) {
 		
 		tabs.selectTab(tabNum);
-		configTab.clearScreen();
+		configTab.refreshTab();
 	}
 	
 	/**
@@ -235,7 +235,7 @@ public class MainWindow extends GwtWindow {
 			public void onSelection(SelectionEvent<Integer> event) {
 				
 				if ( event.getSelectedItem() == tabs.getWidgetIndex(configTab) )
-					configTab.clearScreen();
+					configTab.refreshTab();
 			}
 		});
 		
