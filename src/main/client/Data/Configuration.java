@@ -2081,4 +2081,56 @@ public class Configuration extends LandingGrid {
 			   futureModules[xc][yc] == MODULE_TYPE.Plain;
 	}
 	
+	public int getQualityRating() {
+		
+		double quality = 0;
+		
+		if ( true ) // hasMinimumRequirements
+			quality += 20;
+		
+		if ( true ) // usesAllModules
+			quality += 10;
+		
+		if ( true ) // Rule 3
+			quality += 10;
+		
+		if ( true ) // Rule 2
+			quality += 10;
+		
+		if ( true ) // Rule 1
+			quality += 10;
+		
+		if ( true ) // Rule 9
+			quality += 10;
+		
+		if ( true ) // Rule 12
+			quality += 5;
+		
+		if ( true ) // Rule 6
+			quality += 5;
+		
+		if ( true ) // Rule 11
+			quality += 4;
+		
+		if ( true ) // Rule 10
+			quality += 4;
+		
+		if ( true ) // Rule 8
+			quality += 4;
+		
+		if ( true ) // Rule 7
+			quality += 3;
+		
+		if ( true ) // Rule 5
+			quality += 3;
+		
+		if ( true ) // Rule 4
+			quality += 2;
+		
+		if ( quality > 100 )
+			return 100;
+		else
+			return (int)quality;
+	}
+	
 }
