@@ -188,6 +188,7 @@ public class ModulesTab extends GwtWindow {
 			public void onClick(final ClickEvent e){
 				storetable.clear(true);
 				g.clear();
+				ConfigTab.beforeG.clear();
 				root.landingGrid.getModuleList().clear();
 			}
 		});
@@ -511,6 +512,7 @@ public class ModulesTab extends GwtWindow {
 	 * @param xcc 
 	 */
 	protected void refreshLandingMap(LinkedList<Module> m) {
+		ConfigTab.beforeG.clear();
 		ListIterator<Module> i = m.listIterator();
 		int moduleCount = 0;
 		while (i.hasNext()) {

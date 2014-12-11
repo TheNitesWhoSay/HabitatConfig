@@ -3,10 +3,13 @@ package main.client.Windows;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
@@ -15,6 +18,7 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import main.client.HabitatConfig;
 import main.client.Data.Configuration;
@@ -199,6 +203,11 @@ public class ConfigTab extends GwtWindow {
 				rating.setText("Rating: " + maxConfigTwo.getQualityRating() + "%");
 			}
 		});
+		configSave.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent e){
+				StoreConfig();
+			}
+		});
 		controls.add(mincon1);
 		controls.add(mincon2);
 		controls.add(maxcon1);
@@ -212,5 +221,9 @@ public class ConfigTab extends GwtWindow {
 		//add(configGrid);
 		return true;
 	}
+
+	protected void StoreConfig() {
+		configStore = Storage.getLocalStorageIfSupported();
+	} 
 	
 }
